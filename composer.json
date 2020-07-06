@@ -1,0 +1,50 @@
+{
+    "name": "yiisoft/yii-queue-interop",
+    "type": "library",
+    "description": "yii-queue amqp interop driver",
+    "keywords": [
+        "yii",
+        "queue",
+        "amqp",
+        "interop"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/yii-queue-interop/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "source": "https://github.com/yiisoft/yii-queue-interop"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7.4",
+        "php-amqplib/php-amqplib": "^2.11",
+        "yiisoft/yii-queue": "^3.0.0"
+    },
+    "require-dev": {
+        "infection/infection": "^0.16.3",
+        "phan/phan": "^3.0.2",
+        "phpunit/phpunit": "^9.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Queue\\Driver\\Interop\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Queue\\Driver\\Interop\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
