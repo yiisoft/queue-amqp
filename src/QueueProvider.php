@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\Driver\Interop;
+namespace Yiisoft\Yii\Queue\Driver\AMQP;
 
 use InvalidArgumentException;
 use PhpAmqpLib\Channel\AMQPChannel;
