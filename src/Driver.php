@@ -6,6 +6,7 @@ namespace Yiisoft\Yii\Queue\Driver\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
+use RuntimeException;
 use Yiisoft\Serializer\SerializerInterface;
 use Yiisoft\Yii\Queue\Driver\DriverInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
@@ -28,14 +29,21 @@ class Driver implements DriverInterface
      */
     public function nextMessage(): ?MessageInterface
     {
-        $data = $this->queueProvider->getChannel()->basic_consume(
+        $message = null;
+
+        $channel = $this->queueProvider->getChannel();
+        $channel->basic_consume(
             $this->queueProvider->getQueueName(),
             '',
             false,
-            true
+            true,
+            false,
+            false,
+            fn (AMQPMessage $amqpMessage) => $message = new Message($this->serializer->unserialize($amqpMessage->body))
         );
+        $channel->wait(null, true);
 
-        return new Message($this->serializer->unserialize($data));
+        return $message;
     }
 
     /**
@@ -43,7 +51,7 @@ class Driver implements DriverInterface
      */
     public function status(string $id): JobStatus
     {
-        // TODO: Implement status() method.
+        throw new RuntimeException('Status check is not supported by the driver');
     }
 
     /**
