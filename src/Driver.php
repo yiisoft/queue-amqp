@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\Driver\AMQP;
 
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;
 use Yiisoft\Serializer\SerializerInterface;
@@ -33,7 +32,7 @@ class Driver implements DriverInterface
 
         $channel = $this->queueProvider->getChannel();
         $channel->basic_consume(
-            $this->queueProvider->getQueueName(),
+            $this->queueProvider->getQueueSettings()->getName(),
             '',
             false,
             true,
@@ -60,7 +59,8 @@ class Driver implements DriverInterface
     public function push(JobInterface $job): MessageInterface
     {
         $amqpMessage = new AMQPMessage($this->serializer->serialize($job));
-        $this->queueProvider->getChannel()->basic_publish($amqpMessage, $this->queueProvider->getExchangeName());
+        $exchange = $this->queueProvider->getExchangeSettings()->getName();
+        $this->queueProvider->getChannel()->basic_publish($amqpMessage, $exchange);
 
         return new Message($job);
     }
