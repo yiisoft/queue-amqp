@@ -38,11 +38,17 @@ class Driver implements DriverInterface
             true,
             false,
             false,
-            fn (AMQPMessage $amqpMessage) => $message = new Message($this->serializer->unserialize($amqpMessage->body))
+            function (AMQPMessage $amqpMessage) use (&$message): void {
+                $message = $this->createMessage($amqpMessage);
+            }
         );
         $channel->wait(null, true);
 
         return $message;
+    }
+
+    protected function createMessage(AMQPMessage $message): MessageInterface {
+        return new Message($this->serializer->unserialize($message->body));
     }
 
     /**
