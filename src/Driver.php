@@ -7,20 +7,28 @@ namespace Yiisoft\Yii\Queue\Driver\AMQP;
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;
 use Yiisoft\Serializer\SerializerInterface;
+use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Driver\DriverInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
 use Yiisoft\Yii\Queue\Job\JobInterface;
+use Yiisoft\Yii\Queue\Job\PrioritisedJobInterface;
 use Yiisoft\Yii\Queue\MessageInterface;
+use Yiisoft\Yii\Queue\Tests\App\DelayableJob;
 
 class Driver implements DriverInterface
 {
-    private QueueProviderInterface $queueProvider;
+    protected QueueProviderInterface $queueProvider;
     protected SerializerInterface $serializer;
+    protected LoopInterface $loop;
 
-    public function __construct(QueueProviderInterface $queueProvider, SerializerInterface $serializer)
-    {
+    public function __construct(
+        QueueProviderInterface $queueProvider,
+        SerializerInterface $serializer,
+        LoopInterface $loop
+    ) {
         $this->queueProvider = $queueProvider;
         $this->serializer = $serializer;
+        $this->loop = $loop;
     }
 
     /**
@@ -76,7 +84,20 @@ class Driver implements DriverInterface
      */
     public function subscribe(callable $handler): void
     {
-        // TODO: Implement subscribe() method.
+        while ($this->loop->canContinue()) {
+            $channel = $this->queueProvider->getChannel();
+            $channel->basic_consume(
+                $this->queueProvider->getQueueSettings()->getName(),
+                '',
+                false,
+                true,
+                false,
+                false,
+                fn (AMQPMessage $amqpMessage) => $handler($this->createMessage($amqpMessage))
+            );
+
+            $channel->wait(null, true);
+        }
     }
 
     /**
@@ -84,6 +105,6 @@ class Driver implements DriverInterface
      */
     public function canPush(JobInterface $job): bool
     {
-        // TODO: Implement canPush() method.
+        return !$job instanceof DelayableJob && !$job instanceof PrioritisedJobInterface;
     }
 }
