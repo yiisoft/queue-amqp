@@ -1,21 +1,22 @@
 {
-    "name": "yiisoft/yii-queue-interop",
+    "name": "yiisoft/yii-queue-amqp",
     "type": "library",
-    "description": "yii-queue amqp interop driver",
+    "description": "yii-queue amqp driver based on amqp-lib package",
     "keywords": [
         "yii",
         "queue",
         "amqp",
-        "interop"
+        "async",
+        "rabbitmq"
     ],
     "homepage": "https://www.yiiframework.com/",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/yii-queue-interop/issues?state=open",
+        "issues": "https://github.com/yiisoft/yii-queue-amqp/issues?state=open",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
         "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii-queue-interop"
+        "source": "https://github.com/yiisoft/yii-queue-amqp"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -36,7 +37,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\Yii\\Queue\\Driver\\Interop\\Tests\\": "tests"
+            "Yiisoft\\Yii\\Queue\\Driver\\AMQP\\Tests\\": "tests"
         }
     },
     "extra": {
