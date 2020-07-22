@@ -6,7 +6,6 @@ namespace Yiisoft\Yii\Queue\Driver\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
-use Yiisoft\Yii\Queue\Driver\AMQP\Settings\Exchange;
 use Yiisoft\Yii\Queue\Driver\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Yii\Queue\Driver\AMQP\Settings\Queue;
 use Yiisoft\Yii\Queue\Driver\AMQP\Settings\QueueSettingsInterface;
@@ -16,7 +15,7 @@ final class QueueProvider implements QueueProviderInterface
     private AbstractConnection $connection;
     private QueueSettingsInterface $queueSettings;
     private ExchangeSettingsInterface $exchangeSettings;
-    private AMQPChannel $channel;
+    private ?AMQPChannel $channel = null;
 
     public function __construct(
         AbstractConnection $connection,
