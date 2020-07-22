@@ -6,7 +6,6 @@ namespace Yiisoft\Yii\Queue\Driver\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
-use Yiisoft\Yii\Queue\Driver\AMQP\Settings\Exchange;
 use Yiisoft\Yii\Queue\Driver\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Yii\Queue\Driver\AMQP\Settings\Queue;
 use Yiisoft\Yii\Queue\Driver\AMQP\Settings\QueueSettingsInterface;

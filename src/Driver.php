@@ -10,10 +10,10 @@ use Yiisoft\Serializer\SerializerInterface;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Driver\DriverInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
+use Yiisoft\Yii\Queue\Job\DelayableJobInterface;
 use Yiisoft\Yii\Queue\Job\JobInterface;
 use Yiisoft\Yii\Queue\Job\PrioritisedJobInterface;
 use Yiisoft\Yii\Queue\MessageInterface;
-use Yiisoft\Yii\Queue\Tests\App\DelayableJob;
 
 class Driver implements DriverInterface
 {
@@ -105,6 +105,6 @@ class Driver implements DriverInterface
      */
     public function canPush(JobInterface $job): bool
     {
-        return !$job instanceof DelayableJob && !$job instanceof PrioritisedJobInterface;
+        return !$job instanceof DelayableJobInterface && !$job instanceof PrioritisedJobInterface;
     }
 }

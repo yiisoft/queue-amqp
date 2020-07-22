@@ -30,6 +30,6 @@ class Message implements MessageInterface
      */
     public function getJob(): JobInterface
     {
-        // TODO: Implement getJob() method.
+        return $this->job;
     }
 }
