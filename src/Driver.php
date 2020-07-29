@@ -10,10 +10,9 @@ use Yiisoft\Serializer\SerializerInterface;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Driver\DriverInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
-use Yiisoft\Yii\Queue\Job\DelayableJobInterface;
-use Yiisoft\Yii\Queue\Job\JobInterface;
-use Yiisoft\Yii\Queue\Job\PrioritisedJobInterface;
+use Yiisoft\Yii\Queue\Message;
 use Yiisoft\Yii\Queue\MessageInterface;
+use Yiisoft\Yii\Queue\Payload\PayloadInterface;
 
 class Driver implements DriverInterface
 {
@@ -56,7 +55,9 @@ class Driver implements DriverInterface
     }
 
     protected function createMessage(AMQPMessage $message): MessageInterface {
-        return new Message($this->serializer->unserialize($message->body));
+        $payload = $this->serializer->unserialize($message->body);
+
+        return new Message($payload['name'], $payload['data'], $payload['meta']);
     }
 
     /**
@@ -70,13 +71,18 @@ class Driver implements DriverInterface
     /**
      * @inheritDoc
      */
-    public function push(JobInterface $job): MessageInterface
+    public function push(MessageInterface $message): ?string
     {
-        $amqpMessage = new AMQPMessage($this->serializer->serialize($job));
+        $payload = [
+            'name' => $message->getPayloadName(),
+            'data' => $message->getPayloadData(),
+            'meta' => $message->getPayloadMeta(),
+        ];
+        $amqpMessage = new AMQPMessage($this->serializer->serialize($payload));
         $exchange = $this->queueProvider->getExchangeSettings()->getName();
         $this->queueProvider->getChannel()->basic_publish($amqpMessage, $exchange);
 
-        return new Message($job);
+        return null;
     }
 
     /**
@@ -103,8 +109,10 @@ class Driver implements DriverInterface
     /**
      * @inheritDoc
      */
-    public function canPush(JobInterface $job): bool
+    public function canPush(MessageInterface $message): bool
     {
-        return !$job instanceof DelayableJobInterface && !$job instanceof PrioritisedJobInterface;
+        $meta = $message->getPayloadMeta();
+
+        return !isset($meta[PayloadInterface::META_KEY_DELAY]) && !isset($meta[PayloadInterface::META_KEY_PRIORITY]);
     }
 }
