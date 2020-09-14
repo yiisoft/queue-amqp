@@ -32,7 +32,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Yiisoft\\Yii\\Queue\\Driver\\AMQP\\": "src"
+            "Yiisoft\\Yii\\Queue\\AMQP\\": "src"
         }
     },
     "autoload-dev": {

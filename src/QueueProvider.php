@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\Driver\AMQP;
+namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
-use Yiisoft\Yii\Queue\Driver\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Yii\Queue\Driver\AMQP\Settings\Queue;
-use Yiisoft\Yii\Queue\Driver\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
+use Yiisoft\Yii\Queue\AMQP\Settings\Queue;
+use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 
 final class QueueProvider implements QueueProviderInterface
 {

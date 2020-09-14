@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\Driver\AMQP;
+namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;

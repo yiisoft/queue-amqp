@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\Driver\AMQP\Settings;
+namespace Yiisoft\Yii\Queue\AMQP\Settings;
 
 use InvalidArgumentException;
 use PhpAmqpLib\Wire\AMQPTable;
