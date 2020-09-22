@@ -10,8 +10,8 @@ use Yiisoft\Serializer\SerializerInterface;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Driver\DriverInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
-use Yiisoft\Yii\Queue\Message;
-use Yiisoft\Yii\Queue\MessageInterface;
+use Yiisoft\Yii\Queue\Message\Message;
+use Yiisoft\Yii\Queue\Message\MessageInterface;
 use Yiisoft\Yii\Queue\Payload\PayloadInterface;
 
 class Driver implements DriverInterface
