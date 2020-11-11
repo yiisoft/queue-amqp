@@ -27,9 +27,6 @@ final class Driver implements DriverInterface
         $this->loop = $loop;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function nextMessage(): ?MessageInterface
     {
         $message = null;
@@ -51,17 +48,11 @@ final class Driver implements DriverInterface
         return $message;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function status(string $id): JobStatus
     {
         throw new RuntimeException('Status check is not supported by the driver');
     }
 
-    /**
-     * @inheritDoc
-     */
     public function push(MessageInterface $message): void
     {
         $payload = $this->serializer->serialize($message);
@@ -70,9 +61,6 @@ final class Driver implements DriverInterface
         $this->queueProvider->getChannel()->basic_publish($amqpMessage, $exchange);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function subscribe(callable $handler): void
     {
         while ($this->loop->canContinue()) {
