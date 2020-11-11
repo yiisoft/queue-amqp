@@ -43,7 +43,7 @@ class MessageSerializer implements MessageSerializerInterface
         $payload = $this->serializer->unserialize($value);
 
         $name = $payload['name'] ?? null;
-        if ($name === null) {
+        if (!is_string($name)) {
             throw new InvalidArgumentException('Serialized data must specify message name');
         }
 
