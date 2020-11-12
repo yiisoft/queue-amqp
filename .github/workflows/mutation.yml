@@ -9,7 +9,9 @@ name: mutation test
 jobs:
   mutation:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
-
+    env:
+      extensions: curl, mbstring, dom, intl, json, libxml, xml, xmlwriter
+      key: cache-v1
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -23,11 +25,27 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
+        
+      - name: Setup cache environment
+        id: cache-env
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: ${{ env.extensions }}
+          key: ${{ env.key }}
 
-      - name: "Install PHP"
+      - name: Cache extensions
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.cache-env.outputs.dir }}
+          key: ${{ steps.cache-env.outputs.key }}
+          restore-keys: ${{ steps.cache-env.outputs.key }}
+
+      - name: "Install PHP with extensions"
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
+          extensions: ${{ env.extensions }}
           ini-values: memory_limit=-1
           coverage: "pcov"
           tools: composer:v2
