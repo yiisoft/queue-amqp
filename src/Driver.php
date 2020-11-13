@@ -7,24 +7,30 @@ namespace Yiisoft\Yii\Queue\AMQP;
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
+use Yiisoft\Yii\Queue\Driver\BehaviorChecker;
 use Yiisoft\Yii\Queue\Driver\DriverInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
+use Yiisoft\Yii\Queue\Message\Behaviors\ExecutableBehaviorInterface;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
 
 final class Driver implements DriverInterface
 {
+    private const BEHAVIORS_AVAILABLE = [];
     protected QueueProviderInterface $queueProvider;
     protected MessageSerializerInterface $serializer;
     protected LoopInterface $loop;
+    private ?BehaviorChecker $behaviorChecker;
 
     public function __construct(
         QueueProviderInterface $queueProvider,
         MessageSerializerInterface $serializer,
-        LoopInterface $loop
+        LoopInterface $loop,
+        ?BehaviorChecker $behaviorChecker = null
     ) {
         $this->queueProvider = $queueProvider;
         $this->serializer = $serializer;
         $this->loop = $loop;
+        $this->behaviorChecker = $behaviorChecker;
     }
 
     public function nextMessage(): ?MessageInterface
@@ -55,6 +61,17 @@ final class Driver implements DriverInterface
 
     public function push(MessageInterface $message): void
     {
+        $behaviors = $message->getBehaviors();
+        if ($this->behaviorChecker !== null) {
+            $this->behaviorChecker->check(self::class, $behaviors, self::BEHAVIORS_AVAILABLE);
+        }
+
+        foreach ($behaviors as $behavior) {
+            if ($behavior instanceof ExecutableBehaviorInterface) {
+                $behavior->execute();
+            }
+        }
+
         $payload = $this->serializer->serialize($message);
         $amqpMessage = new AMQPMessage($payload);
         $exchange = $this->queueProvider->getExchangeSettings()->getName();
