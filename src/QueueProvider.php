@@ -7,7 +7,6 @@ namespace Yiisoft\Yii\Queue\AMQP;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
 use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Yii\Queue\AMQP\Settings\Queue;
 use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 
 final class QueueProvider implements QueueProviderInterface
@@ -19,7 +18,7 @@ final class QueueProvider implements QueueProviderInterface
 
     public function __construct(
         AbstractConnection $connection,
-        Queue $queueSettings,
+        QueueSettingsInterface $queueSettings,
         ExchangeSettingsInterface $exchangeSettings
     ) {
         $this->connection = $connection;
