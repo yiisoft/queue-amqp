@@ -9,7 +9,7 @@ use PhpAmqpLib\Wire\AMQPTable;
 interface ExchangeSettingsInterface
 {
     /**
-     * @return array|AMQPTable
+     * @return AMQPTable|array
      */
     public function getArguments();
 

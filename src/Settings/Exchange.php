@@ -17,7 +17,7 @@ final class Exchange implements ExchangeSettingsInterface
     private bool $autoDelete;
     private bool $nowait;
     /**
-     * @var array|AMQPTable
+     * @var AMQPTable|array
      */
     private $arguments;
     private ?int $ticket;

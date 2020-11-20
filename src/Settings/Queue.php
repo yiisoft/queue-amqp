@@ -16,7 +16,7 @@ final class Queue implements QueueSettingsInterface
     private bool $autoDelete;
     private bool $nowait;
     /**
-     * @var array|AMQPTable
+     * @var AMQPTable|array
      */
     private $arguments;
     private ?int $ticket;
