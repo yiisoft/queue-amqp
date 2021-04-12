@@ -30,7 +30,7 @@ class MessageSerializer implements MessageSerializerInterface
         ];
         foreach ($message->getBehaviors() as $behavior) {
             $payload['behaviors'][] = [
-                '__class' => get_class($behavior),
+                'class' => get_class($behavior),
                 '__construct()' => $behavior->getConstructorParameters(),
             ];
         }
