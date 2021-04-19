@@ -6,18 +6,15 @@ namespace Yiisoft\Yii\Queue\AMQP;
 
 use InvalidArgumentException;
 use Yiisoft\Factory\Factory;
-use Yiisoft\Serializer\SerializerInterface;
 use Yiisoft\Yii\Queue\Message\Message;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
 
 class MessageSerializer implements MessageSerializerInterface
 {
-    private SerializerInterface $serializer;
     private Factory $factory;
 
-    public function __construct(SerializerInterface $serializer, Factory $factory)
+    public function __construct(Factory $factory)
     {
-        $this->serializer = $serializer;
         $this->factory = $factory;
     }
 
@@ -35,12 +32,12 @@ class MessageSerializer implements MessageSerializerInterface
             ];
         }
 
-        return $this->serializer->serialize($payload);
+        return json_encode($payload, JSON_THROW_ON_ERROR);
     }
 
     public function unserialize(string $value): MessageInterface
     {
-        $payload = $this->serializer->unserialize($value);
+        $payload = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
         $name = $payload['name'] ?? null;
         if (!is_string($name)) {
