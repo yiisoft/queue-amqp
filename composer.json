@@ -22,6 +22,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.4|^8.0",
+        "ext-json": "*",
         "php-amqplib/php-amqplib": "^2.11|^3.0",
         "yiisoft/factory": "3.0.x-dev",
         "yiisoft/yii-queue": "^3.0.0"
