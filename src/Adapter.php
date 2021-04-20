@@ -6,14 +6,14 @@ namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;
+use Yiisoft\Yii\Queue\Adapter\BehaviorChecker;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Driver\BehaviorChecker;
-use Yiisoft\Yii\Queue\Driver\DriverInterface;
+use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
 use Yiisoft\Yii\Queue\Message\Behaviors\ExecutableBehaviorInterface;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
 
-final class Driver implements DriverInterface
+final class Adapter implements AdapterInterface
 {
     private const BEHAVIORS_AVAILABLE = [];
     protected QueueProviderInterface $queueProvider;
@@ -56,7 +56,7 @@ final class Driver implements DriverInterface
 
     public function status(string $id): JobStatus
     {
-        throw new RuntimeException('Status check is not supported by the driver');
+        throw new RuntimeException('Status check is not supported by the adapter');
     }
 
     public function push(MessageInterface $message): void

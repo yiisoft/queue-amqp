@@ -1,7 +1,7 @@
 {
     "name": "yiisoft/yii-queue-amqp",
     "type": "library",
-    "description": "yii-queue amqp driver based on amqp-lib package",
+    "description": "yii-queue amqp adapter based on amqp-lib package",
     "keywords": [
         "yii",
         "queue",
@@ -41,7 +41,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\Yii\\Queue\\Driver\\AMQP\\Tests\\": "tests"
+            "Yiisoft\\Yii\\Queue\\AMQP\\Tests\\": "tests"
         }
     },
     "extra": {
