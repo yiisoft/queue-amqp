@@ -25,6 +25,7 @@
         "ext-json": "*",
         "php-amqplib/php-amqplib": "^2.11|^3.0",
         "yiisoft/factory": "3.0.x-dev",
+        "yiisoft/friendly-exception": "^1.0",
         "yiisoft/yii-queue": "^3.0.0"
     },
     "require-dev": {

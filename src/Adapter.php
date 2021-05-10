@@ -33,6 +33,14 @@ final class Adapter implements AdapterInterface
         $this->behaviorChecker = $behaviorChecker;
     }
 
+    public function withChannel(string $channel): self
+    {
+        $instance = clone $this;
+        $instance->queueProvider = $this->queueProvider->withChannelName($channel);
+
+        return $instance;
+    }
+
     public function nextMessage(): ?MessageInterface
     {
         $message = null;
@@ -74,8 +82,12 @@ final class Adapter implements AdapterInterface
 
         $payload = $this->serializer->serialize($message);
         $amqpMessage = new AMQPMessage($payload);
-        $exchange = $this->queueProvider->getExchangeSettings()->getName();
-        $this->queueProvider->getChannel()->basic_publish($amqpMessage, $exchange);
+        $exchangeSettings = $this->queueProvider->getExchangeSettings();
+        $this->queueProvider->getChannel()->basic_publish(
+            $amqpMessage,
+            $exchangeSettings ? $exchangeSettings->getName() : '',
+            $exchangeSettings ? '' : $this->queueProvider->getQueueSettings()->getName()
+        );
     }
 
     public function subscribe(callable $handler): void

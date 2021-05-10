@@ -100,4 +100,12 @@ final class Queue implements QueueSettingsInterface
             $this->ticket,
         ];
     }
+
+    public function withName(string $name): QueueSettingsInterface
+    {
+        $instance = clone $this;
+        $instance->queueName = $name;
+
+        return $instance;
+    }
 }

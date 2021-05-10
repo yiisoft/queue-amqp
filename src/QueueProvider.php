@@ -13,13 +13,13 @@ final class QueueProvider implements QueueProviderInterface
 {
     private AbstractConnection $connection;
     private QueueSettingsInterface $queueSettings;
-    private ExchangeSettingsInterface $exchangeSettings;
+    private ?ExchangeSettingsInterface $exchangeSettings;
     private ?AMQPChannel $channel = null;
 
     public function __construct(
         AbstractConnection $connection,
         QueueSettingsInterface $queueSettings,
-        ExchangeSettingsInterface $exchangeSettings
+        ?ExchangeSettingsInterface $exchangeSettings
     ) {
         $this->connection = $connection;
         $this->queueSettings = $queueSettings;
@@ -31,8 +31,11 @@ final class QueueProvider implements QueueProviderInterface
         if ($this->channel === null) {
             $this->channel = $this->connection->channel();
             $this->channel->queue_declare(...$this->queueSettings->getPositionalSettings());
-            $this->channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
-            $this->channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
+
+            if ($this->exchangeSettings !== null) {
+                $this->channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
+                $this->channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
+            }
         }
 
         return $this->channel;
@@ -43,8 +46,25 @@ final class QueueProvider implements QueueProviderInterface
         return $this->queueSettings;
     }
 
-    public function getExchangeSettings(): ExchangeSettingsInterface
+    public function getExchangeSettings(): ?ExchangeSettingsInterface
     {
         return $this->exchangeSettings;
+    }
+
+    public function withChannelName(string $channel): self
+    {
+        if ($channel === $this->queueSettings->getName()) {
+            return $this;
+        }
+
+        if ($this->exchangeSettings !== null) {
+            throw new ExchangeDeclaredException();
+        }
+
+        $instance = clone $this;
+        $instance->channel = null;
+        $instance->queueSettings = $instance->queueSettings->withName($channel);
+
+        return $instance;
     }
 }

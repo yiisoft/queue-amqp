@@ -49,4 +49,6 @@ interface QueueSettingsInterface
     public function isPassive(): bool;
 
     public function getPositionalSettings(): array;
+
+    public function withName(string $name): self;
 }
