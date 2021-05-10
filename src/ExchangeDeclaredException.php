@@ -31,6 +31,5 @@ class ExchangeDeclaredException extends InvalidArgumentException implements Frie
             Reference: https://github.com/yiisoft/yii-queue#different-queue-channels
 
             SOLUTION;
-
     }
 }
