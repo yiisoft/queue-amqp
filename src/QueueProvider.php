@@ -19,7 +19,7 @@ final class QueueProvider implements QueueProviderInterface
     public function __construct(
         AbstractConnection $connection,
         QueueSettingsInterface $queueSettings,
-        ?ExchangeSettingsInterface $exchangeSettings
+        ?ExchangeSettingsInterface $exchangeSettings = null
     ) {
         $this->connection = $connection;
         $this->queueSettings = $queueSettings;
