@@ -14,6 +14,6 @@ return [
     QueueProviderInterface::class => QueueProvider::class,
     QueueSettingsInterface::class => [
         'class' => Queue::class,
-        '__constructor()' => ['queueName' => 'yii-queue'],
+        '__construct()' => ['queueName' => 'yii-queue'],
     ],
 ];
