@@ -12,8 +12,5 @@ use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 return [
     MessageSerializerInterface::class => MessageSerializer::class,
     QueueProviderInterface::class => QueueProvider::class,
-    QueueSettingsInterface::class => [
-        'class' => Queue::class,
-        '__construct()' => ['queueName' => 'yii-queue'],
-    ],
+    QueueSettingsInterface::class => Queue::class,
 ];
