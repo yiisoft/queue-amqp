@@ -6,9 +6,10 @@ namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;
+use Throwable;
+use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
 use Yiisoft\Yii\Queue\Adapter\BehaviorChecker;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
 use Yiisoft\Yii\Queue\Message\Behaviors\ExecutableBehaviorInterface;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
@@ -33,25 +34,11 @@ final class Adapter implements AdapterInterface
         $this->behaviorChecker = $behaviorChecker;
     }
 
-    public function nextMessage(): ?MessageInterface
+    public function runExisting(callable $callback): void
     {
-        $message = null;
-
         $channel = $this->queueProvider->getChannel();
-        $channel->basic_consume(
-            $this->queueProvider->getQueueSettings()->getName(),
-            '',
-            false,
-            true,
-            false,
-            false,
-            function (AMQPMessage $amqpMessage) use (&$message): void {
-                $message = $this->serializer->unserialize($amqpMessage->body);
-            }
-        );
-        $channel->wait(null, true);
-
-        return $message;
+        (new ExistingMessagesConsumer($channel, $this->queueProvider->getQueueSettings()->getName(), $this->serializer))
+            ->consume($callback);
     }
 
     public function status(string $id): JobStatus
@@ -86,10 +73,19 @@ final class Adapter implements AdapterInterface
                 $this->queueProvider->getQueueSettings()->getName(),
                 '',
                 false,
-                true,
                 false,
                 false,
-                fn (AMQPMessage $amqpMessage) => $handler($this->serializer->unserialize($amqpMessage->body))
+                false,
+                function (AMQPMessage $amqpMessage) use ($handler, $channel): void {
+                    try {
+                        $handler($this->serializer->unserialize($amqpMessage->body));
+                        $channel->basic_ack($amqpMessage->getDeliveryTag());
+                    } catch (Throwable $exception) {
+                        $channel->basic_cancel($amqpMessage->getConsumerTag());
+
+                        throw $exception;
+                    }
+                }
             );
 
             $channel->wait();
