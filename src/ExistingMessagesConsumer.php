@@ -34,7 +34,7 @@ final class ExistingMessagesConsumer
             false,
             false,
             false,
-            function (AMQPMessage $amqpMessage) use($callback): void {
+            function (AMQPMessage $amqpMessage) use ($callback): void {
                 try {
                     $message = $this->serializer->unserialize($amqpMessage->body);
                     if ($this->messageConsumed = $callback($message)) {
