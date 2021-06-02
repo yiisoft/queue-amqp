@@ -6,8 +6,11 @@ use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializerInterface;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\QueueProviderInterface;
+use Yiisoft\Yii\Queue\AMQP\Settings\Queue;
+use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 
 return [
     MessageSerializerInterface::class => MessageSerializer::class,
     QueueProviderInterface::class => QueueProvider::class,
+    QueueSettingsInterface::class => Queue::class,
 ];

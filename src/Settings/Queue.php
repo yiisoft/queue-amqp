@@ -6,6 +6,7 @@ namespace Yiisoft\Yii\Queue\AMQP\Settings;
 
 use InvalidArgumentException;
 use PhpAmqpLib\Wire\AMQPTable;
+use Yiisoft\Yii\Queue\QueueFactory;
 
 final class Queue implements QueueSettingsInterface
 {
@@ -22,7 +23,7 @@ final class Queue implements QueueSettingsInterface
     private ?int $ticket;
 
     public function __construct(
-        string $queueName,
+        string $queueName = QueueFactory::DEFAULT_CHANNEL_NAME,
         bool $passive = false,
         bool $durable = false,
         bool $exclusive = false,
@@ -99,5 +100,13 @@ final class Queue implements QueueSettingsInterface
             $this->arguments,
             $this->ticket,
         ];
+    }
+
+    public function withName(string $name): QueueSettingsInterface
+    {
+        $instance = clone $this;
+        $instance->queueName = $name;
+
+        return $instance;
     }
 }
