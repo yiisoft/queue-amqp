@@ -2,7 +2,7 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://github.com/yiisoft.png" height="100px">
     </a>
-    <h1 align="center">Yii queue amqp adapter</h1>
+    <h1 align="center">Yii Queue AMQP Adapter</h1>
     <br>
 </p>
 
