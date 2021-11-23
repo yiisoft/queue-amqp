@@ -53,7 +53,7 @@ jobs:
 
       - name: Determine composer cache directory on Linux
         if: matrix.os == 'ubuntu-latest'
-        run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
+        run: echo '$(composer config cache-dir)' >> COMPOSER_CACHE_DIR
 
       - name: Determine composer cache directory on Windows
         if: matrix.os == 'windows-latest'
