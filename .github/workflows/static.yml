@@ -1,14 +1,32 @@
 on:
-  - pull_request
-  - push
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'phpunit.xml.dist'
+
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'phpunit.xml.dist'
+
+  schedule:
+    - cron: '0 0 * * *'
 
 name: static analysis
 
 jobs:
   mutation:
-    name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
-    env:
-      extensions: ast
+    name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
 
@@ -17,8 +35,9 @@ jobs:
         os:
           - ubuntu-latest
 
-        php-version:
-          - "7.4"
+        php:
+          - 7.4
+          - 8.0
 
     steps:
       - name: "Checkout"
@@ -27,24 +46,27 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "${{ matrix.php-version }}"
+          php-version: "${{ matrix.php }}"
           extensions: ${{ env.extensions }}
           tools: composer:v2, cs2pr
           coverage: none
 
       - name: Determine composer cache directory
-        run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
+        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
 
       - name: Cache dependencies installed with composer
         uses: actions/cache@v2
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: php${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}
+          key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: |
-            php${{ matrix.php-version }}-composer-
+            php${{ matrix.php }}-composer-
+
+      - name: Update composer
+        run: composer self-update
 
       - name: Install dependencies with composer
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
-      - name: Static analysis with phan
-        run: vendor/bin/phan --no-progress-bar --output-mode checkstyle | cs2pr --graceful-warnings --colorize
+      - name: Static analysis
+        run: vendor/bin/psalm --shepherd --stats --output-format=checkstyle | cs2pr --graceful-warnings --colorize
