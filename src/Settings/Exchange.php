@@ -23,6 +23,17 @@ final class Exchange implements ExchangeSettingsInterface
     private ?int $ticket;
     private string $type;
 
+    /**
+     * @param string $exchangeName
+     * @param string $type
+     * @param bool $passive
+     * @param bool $durable
+     * @param bool $autoDelete
+     * @param bool $internal
+     * @param bool $nowait
+     * @param array|AMQPTable $arguments
+     * @param int|null $ticket
+     */
     public function __construct(
         string $exchangeName,
         string $type = AMQPExchangeType::DIRECT,

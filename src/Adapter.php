@@ -89,11 +89,18 @@ final class Adapter implements AdapterInterface
                 false,
                 false,
                 function (AMQPMessage $amqpMessage) use ($handler, $channel): void {
+                    if ($amqpMessage->getConsumerTag() === null) {
+                        throw new RuntimeException('Amqp message consumer tag cannot be null');
+                    }
+
                     try {
                         $handler($this->serializer->unserialize($amqpMessage->body));
                         $channel->basic_ack($amqpMessage->getDeliveryTag());
                     } catch (Throwable $exception) {
-                        $channel->basic_cancel($amqpMessage->getConsumerTag());
+                        $consumerTag = $amqpMessage->getConsumerTag();
+                        if ($consumerTag !== null) {
+                            $channel->basic_cancel($consumerTag);
+                        }
 
                         throw $exception;
                     }
