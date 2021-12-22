@@ -42,7 +42,10 @@ final class ExistingMessagesConsumer
                     }
                 } catch (Throwable $exception) {
                     $this->messageConsumed = false;
-                    $this->channel->basic_cancel($amqpMessage->getConsumerTag());
+                    $consumerTag = $amqpMessage->getConsumerTag();
+                    if ($consumerTag !== null) {
+                        $this->channel->basic_cancel($consumerTag);
+                    }
 
                     throw $exception;
                 }

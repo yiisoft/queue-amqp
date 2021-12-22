@@ -22,6 +22,16 @@ final class Queue implements QueueSettingsInterface
     private $arguments;
     private ?int $ticket;
 
+    /**
+     * @param string $queueName
+     * @param bool $passive
+     * @param bool $durable
+     * @param bool $exclusive
+     * @param bool $autoDelete
+     * @param bool $nowait
+     * @param AMQPTable|array $arguments
+     * @param int|null $ticket
+     */
     public function __construct(
         string $queueName = QueueFactory::DEFAULT_CHANNEL_NAME,
         bool $passive = false,

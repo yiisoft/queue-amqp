@@ -93,7 +93,10 @@ final class Adapter implements AdapterInterface
                         $handler($this->serializer->unserialize($amqpMessage->body));
                         $channel->basic_ack($amqpMessage->getDeliveryTag());
                     } catch (Throwable $exception) {
-                        $channel->basic_cancel($amqpMessage->getConsumerTag());
+                        $consumerTag = $amqpMessage->getConsumerTag();
+                        if ($consumerTag !== null) {
+                            $channel->basic_cancel($consumerTag);
+                        }
 
                         throw $exception;
                     }
