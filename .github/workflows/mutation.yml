@@ -33,11 +33,11 @@ jobs:
           - ubuntu-latest
 
         php-version:
-          - "7.4"
+          - 8.1
 
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Setup cache environment
         id: cache-env
@@ -54,13 +54,13 @@ jobs:
           key: ${{ steps.cache-env.outputs.key }}
           restore-keys: ${{ steps.cache-env.outputs.key }}
 
-      - name: "Install PHP with extensions"
-        uses: "shivammathur/setup-php@v2"
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: "${{ matrix.php-version }}"
+          php-version: ${{ matrix.php-version }}
           extensions: ${{ env.extensions }}
           ini-values: memory_limit=-1
-          coverage: "pcov"
+          coverage: pcov
           tools: composer:v2
 
       - name: Determine composer cache directory

@@ -35,16 +35,16 @@ jobs:
         php:
           - 7.4
           - 8.0
+          - 8.1
 
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: "${{ matrix.php }}"
-          extensions: ${{ env.extensions }}
+          php-version: ${{ matrix.php }}
           tools: composer:v2, cs2pr
           coverage: none
 
