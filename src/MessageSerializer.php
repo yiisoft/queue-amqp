@@ -21,7 +21,7 @@ class MessageSerializer implements MessageSerializerInterface
     public function serialize(MessageInterface $message): string
     {
         $payload = [
-            'name' => $message->getName(),
+            'name' => $message->getHandlerName(),
             'data' => $message->getData(),
             'behaviors' => [],
         ];
