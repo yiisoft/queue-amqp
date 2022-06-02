@@ -45,7 +45,9 @@ final class Adapter implements AdapterInterface
     public function runExisting(callable $callback): void
     {
         $channel = $this->queueProvider->getChannel();
-        (new ExistingMessagesConsumer($channel, $this->queueProvider->getQueueSettings()->getName(), $this->serializer))
+        (new ExistingMessagesConsumer($channel, $this->queueProvider
+            ->getQueueSettings()
+            ->getName(), $this->serializer))
             ->consume($callback);
     }
 
@@ -70,11 +72,15 @@ final class Adapter implements AdapterInterface
         $payload = $this->serializer->serialize($message);
         $amqpMessage = new AMQPMessage($payload);
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
-        $this->queueProvider->getChannel()->basic_publish(
-            $amqpMessage,
-            $exchangeSettings ? $exchangeSettings->getName() : '',
-            $exchangeSettings ? '' : $this->queueProvider->getQueueSettings()->getName()
-        );
+        $this->queueProvider
+            ->getChannel()
+            ->basic_publish(
+                $amqpMessage,
+                $exchangeSettings ? $exchangeSettings->getName() : '',
+                $exchangeSettings ? '' : $this->queueProvider
+                    ->getQueueSettings()
+                    ->getName()
+            );
     }
 
     public function subscribe(callable $handler): void
@@ -82,7 +88,9 @@ final class Adapter implements AdapterInterface
         while ($this->loop->canContinue()) {
             $channel = $this->queueProvider->getChannel();
             $channel->basic_consume(
-                $this->queueProvider->getQueueSettings()->getName(),
+                $this->queueProvider
+                    ->getQueueSettings()
+                    ->getName(),
                 '',
                 false,
                 false,
