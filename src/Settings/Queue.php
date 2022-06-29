@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP\Settings;
 
-use InvalidArgumentException;
 use PhpAmqpLib\Wire\AMQPTable;
+use Yiisoft\Yii\Queue\AMQP\Exception\InvalidArgumentsTypeException;
 use Yiisoft\Yii\Queue\QueueFactory;
 
 final class Queue implements QueueSettingsInterface
@@ -43,9 +43,7 @@ final class Queue implements QueueSettingsInterface
         ?int $ticket = null
     ) {
         if (!is_array($arguments) && !$arguments instanceof AMQPTable) {
-            $message = '"arguments" parameter must be either an array or an ' . AMQPTable::class . ' object';
-
-            throw new InvalidArgumentException($message);
+            throw new InvalidArgumentsTypeException();
         }
 
         $this->queueName = $queueName;

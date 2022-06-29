@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Message\AMQPMessage;
-use RuntimeException;
 use Throwable;
 use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
 use Yiisoft\Yii\Queue\Adapter\BehaviorChecker;
+use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
 use Yiisoft\Yii\Queue\Message\Behaviors\ExecutableBehaviorInterface;
@@ -53,7 +53,7 @@ final class Adapter implements AdapterInterface
 
     public function status(string $id): JobStatus
     {
-        throw new RuntimeException('Status check is not supported by the adapter');
+        throw new NotImplementedException('Status check is not supported by the adapter '.get_called_class());
     }
 
     public function push(MessageInterface $message): void

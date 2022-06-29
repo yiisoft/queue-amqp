@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP\Settings;
 
-use InvalidArgumentException;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Wire\AMQPTable;
+use Yiisoft\Yii\Queue\AMQP\Exception\InvalidArgumentsTypeException;
 
 final class Exchange implements ExchangeSettingsInterface
 {
@@ -46,9 +46,7 @@ final class Exchange implements ExchangeSettingsInterface
         ?int $ticket = null
     ) {
         if (!is_array($arguments) && !$arguments instanceof AMQPTable) {
-            $message = '"arguments" parameter must be either an array or an ' . AMQPTable::class . ' object';
-
-            throw new InvalidArgumentException($message);
+            throw new InvalidArgumentsTypeException();
         }
 
         $this->exchangeName = $exchangeName;

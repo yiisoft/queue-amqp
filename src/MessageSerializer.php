@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP;
 
-use InvalidArgumentException;
 use Yiisoft\Factory\Factory;
+use Yiisoft\Yii\Queue\AMQP\Exception\NoKeyInPayloadException;
 use Yiisoft\Yii\Queue\Message\Message;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
 
@@ -41,7 +41,7 @@ class MessageSerializer implements MessageSerializerInterface
 
         $name = $payload['name'] ?? null;
         if (!is_string($name)) {
-            throw new InvalidArgumentException('Serialized data must specify message name');
+            throw new NoKeyInPayloadException('name', $payload);
         }
 
         $message = new Message($name, $payload['data'] ?? null);
