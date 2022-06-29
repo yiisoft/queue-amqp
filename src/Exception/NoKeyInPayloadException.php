@@ -13,7 +13,7 @@ class NoKeyInPayloadException extends InvalidArgumentException implements Friend
     protected string $expectedKey;
     protected array $payload;
 
-    public function __construct(string $expectedKey, array $payload, $code = 0, Throwable $previous = null)
+    public function __construct(string $expectedKey, array $payload, int $code = 0, Throwable $previous = null)
     {
         $this->expectedKey = $expectedKey;
         $this->payload = $payload;
