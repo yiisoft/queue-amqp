@@ -17,8 +17,10 @@ class NoKeyInPayloadException extends InvalidArgumentException implements Friend
     {
         $this->expectedKey = $expectedKey;
         $this->payload = $payload;
-        parent::__construct("No expected key '$expectedKey' in payload. Payload's keys list: " . implode(', ',
-                array_keys($payload) . '.'), $code, $previous);
+        parent::__construct("No expected key '$expectedKey' in payload. Payload's keys list: " . implode(
+            ', ',
+            array_keys($payload) . '.'
+        ), $code, $previous);
     }
 
     public function getName(): string
