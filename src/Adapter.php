@@ -53,7 +53,7 @@ final class Adapter implements AdapterInterface
 
     public function status(string $id): JobStatus
     {
-        throw new NotImplementedException('Status check is not supported by the adapter '.get_called_class());
+        throw new NotImplementedException('Status check is not supported by the adapter '.get_called_class() . '.');
     }
 
     public function push(MessageInterface $message): void
