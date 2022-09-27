@@ -18,7 +18,7 @@ final class Adapter implements AdapterInterface
 {
     private const BEHAVIORS_AVAILABLE = [];
 
-    public function __construct(protected QueueProviderInterface $queueProvider, protected MessageSerializerInterface $serializer, protected LoopInterface $loop, private ?\Yiisoft\Yii\Queue\Adapter\BehaviorChecker $behaviorChecker = null)
+    public function __construct(protected QueueProviderInterface $queueProvider, protected MessageSerializerInterface $serializer, protected LoopInterface $loop, private ?BehaviorChecker $behaviorChecker = null)
     {
     }
 

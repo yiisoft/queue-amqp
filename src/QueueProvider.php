@@ -13,7 +13,7 @@ final class QueueProvider implements QueueProviderInterface
 {
     private ?AMQPChannel $channel = null;
 
-    public function __construct(private AbstractConnection $connection, private QueueSettingsInterface $queueSettings, private ?\Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface $exchangeSettings = null)
+    public function __construct(private AbstractConnection $connection, private QueueSettingsInterface $queueSettings, private ?ExchangeSettingsInterface $exchangeSettings = null)
     {
     }
 
