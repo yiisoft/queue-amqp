@@ -10,50 +10,25 @@ use Yiisoft\Yii\Queue\QueueFactory;
 
 final class Queue implements QueueSettingsInterface
 {
-    private string $queueName;
-    private bool $passive;
-    private bool $durable;
-    private bool $exclusive;
-    private bool $autoDelete;
-    private bool $nowait;
-    /**
-     * @var AMQPTable|array
-     */
-    private $arguments;
-    private ?int $ticket;
+    private \PhpAmqpLib\Wire\AMQPTable|array $arguments;
 
     /**
-     * @param string $queueName
-     * @param bool $passive
-     * @param bool $durable
-     * @param bool $exclusive
-     * @param bool $autoDelete
-     * @param bool $nowait
      * @param AMQPTable|array $arguments
-     * @param int|null $ticket
      */
     public function __construct(
-        string $queueName = QueueFactory::DEFAULT_CHANNEL_NAME,
-        bool $passive = false,
-        bool $durable = false,
-        bool $exclusive = false,
-        bool $autoDelete = true,
-        bool $nowait = false,
+        private string $queueName = QueueFactory::DEFAULT_CHANNEL_NAME,
+        private bool $passive = false,
+        private bool $durable = false,
+        private bool $exclusive = false,
+        private bool $autoDelete = true,
+        private bool $nowait = false,
         $arguments = [],
-        ?int $ticket = null
+        private ?int $ticket = null
     ) {
         if (!is_array($arguments) && !$arguments instanceof AMQPTable) {
             throw new InvalidArgumentsTypeException();
         }
-
-        $this->queueName = $queueName;
-        $this->passive = $passive;
-        $this->durable = $durable;
-        $this->exclusive = $exclusive;
-        $this->autoDelete = $autoDelete;
-        $this->nowait = $nowait;
         $this->arguments = $arguments;
-        $this->ticket = $ticket;
     }
 
     public function getArguments()

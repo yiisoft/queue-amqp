@@ -13,16 +13,10 @@ use Throwable;
  */
 final class ExistingMessagesConsumer
 {
-    private string $queueName;
-    private AMQPChannel $channel;
-    private MessageSerializerInterface $serializer;
     private bool $messageConsumed = false;
 
-    public function __construct(AMQPChannel $channel, string $queueName, MessageSerializerInterface $serializer)
+    public function __construct(private AMQPChannel $channel, private string $queueName, private MessageSerializerInterface $serializer)
     {
-        $this->channel = $channel;
-        $this->queueName = $queueName;
-        $this->serializer = $serializer;
     }
 
     public function consume(callable $callback): void

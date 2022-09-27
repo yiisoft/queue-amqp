@@ -8,10 +8,7 @@ use PhpAmqpLib\Wire\AMQPTable;
 
 interface QueueSettingsInterface
 {
-    /**
-     * @return AMQPTable|array
-     */
-    public function getArguments();
+    public function getArguments(): \PhpAmqpLib\Wire\AMQPTable|array;
 
     /**
      * @return string
