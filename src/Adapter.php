@@ -17,21 +17,9 @@ use Yiisoft\Yii\Queue\Message\MessageInterface;
 final class Adapter implements AdapterInterface
 {
     private const BEHAVIORS_AVAILABLE = [];
-    protected QueueProviderInterface $queueProvider;
-    protected MessageSerializerInterface $serializer;
-    protected LoopInterface $loop;
-    private ?BehaviorChecker $behaviorChecker;
 
-    public function __construct(
-        QueueProviderInterface $queueProvider,
-        MessageSerializerInterface $serializer,
-        LoopInterface $loop,
-        ?BehaviorChecker $behaviorChecker = null
-    ) {
-        $this->queueProvider = $queueProvider;
-        $this->serializer = $serializer;
-        $this->loop = $loop;
-        $this->behaviorChecker = $behaviorChecker;
+    public function __construct(protected QueueProviderInterface $queueProvider, protected MessageSerializerInterface $serializer, protected LoopInterface $loop, private ?BehaviorChecker $behaviorChecker = null)
+    {
     }
 
     public function withChannel(string $channel): self

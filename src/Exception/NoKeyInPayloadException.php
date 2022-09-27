@@ -10,13 +10,8 @@ use Yiisoft\FriendlyException\FriendlyExceptionInterface;
 
 class NoKeyInPayloadException extends InvalidArgumentException implements FriendlyExceptionInterface
 {
-    protected string $expectedKey;
-    protected array $payload;
-
-    public function __construct(string $expectedKey, array $payload, int $code = 0, Throwable $previous = null)
+    public function __construct(protected string $expectedKey, protected array $payload, int $code = 0, Throwable $previous = null)
     {
-        $this->expectedKey = $expectedKey;
-        $this->payload = $payload;
         parent::__construct("No expected key '$expectedKey' in payload. Payload's keys list: " . implode(
             ', ',
             array_keys($payload) . '.'

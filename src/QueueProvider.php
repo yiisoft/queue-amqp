@@ -11,19 +11,10 @@ use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 
 final class QueueProvider implements QueueProviderInterface
 {
-    private AbstractConnection $connection;
-    private QueueSettingsInterface $queueSettings;
-    private ?ExchangeSettingsInterface $exchangeSettings;
     private ?AMQPChannel $channel = null;
 
-    public function __construct(
-        AbstractConnection $connection,
-        QueueSettingsInterface $queueSettings,
-        ?ExchangeSettingsInterface $exchangeSettings = null
-    ) {
-        $this->connection = $connection;
-        $this->queueSettings = $queueSettings;
-        $this->exchangeSettings = $exchangeSettings;
+    public function __construct(private AbstractConnection $connection, private QueueSettingsInterface $queueSettings, private ?ExchangeSettingsInterface $exchangeSettings = null)
+    {
     }
 
     public function __destruct()

@@ -11,11 +11,8 @@ use Yiisoft\Yii\Queue\Message\MessageInterface;
 
 class MessageSerializer implements MessageSerializerInterface
 {
-    private Factory $factory;
-
-    public function __construct(Factory $factory)
+    public function __construct(private Factory $factory)
     {
-        $this->factory = $factory;
     }
 
     public function serialize(MessageInterface $message): string
@@ -27,7 +24,7 @@ class MessageSerializer implements MessageSerializerInterface
         ];
         foreach ($message->getBehaviors() as $behavior) {
             $payload['behaviors'][] = [
-                'class' => get_class($behavior),
+                'class' => $behavior::class,
                 '__construct()' => $behavior->getConstructorParameters(),
             ];
         }
