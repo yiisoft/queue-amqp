@@ -4,39 +4,34 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP;
 
-use Yiisoft\Factory\Factory;
+use JsonException;
 use Yiisoft\Yii\Queue\AMQP\Exception\NoKeyInPayloadException;
 use Yiisoft\Yii\Queue\Message\Message;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
 
 class MessageSerializer implements MessageSerializerInterface
 {
-    private Factory $factory;
-
-    public function __construct(Factory $factory)
-    {
-        $this->factory = $factory;
-    }
-
+    /**
+     * @throws JsonException
+     */
     public function serialize(MessageInterface $message): string
     {
         $payload = [
+            'id' => $message->getId(),
             'name' => $message->getHandlerName(),
             'data' => $message->getData(),
-            'behaviors' => [],
+            'meta' => $message->getMetadata(),
         ];
-        foreach ($message->getBehaviors() as $behavior) {
-            $payload['behaviors'][] = [
-                'class' => get_class($behavior),
-                '__construct()' => $behavior->getConstructorParameters(),
-            ];
-        }
 
         return json_encode($payload, JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * @throws JsonException
+     */
     public function unserialize(string $value): MessageInterface
     {
+        /** @var array $payload */
         $payload = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
         $name = $payload['name'] ?? null;
@@ -44,11 +39,11 @@ class MessageSerializer implements MessageSerializerInterface
             throw new NoKeyInPayloadException('name', $payload);
         }
 
-        $message = new Message($name, $payload['data'] ?? null);
-        foreach ($payload['behaviors'] as $behavior) {
-            $message->attachBehavior($this->factory->create($behavior));
-        }
-
-        return $message;
+        return new Message(
+            $name,
+            $payload['data'] ?? null,
+            $payload['meta'] ?? [],
+            $payload['id'] ?? null,
+        );
     }
 }
