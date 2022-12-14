@@ -16,7 +16,7 @@ final class Queue implements QueueSettingsInterface
      * @param bool $exclusive
      * @param bool $autoDelete
      * @param bool $nowait
-     * @param array|AMQPTable $arguments
+     * @param AMQPTable|array $arguments
      * @param int|null $ticket
      */
     public function __construct(
