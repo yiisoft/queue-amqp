@@ -9,7 +9,7 @@ use Yiisoft\FriendlyException\FriendlyExceptionInterface;
 
 class ExchangeDeclaredException extends InvalidArgumentException implements FriendlyExceptionInterface
 {
-    protected $message = 'Ca\'t set channel name implicitly when an exchange is declared';
+    protected $message = 'Can\'t set channel name implicitly when an exchange is declared';
 
     public function getName(): string
     {

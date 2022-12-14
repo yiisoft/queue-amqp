@@ -6,23 +6,9 @@ namespace Yiisoft\Yii\Queue\AMQP\Settings;
 
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Yii\Queue\AMQP\Exception\InvalidArgumentsTypeException;
 
 final class Exchange implements ExchangeSettingsInterface
 {
-    private string $exchangeName;
-    private bool $passive;
-    private bool $durable;
-    private bool $internal;
-    private bool $autoDelete;
-    private bool $nowait;
-    /**
-     * @var AMQPTable|array
-     */
-    private $arguments;
-    private ?int $ticket;
-    private string $type;
-
     /**
      * @param string $exchangeName
      * @param string $type
@@ -31,36 +17,23 @@ final class Exchange implements ExchangeSettingsInterface
      * @param bool $autoDelete
      * @param bool $internal
      * @param bool $nowait
-     * @param AMQPTable|array $arguments
+     * @param array|AMQPTable $arguments
      * @param int|null $ticket
      */
     public function __construct(
-        string $exchangeName,
-        string $type = AMQPExchangeType::DIRECT,
-        bool $passive = false,
-        bool $durable = false,
-        bool $autoDelete = true,
-        bool $internal = false,
-        bool $nowait = false,
-        $arguments = [],
-        ?int $ticket = null
+        private string $exchangeName,
+        private string $type = AMQPExchangeType::DIRECT,
+        private bool $passive = false,
+        private bool $durable = false,
+        private bool $autoDelete = true,
+        private bool $internal = false,
+        private bool $nowait = false,
+        private AMQPTable|array $arguments = [],
+        private ?int $ticket = null
     ) {
-        if (!is_array($arguments) && !$arguments instanceof AMQPTable) {
-            throw new InvalidArgumentsTypeException();
-        }
-
-        $this->exchangeName = $exchangeName;
-        $this->type = $type;
-        $this->passive = $passive;
-        $this->durable = $durable;
-        $this->autoDelete = $autoDelete;
-        $this->internal = $internal;
-        $this->nowait = $nowait;
-        $this->arguments = $arguments;
-        $this->ticket = $ticket;
     }
 
-    public function getArguments()
+    public function getArguments(): AMQPTable|array
     {
         return $this->arguments;
     }

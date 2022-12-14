@@ -8,10 +8,7 @@ use PhpAmqpLib\Wire\AMQPTable;
 
 interface ExchangeSettingsInterface
 {
-    /**
-     * @return AMQPTable|array
-     */
-    public function getArguments();
+    public function getArguments(): AMQPTable|array;
 
     public function getName(): string;
 
