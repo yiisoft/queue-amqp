@@ -148,6 +148,4 @@ final class Queue implements QueueSettingsInterface
 
         return $new;
     }
-
-
 }

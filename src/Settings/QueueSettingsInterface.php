@@ -41,5 +41,4 @@ interface QueueSettingsInterface
     public function withNowait(bool $nowait): self;
 
     public function withPassive(bool $passive): self;
-
 }
