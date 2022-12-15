@@ -15,9 +15,9 @@ use Yiisoft\Yii\Queue\Message\MessageInterface;
 final class Adapter implements AdapterInterface
 {
     public function __construct(
-        protected QueueProviderInterface $queueProvider,
-        protected MessageSerializerInterface $serializer,
-        protected LoopInterface $loop,
+        private QueueProviderInterface $queueProvider,
+        private MessageSerializerInterface $serializer,
+        private LoopInterface $loop,
     ) {
     }
 
@@ -46,13 +46,13 @@ final class Adapter implements AdapterInterface
     public function push(MessageInterface $message): void
     {
         $payload = $this->serializer->serialize($message);
-        $amqpMessage = new AMQPMessage($payload);
+        $amqpMessage = new AMQPMessage($payload, $this->queueProvider->getMessageProperties());
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
         $this->queueProvider
             ->getChannel()
             ->basic_publish(
                 $amqpMessage,
-                $exchangeSettings ? $exchangeSettings->getName() : '',
+                $exchangeSettings?->getName() ?? '',
                 $exchangeSettings ? '' : $this->queueProvider
                     ->getQueueSettings()
                     ->getName()
@@ -89,5 +89,18 @@ final class Adapter implements AdapterInterface
 
             $channel->wait();
         }
+    }
+
+    public function getQueueProvider(): QueueProviderInterface
+    {
+        return $this->queueProvider;
+    }
+
+    public function withQueueProvider(QueueProviderInterface $queueProvider): self
+    {
+        $new = clone $this;
+        $new->queueProvider = $queueProvider;
+
+        return $new;
     }
 }

@@ -85,11 +85,69 @@ final class Queue implements QueueSettingsInterface
         ];
     }
 
-    public function withName(string $name): QueueSettingsInterface
+    public function withName(string $name): self
     {
         $instance = clone $this;
         $instance->queueName = $name;
 
         return $instance;
     }
+
+    public function withArguments(AMQPTable|array $arguments): self
+    {
+        $new = clone $this;
+        $new->arguments = $arguments;
+
+        return $new;
+    }
+
+    public function withTicket(?int $ticket): self
+    {
+        $new = clone $this;
+        $new->ticket = $ticket;
+
+        return $new;
+    }
+
+    public function withAutoDeletable(bool $autoDelete): self
+    {
+        $new = clone $this;
+        $new->autoDelete = $autoDelete;
+
+        return $new;
+    }
+
+    public function withDurable(bool $durable): self
+    {
+        $new = clone $this;
+        $new->durable = $durable;
+
+        return $new;
+    }
+
+    public function withExclusive(bool $exclusive): self
+    {
+        $new = clone $this;
+        $new->exclusive = $exclusive;
+
+        return $new;
+    }
+
+    public function withNowait(bool $nowait): self
+    {
+        $new = clone $this;
+        $new->nowait = $nowait;
+
+        return $new;
+    }
+
+    public function withPassive(bool $passive): self
+    {
+        $new = clone $this;
+        $new->passive = $passive;
+
+        return $new;
+    }
+
+
 }

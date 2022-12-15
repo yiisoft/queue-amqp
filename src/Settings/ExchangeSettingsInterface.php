@@ -27,4 +27,22 @@ interface ExchangeSettingsInterface
     public function isPassive(): bool;
 
     public function getPositionalSettings(): array;
+
+    public function withArguments(AMQPTable|array $arguments): self;
+
+    public function withName(string $name): self;
+
+    public function withTicket(?int $ticket): self;
+
+    public function withType(string $type): self;
+
+    public function withAutoDeletable(bool $autoDelete): self;
+
+    public function withDurable(bool $durable): self;
+
+    public function withInternal(bool $internal): self;
+
+    public function withNowait(bool $nowait): self;
+
+    public function withPassive(bool $passive): self;
 }

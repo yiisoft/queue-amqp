@@ -16,5 +16,13 @@ interface QueueProviderInterface
 
     public function getExchangeSettings(): ?ExchangeSettingsInterface;
 
+    public function getMessageProperties(): array;
+
     public function withChannelName(string $channel): self;
+
+    public function withQueueSettings(QueueSettingsInterface $queueSettings): self;
+
+    public function withExchangeSettings(?ExchangeSettingsInterface $exchangeSettings): self;
+
+    public function withMessageProperties(array $properties): self;
 }

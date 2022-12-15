@@ -11,19 +11,14 @@ use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 
 final class QueueProvider implements QueueProviderInterface
 {
-    private AbstractConnection $connection;
-    private QueueSettingsInterface $queueSettings;
-    private ?ExchangeSettingsInterface $exchangeSettings;
     private ?AMQPChannel $channel = null;
 
     public function __construct(
-        AbstractConnection $connection,
-        QueueSettingsInterface $queueSettings,
-        ?ExchangeSettingsInterface $exchangeSettings = null
+        private AbstractConnection $connection,
+        private QueueSettingsInterface $queueSettings,
+        private ?ExchangeSettingsInterface $exchangeSettings = null,
+        private array $messageProperties = [],
     ) {
-        $this->connection = $connection;
-        $this->queueSettings = $queueSettings;
-        $this->exchangeSettings = $exchangeSettings;
     }
 
     public function __destruct()
@@ -56,6 +51,11 @@ final class QueueProvider implements QueueProviderInterface
         return $this->exchangeSettings;
     }
 
+    public function getMessageProperties(): array
+    {
+        return $this->messageProperties;
+    }
+
     public function withChannelName(string $channel): self
     {
         if ($channel === $this->queueSettings->getName()) {
@@ -71,5 +71,29 @@ final class QueueProvider implements QueueProviderInterface
         $instance->queueSettings = $instance->queueSettings->withName($channel);
 
         return $instance;
+    }
+
+    public function withQueueSettings(QueueSettingsInterface $queueSettings): QueueProviderInterface
+    {
+        $new = clone $this;
+        $new->queueSettings = $queueSettings;
+
+        return $new;
+    }
+
+    public function withExchangeSettings(?ExchangeSettingsInterface $exchangeSettings): QueueProviderInterface
+    {
+        $new = clone $this;
+        $new->exchangeSettings = $exchangeSettings;
+
+        return $new;
+    }
+
+    public function withMessageProperties(array $properties): QueueProviderInterface
+    {
+        $new = clone $this;
+        $new->messageProperties = $properties;
+
+        return $new;
     }
 }

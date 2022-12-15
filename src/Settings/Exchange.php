@@ -92,4 +92,76 @@ final class Exchange implements ExchangeSettingsInterface
             $this->ticket,
         ];
     }
+
+    public function withArguments(AMQPTable|array $arguments): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->arguments = $arguments;
+
+        return $new;
+    }
+
+    public function withName(string $name): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->exchangeName = $name;
+
+        return $new;
+    }
+
+    public function withTicket(?int $ticket): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->ticket = $ticket;
+
+        return $new;
+    }
+
+    public function withType(string $type): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->type = $type;
+
+        return $new;
+    }
+
+    public function withAutoDeletable(bool $autoDelete): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->autoDelete = $autoDelete;
+
+        return $new;
+    }
+
+    public function withDurable(bool $durable): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->durable = $durable;
+
+        return $new;
+    }
+
+    public function withInternal(bool $internal): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->internal = $internal;
+
+        return $new;
+    }
+
+    public function withNowait(bool $nowait): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->nowait = $nowait;
+
+        return $new;
+    }
+
+    public function withPassive(bool $passive): ExchangeSettingsInterface
+    {
+        $new = clone $this;
+        $new->passive = $passive;
+
+        return $new;
+    }
 }
