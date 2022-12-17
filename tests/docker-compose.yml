@@ -1,0 +1,62 @@
+version: "3.5"
+
+services:
+  php80:
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.0'
+    volumes:
+      - ./runtime/.composer74:/root/.composer
+      - ..:/code
+    dns: &php_dns
+      - 8.8.8.8
+      - 1.1.1.1
+    environment: &php_environment
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+    depends_on: &php_depends_on
+      - rabbitmq
+    networks:
+      net: {}
+
+  php81:
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.1'
+    volumes:
+      - ./runtime/.composer74:/root/.composer
+      - ..:/code
+    dns: *php_dns
+    environment: *php_environment
+    depends_on: *php_depends_on
+    networks:
+      net: {}
+
+  php82:
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.2'
+    volumes:
+      - ./runtime/.composer74:/root/.composer
+      - ..:/code
+    dns: *php_dns
+    environment: *php_environment
+    depends_on: *php_depends_on
+    networks:
+      net: {}
+
+  rabbitmq:
+    image: rabbitmq:alpine
+    networks:
+      net: { }
+
+networks:
+  net:
+    name: yii2_queue_net
