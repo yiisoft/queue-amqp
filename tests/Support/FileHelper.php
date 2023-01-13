@@ -11,8 +11,6 @@ final class FileHelper
     /**
      * @param string $fileName File to be created
      * @param int|string $data Data to be written into the file
-     *
-     * @return void
      */
     public function put(string $fileName, int|string $data): void
     {
