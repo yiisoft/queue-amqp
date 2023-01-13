@@ -10,11 +10,11 @@ RUN apk --no-cache add \
 # install xDebug
 ENV XDEBUG_MODE=coverage
 ENV XDEBUG_CONFIG=""
-RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS
-RUN docker-php-ext-install sockets
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
-RUN pecl clear-cache \
+RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
+    && docker-php-ext-install pcntl sockets \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && pecl clear-cache \
     && apk del .build-dependencies
 
 RUN curl -sS https://getcomposer.org/installer | php -- --2 --install-dir=/usr/local/bin --filename=composer

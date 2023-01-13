@@ -1,0 +1,33 @@
+services:
+  php80:
+    volumes:
+      - ..:/app
+    environment:
+      XDEBUG_MODE: debug,coverage
+      XDEBUG_HOST: host.docker.internal
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+
+  php81:
+    volumes:
+      - ..:/app
+    environment:
+      XDEBUG_MODE: debug,coverage
+      XDEBUG_HOST: host.docker.internal
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+
+  php82:
+    volumes:
+      - ..:/app
+    environment:
+      XDEBUG_MODE: develop,debug,coverage
+      XDEBUG_CONFIG: "client_host=172.17.0.1 log=/app/runtime/xdebug.log log_level=10"
+      #PHP_IDE_CONFIG: "serverName=docker"
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - ${RABBIT_MANAGEMENT_PORT:-15672}:15672

@@ -13,8 +13,8 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
-    <testsuite name="Yii _____ tests">
-      <directory>./tests</directory>
+    <testsuite name="Yii Integration tests">
+      <directory>./tests/Integration</directory>
     </testsuite>
   </testsuites>
 </phpunit>

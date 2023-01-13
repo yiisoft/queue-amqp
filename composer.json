@@ -34,8 +34,11 @@
         "phpunit/phpunit": "^9.5",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
+        "symfony/console": "^6.0",
+        "symfony/process": "^6.0",
         "vimeo/psalm": "^4.18",
-        "vishnubob/wait-for-it": "dev-master"
+        "vishnubob/wait-for-it": "dev-master",
+        "yiisoft/test-support": "^3.0"
     },
     "autoload": {
         "psr-4": {
