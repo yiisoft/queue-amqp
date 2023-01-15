@@ -13,6 +13,13 @@ abstract class TestCase extends PhpUnitTestCase
     /** @var Process[] */
     private array $processes = [];
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        (new FileHelper())->clear();
+    }
+
     protected function tearDown(): void
     {
         foreach ($this->processes as $process) {
@@ -27,7 +34,8 @@ abstract class TestCase extends PhpUnitTestCase
 
     protected function queueListen(?string $queue = null): void
     {
-        $command = [PHP_BINARY, dirname(__DIR__) . '/yii', 'listen'];
+        // TODO Fail test on subprocess error exit code
+        $command = [PHP_BINARY, dirname(__DIR__) . '/yii', 'queue/listen'];
         if ($queue !== null) {
             $command[] = "--channel=$queue";
         }

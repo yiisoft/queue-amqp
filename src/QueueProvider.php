@@ -6,11 +6,14 @@ namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
+use Yiisoft\Yii\Queue\AMQP\Settings\Exchange;
 use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 
 final class QueueProvider implements QueueProviderInterface
 {
+    public const EXCHANGE_NAME_DEFAULT = 'yii-queue';
+
     private ?AMQPChannel $channel = null;
 
     public function __construct(
@@ -19,6 +22,9 @@ final class QueueProvider implements QueueProviderInterface
         private ?ExchangeSettingsInterface $exchangeSettings = null,
         private array $messageProperties = [],
     ) {
+        if ($this->exchangeSettings === null) {
+            $this->exchangeSettings = new Exchange(self::EXCHANGE_NAME_DEFAULT);
+        }
     }
 
     public function __destruct()

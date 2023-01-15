@@ -38,7 +38,7 @@ $worker = new \Yiisoft\Yii\Queue\Worker\Worker(
     $logger,
     $injector,
     $container,
-    new ConsumeMiddlewareDispatcher(new MiddlewareFactoryConsume($container, $callableFactory), []),
+    new ConsumeMiddlewareDispatcher(new MiddlewareFactoryConsume($container, $callableFactory)),
     new FailureMiddlewareDispatcher(new MiddlewareFactoryFailure($container, $callableFactory), []),
 );
 $loop = new SignalLoop();

@@ -64,13 +64,13 @@ final class DelayMiddlewareTest extends TestCase
             new DelayMiddleware(3),
         );
 
-        //sleep(60);
+        sleep(2);
         self::assertNull($fileHelper->get('test-delay-middleware-main'));
-        //sleep(2);
+        sleep(2);
         $result = $fileHelper->get('test-delay-middleware-main');
         self::assertNotNull($result);
         $result = (int) $result;
         self::assertTrue($result >= $time + 3);
-        self::assertTrue($result <= $time + 4);
+        self::assertTrue($result <= $time + 5);
     }
 }

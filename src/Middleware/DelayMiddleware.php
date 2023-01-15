@@ -40,7 +40,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
 
         $queueProvider = $adapter->getQueueProvider();
         $exchangeSettings = $this->getExchangeSettings($queueProvider->getExchangeSettings());
-        $queueSettings = $this->getQueueSettings($queueProvider->getQueueSettings(), $exchangeSettings);
+        $queueSettings = $this->getQueueSettings($queueProvider->getQueueSettings(), $queueProvider->getExchangeSettings());
         $adapter = $adapter->withQueueProvider(
             $queueProvider
                 ->withMessageProperties($this->getMessageProperties($queueProvider))
@@ -48,7 +48,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
                 ->withQueueSettings($queueSettings)
         );
 
-        return $request->withAdapter($adapter);
+        return $handler->handlePush($request->withAdapter($adapter));
     }
 
     private function getMessageProperties(QueueProviderInterface $queueProvider): array
@@ -70,8 +70,9 @@ final class DelayMiddleware implements DelayMiddlewareInterface
             ->withAutoDeletable(true)
             ->withArguments(
                 [
-                    'x-dead-letter-exchange' => $exchangeSettings?->getName() ?? '',
+                    'x-dead-letter-exchange' => ['S', $exchangeSettings?->getName() ?? ''],
                     'x-expires' => ['I', $this->delay * 1000 + 30000],
+                    'x-message-ttl' => ['I', $this->delay * 1000],
                 ]
             );
     }

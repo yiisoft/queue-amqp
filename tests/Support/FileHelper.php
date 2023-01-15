@@ -14,7 +14,7 @@ final class FileHelper
      */
     public function put(string $fileName, int|string $data): void
     {
-        if (file_put_contents("{$this->getRuntimeDir()}/$fileName", $data) === false) {
+        if (file_put_contents("{$this->getRuntimeDir()}/$fileName", $data, FILE_APPEND) === false) {
             throw new RuntimeException("Runtime dir {$this->getRuntimeDir()} or file $fileName are not writable.");
         }
     }
@@ -43,8 +43,8 @@ final class FileHelper
     {
         $files = glob("{$this->getRuntimeDir()}/*");
         foreach ($files as $file) {
-            if (is_file($file)) {
-                //unlink($file);
+            if (is_file($file) && !str_ends_with($file, '.log')) {
+                unlink($file);
             }
         }
     }
