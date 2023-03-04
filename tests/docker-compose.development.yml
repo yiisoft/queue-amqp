@@ -1,6 +1,7 @@
 services:
   php80:
     volumes:
+      - ./runtime/.composer80:/root/.composer
       - ..:/app
     environment:
       XDEBUG_MODE: develop,debug,coverage
@@ -11,6 +12,7 @@ services:
 
   php81:
     volumes:
+      - ./runtime/.composer80:/root/.composer
       - ..:/app
     environment:
       XDEBUG_MODE: develop,debug,coverage
@@ -21,6 +23,7 @@ services:
 
   php82:
     volumes:
+      - ./runtime/.composer80:/root/.composer
       - ..:/app
     environment:
       XDEBUG_MODE: develop,debug,coverage

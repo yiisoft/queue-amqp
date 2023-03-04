@@ -33,3 +33,4 @@ phpunit.phar
 # Phan
 analysis.txt
 
+tests/.env
