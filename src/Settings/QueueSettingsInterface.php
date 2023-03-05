@@ -26,6 +26,7 @@ interface QueueSettingsInterface
 
     /**
      * Returns positional arguments to be used with {@see \PhpAmqpLib\Channel\AMQPChannel::queue_declare()}
+     *
      * @see \Yiisoft\Yii\Queue\AMQP\QueueProvider::getChannel()
      *
      * @return (AMQPTable|array|bool|int|null|string)[]

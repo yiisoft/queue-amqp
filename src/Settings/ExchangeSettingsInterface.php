@@ -28,6 +28,7 @@ interface ExchangeSettingsInterface
 
     /**
      * Positional arguments to be used with {@see \PhpAmqpLib\Channel\AMQPChannel::exchange_declare()}
+     *
      * @see \Yiisoft\Yii\Queue\AMQP\QueueProvider::getChannel()
      *
      * @return (AMQPTable|array|bool|int|null|string)[]
