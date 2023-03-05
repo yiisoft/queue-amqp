@@ -39,10 +39,6 @@ final class QueueProvider implements QueueProviderInterface
             $this->channel->queue_declare(...$this->queueSettings->getPositionalSettings());
 
             if ($this->exchangeSettings !== null) {
-                /**
-                 * @psalm-suppress TooFewArguments
-                 * @psalm-suppress MixedArgument
-                 */
                 $this->channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
                 $this->channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
             }

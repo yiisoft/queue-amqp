@@ -33,7 +33,7 @@ interface ExchangeSettingsInterface
      *
      * @return (AMQPTable|array|bool|int|null|string)[]
      *
-     * @psalm-return array{0: string, 1: string, 2: bool, 3: bool, 4: bool, 5: bool, 6: bool, 7: AMQPTable|array, 8: int|null}
+     * @psalm-return array{string, string, bool, bool, bool, bool, bool, AMQPTable|array, int|null}
      */
     public function getPositionalSettings(): array;
 
