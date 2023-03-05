@@ -17,7 +17,8 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASSWORD: guest
     depends_on: &php_depends_on
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   php81:
     container_name: yii-queue-php81
@@ -43,3 +44,8 @@ services:
 
   rabbitmq:
     image: rabbitmq:alpine
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 3s
+      timeout: 5s
+      retries: 3
