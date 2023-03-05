@@ -38,6 +38,9 @@ final class Adapter implements AdapterInterface
             ->consume($callback);
     }
 
+    /**
+     * @return never
+     */
     public function status(string $id): JobStatus
     {
         throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');

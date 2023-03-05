@@ -7,6 +7,7 @@ namespace Yiisoft\Yii\Queue\AMQP;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
+use Yiisoft\Yii\Queue\Message\MessageInterface;
 
 /**
  * @internal
@@ -22,6 +23,9 @@ final class ExistingMessagesConsumer
     ) {
     }
 
+    /**
+     * @param callable(MessageInterface): bool  $callback
+     */
     public function consume(callable $callback): void
     {
         $this->channel->basic_consume(

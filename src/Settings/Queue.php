@@ -71,6 +71,11 @@ final class Queue implements QueueSettingsInterface
         return $this->passive;
     }
 
+    /**
+     * @return (AMQPTable|array|bool|int|null|string)[]
+     *
+     * @psalm-return array{0: string, 1: bool, 2: bool, 3: bool, 4: bool, 5: bool, 6: AMQPTable|array, 7: int|null}
+     */
     public function getPositionalSettings(): array
     {
         return [
@@ -109,10 +114,10 @@ final class Queue implements QueueSettingsInterface
         return $new;
     }
 
-    public function withAutoDeletable(bool $autoDelete): self
+    public function withAutoDeletable(bool $autoDeletable): self
     {
         $new = clone $this;
-        $new->autoDelete = $autoDelete;
+        $new->autoDelete = $autoDeletable;
 
         return $new;
     }

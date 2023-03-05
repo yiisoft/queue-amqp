@@ -21,7 +21,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     {
     }
 
-    public function withDelay(float $delay): self
+    public function withDelay(float $delay): static
     {
         $new = clone $this;
         $new->delay = $this->delay;
@@ -33,8 +33,10 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     {
         $adapter = $request->getAdapter();
         if (!$adapter instanceof Adapter) {
+            $type = get_debug_type($adapter);
+            $class = Adapter::class;
             throw new InvalidArgumentException(
-                'This middleware works only with the ' . Adapter::class . '. ' . get_class($adapter) . ' given.'
+                "This middleware works only with the $class. $type given."
             );
         }
 
@@ -51,6 +53,11 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         return $handler->handlePush($request->withAdapter($adapter));
     }
 
+    /**
+     * @return (int|mixed)[]
+     *
+     * @psalm-return array{expiration: int, delivery_mode?: int}
+     */
     private function getMessageProperties(QueueProviderInterface $queueProvider): array
     {
         $messageProperties = ['expiration' => $this->delay * 1000];
@@ -77,11 +84,15 @@ final class DelayMiddleware implements DelayMiddlewareInterface
             );
     }
 
-    private function getExchangeSettings(?ExchangeSettingsInterface $exchangeSettingsOld): ?ExchangeSettingsInterface
+    /**
+     * @see https://github.com/vimeo/psalm/issues/9454
+     * @psalm-suppress LessSpecificReturnType
+     */
+    private function getExchangeSettings(?ExchangeSettingsInterface $exchangeSettings): ?ExchangeSettingsInterface
     {
         /** @noinspection NullPointerExceptionInspection */
-        return $exchangeSettingsOld
-            ?->withName("{$exchangeSettingsOld->getName()}.dlx")
+        return $exchangeSettings
+            ?->withName("{$exchangeSettings->getName()}.dlx")
             ->withAutoDeletable(true)
             ->withType(AMQPExchangeType::TOPIC);
     }

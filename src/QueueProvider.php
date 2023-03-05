@@ -39,6 +39,10 @@ final class QueueProvider implements QueueProviderInterface
             $this->channel->queue_declare(...$this->queueSettings->getPositionalSettings());
 
             if ($this->exchangeSettings !== null) {
+                /**
+                 * @psalm-suppress TooFewArguments
+                 * @psalm-suppress MixedArgument
+                 */
                 $this->channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
                 $this->channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
             }
@@ -79,6 +83,9 @@ final class QueueProvider implements QueueProviderInterface
         return $instance;
     }
 
+    /**
+     * @return self
+     */
     public function withQueueSettings(QueueSettingsInterface $queueSettings): QueueProviderInterface
     {
         $new = clone $this;
@@ -87,6 +94,9 @@ final class QueueProvider implements QueueProviderInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withExchangeSettings(?ExchangeSettingsInterface $exchangeSettings): QueueProviderInterface
     {
         $new = clone $this;
@@ -95,6 +105,9 @@ final class QueueProvider implements QueueProviderInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withMessageProperties(array $properties): QueueProviderInterface
     {
         $new = clone $this;

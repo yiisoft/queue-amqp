@@ -93,6 +93,9 @@ final class Exchange implements ExchangeSettingsInterface
         ];
     }
 
+    /**
+     * @return self
+     */
     public function withArguments(AMQPTable|array $arguments): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -101,6 +104,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withName(string $name): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -109,6 +115,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withTicket(?int $ticket): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -117,6 +126,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withType(string $type): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -125,6 +137,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withAutoDeletable(bool $autoDelete): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -133,6 +148,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withDurable(bool $durable): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -141,6 +159,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withInternal(bool $internal): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -149,6 +170,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withNowait(bool $nowait): ExchangeSettingsInterface
     {
         $new = clone $this;
@@ -157,6 +181,9 @@ final class Exchange implements ExchangeSettingsInterface
         return $new;
     }
 
+    /**
+     * @return self
+     */
     public function withPassive(bool $passive): ExchangeSettingsInterface
     {
         $new = clone $this;

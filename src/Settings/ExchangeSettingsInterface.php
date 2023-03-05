@@ -26,6 +26,14 @@ interface ExchangeSettingsInterface
 
     public function isPassive(): bool;
 
+    /**
+     * Positional arguments to be used with {@see \PhpAmqpLib\Channel\AMQPChannel::exchange_declare()}
+     * @see \Yiisoft\Yii\Queue\AMQP\QueueProvider::getChannel()
+     *
+     * @return (AMQPTable|array|bool|int|null|string)[]
+     *
+     * @psalm-return array{0: string, 1: string, 2: bool, 3: bool, 4: bool, 5: bool, 6: bool, 7: AMQPTable|array, 8: int|null}
+     */
     public function getPositionalSettings(): array;
 
     public function withArguments(AMQPTable|array $arguments): self;
