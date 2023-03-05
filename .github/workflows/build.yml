@@ -23,10 +23,16 @@ name: build
 
 jobs:
   phpunit:
-    uses: yiisoft/actions/.github/workflows/phpunit.yml@master
-    with:
-      extensions: intl, sockets
-      os: >-
-        ['ubuntu-latest', 'windows-latest']
-      php: >-
-        ['7.4', '8.0', '8.1']
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ 80, 81, 82 ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: docker compose build
+      - name: PHP Unit tests for PHP ${{ matrix.php }}
+        run: make test${{ matrix.php }}
