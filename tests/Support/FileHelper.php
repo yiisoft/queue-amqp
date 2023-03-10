@@ -28,7 +28,7 @@ final class FileHelper
 
         $result = file_get_contents($path);
         if ($result === false) {
-            throw new RuntimeException("File $path exists but not readable.");
+            throw new RuntimeException("File "$path" exists but is not readable.");
         }
 
         return $result;

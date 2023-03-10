@@ -17,11 +17,11 @@ use Yiisoft\Yii\Queue\Middleware\Push\PushRequest;
 
 final class DelayMiddleware implements DelayMiddlewareInterface
 {
-    public function __construct(private int $delay, private bool $forcePersistentMessages = true)
+    public function __construct(private int $delayInSeconds, private bool $forcePersistentMessages = true)
     {
     }
 
-    public function withDelay(float $delay): static
+    public function withDelay(float $delayInSeconds): static
     {
         $new = clone $this;
         $new->delay = $this->delay;

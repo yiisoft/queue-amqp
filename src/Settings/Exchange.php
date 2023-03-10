@@ -140,7 +140,7 @@ final class Exchange implements ExchangeSettingsInterface
     /**
      * @return self
      */
-    public function withAutoDeletable(bool $autoDelete): ExchangeSettingsInterface
+    public function withAutoDelete(bool $autoDelete): ExchangeSettingsInterface
     {
         $new = clone $this;
         $new->autoDelete = $autoDelete;

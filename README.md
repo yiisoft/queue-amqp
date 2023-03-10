@@ -23,7 +23,7 @@ The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 cd tests && docker compose build && docker compose run --rm php82 vendor/bin/phpunit
 ```
 
-You can use any of the supported php versions with service names `php80`, `php81` and `php82`.  
+You can use any of the supported PHP versions with service names `php80`, `php81` and `php82`.  
 To debug code with xDebug and to use volumes inside the built containers, you can use
 `test/docker-compose.development.yml`. To do so you should either run
 `docker compose -f docker-compose.yml -f docker-compose.development.yml run --rm php<version> vendor/bin/phpunit`
