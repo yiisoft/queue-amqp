@@ -29,12 +29,12 @@ jobs:
           - ubuntu-latest
 
         php:
-          - 8.0
-          - 8.1
-          - 8.2
+          - 80
+          - 81
+          - 82
     steps:
       - name: Run infection
         run: |
-          make mutation-test
+          make mutation-test v=${{ matrix.php }}
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
