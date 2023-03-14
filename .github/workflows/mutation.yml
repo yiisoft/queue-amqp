@@ -34,9 +34,7 @@ jobs:
           - 8.2
     steps:
       - name: Run infection
-        working-directory: ./tests
         run: |
-          docker compose build
-          docker compose run --rm php${{ matrix.php }} php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/roave-infection-static-analysis-plugin -j2 --ignore-msi-with-no-mutations --only-covered
+          make mutation-test
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
