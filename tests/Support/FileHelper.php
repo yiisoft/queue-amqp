@@ -14,7 +14,7 @@ final class FileHelper
      */
     public function put(string $fileName, int|string $data): void
     {
-        if (file_put_contents("{$this->getRuntimeDir()}/$fileName", $data, FILE_APPEND) === false) {
+        if (file_put_contents("{$this->getRuntimeDir()}/$fileName", $data) === false) {
             throw new RuntimeException("Runtime dir {$this->getRuntimeDir()} or file $fileName are not writable.");
         }
     }
@@ -28,7 +28,7 @@ final class FileHelper
 
         $result = file_get_contents($path);
         if ($result === false) {
-            throw new RuntimeException("File "$path" exists but is not readable.");
+            throw new RuntimeException("File $path exists but is not readable.");
         }
 
         return $result;

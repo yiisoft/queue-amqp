@@ -14,6 +14,7 @@ AMQP adapter based on [php-amqplib](https://github.com/php-amqplib/php-amqplib) 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/yii-queue-amqp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/yii-queue-amqp/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-queue-amqp/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/yii-queue-amqp/?branch=master)
 [![static analysis](https://github.com/yiisoft/yii-queue-amqp/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/yii-queue-amqp/actions?query=workflow%3A%22static+analysis%22)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fyii-queue-amqp%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/yii-queue-amqp/master)
 [![type-coverage](https://shepherd.dev/github/yiisoft/yii-queue-amqp/coverage.svg)](https://shepherd.dev/github/yiisoft/yii-queue-amqp)
 ### Unit testing
 
