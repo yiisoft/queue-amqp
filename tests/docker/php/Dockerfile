@@ -17,7 +17,9 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && pecl clear-cache \
     && apk del .build-dependencies
 
-RUN curl -sS https://getcomposer.org/installer | php -- --2 --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
 ADD . /app
 WORKDIR /app

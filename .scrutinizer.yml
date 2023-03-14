@@ -20,7 +20,7 @@ build:
       dependencies:
         override:
           - make build
-          - make test
+          - make test v=81
 
       tests:
         override:
