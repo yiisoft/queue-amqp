@@ -1,11 +1,13 @@
 build:
-	COMPOSE_FILE=tests/docker-compose.yml docker compose build
+	COMPOSE_FILE=tests/docker-compose.yml docker-compose up -d --build
 
 test:
-	COMPOSE_FILE=tests/docker-compose.yml docker compose up -d
+	COMPOSE_FILE=tests/docker-compose.yml docker-compose build --pull php$(v)
+	COMPOSE_FILE=tests/docker-compose.yml docker-compose run php$(v) vendor/bin/phpunit --colors=always
+	COMPOSE_FILE=tests/docker-compose.yml docker-compose down
 
 php:
-	COMPOSE_FILE=tests/docker-compose.yml docker-compose run php81
+	COMPOSE_FILE=tests/docker-compose.yml docker-compose run php$(v)
 
 mutation-test:
 	COMPOSE_FILE=tests/docker-compose.yml docker-compose build --pull php$(v)
