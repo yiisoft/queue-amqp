@@ -16,7 +16,7 @@ interface ExchangeSettingsInterface
 
     public function getType(): string;
 
-    public function isAutoDeletable(): bool;
+    public function isAutoDelete(): bool;
 
     public function isDurable(): bool;
 
@@ -45,7 +45,7 @@ interface ExchangeSettingsInterface
 
     public function withType(string $type): self;
 
-    public function withAutoDeletable(bool $autoDelete): self;
+    public function withAutoDelete(bool $autoDelete): self;
 
     public function withDurable(bool $durable): self;
 

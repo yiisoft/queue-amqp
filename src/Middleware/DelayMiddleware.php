@@ -24,7 +24,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     public function withDelay(float $delayInSeconds): static
     {
         $new = clone $this;
-        $new->delay = $this->delay;
+        $new->delayInSeconds = $this->delayInSeconds;
 
         return $new;
     }
@@ -60,7 +60,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
      */
     private function getMessageProperties(QueueProviderInterface $queueProvider): array
     {
-        $messageProperties = ['expiration' => $this->delay * 1000];
+        $messageProperties = ['expiration' => $this->delayInSeconds * 1000];
         if ($this->forcePersistentMessages === true) {
             $messageProperties['delivery_mode'] = AMQPMessage::DELIVERY_MODE_PERSISTENT;
         }
@@ -70,7 +70,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
 
     private function getQueueSettings(QueueSettingsInterface $queueSettings, ?ExchangeSettingsInterface $exchangeSettings): QueueSettingsInterface
     {
-        $deliveryTime = time() + $this->delay;
+        $deliveryTime = time() + $this->delayInSeconds;
 
         return $queueSettings
             ->withName("{$queueSettings->getName()}.dlx.$deliveryTime")
@@ -78,8 +78,8 @@ final class DelayMiddleware implements DelayMiddlewareInterface
             ->withArguments(
                 [
                     'x-dead-letter-exchange' => ['S', $exchangeSettings?->getName() ?? ''],
-                    'x-expires' => ['I', $this->delay * 1000 + 30000],
-                    'x-message-ttl' => ['I', $this->delay * 1000],
+                    'x-expires' => ['I', $this->delayInSeconds * 1000 + 30000],
+                    'x-message-ttl' => ['I', $this->delayInSeconds * 1000],
                 ]
             );
     }
@@ -93,7 +93,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         /** @noinspection NullPointerExceptionInspection */
         return $exchangeSettings
             ?->withName("{$exchangeSettings->getName()}.dlx")
-            ->withAutoDeletable(true)
+            ->withAutoDelete(true)
             ->withType(AMQPExchangeType::TOPIC);
     }
 }
