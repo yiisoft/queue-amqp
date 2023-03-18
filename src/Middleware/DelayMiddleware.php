@@ -86,6 +86,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
 
     /**
      * @see https://github.com/vimeo/psalm/issues/9454
+     *
      * @psalm-suppress LessSpecificReturnType
      */
     private function getExchangeSettings(?ExchangeSettingsInterface $exchangeSettings): ?ExchangeSettingsInterface

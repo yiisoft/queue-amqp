@@ -53,7 +53,7 @@ final class Exchange implements ExchangeSettingsInterface
         return $this->type;
     }
 
-    public function isAutoDeletable(): bool
+    public function isAutoDelete(): bool
     {
         return $this->autoDelete;
     }

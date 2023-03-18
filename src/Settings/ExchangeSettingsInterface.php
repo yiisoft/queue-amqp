@@ -16,7 +16,7 @@ interface ExchangeSettingsInterface
 
     public function getType(): string;
 
-    public function isAutoDeletable(): bool;
+    public function isAutoDelete(): bool;
 
     public function isDurable(): bool;
 
