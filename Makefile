@@ -6,7 +6,7 @@ down:
 
 test:
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml build --pull php$(v)
-	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml run php$(v) vendor/bin/phpunit --colors=always
+	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml run php$(v) vendor/bin/phpunit --colors=always -v --debug
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml down
 
 run:
@@ -18,7 +18,7 @@ mutation-test:
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml down
 
 coverage:
-	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml run php81 vendor/bin/phpunit --coverage-clover coverage.xml
+	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml run php$(v) vendor/bin/phpunit --coverage-clover coverage.xml
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml down
 
 static-analyze:

@@ -37,3 +37,31 @@ The code is statically analyzed with [Psalm](https://psalm.dev). To run static a
 ```php
 ./vendor/bin/psalm
 ```
+
+## For Docker
+
+If you are using Docker, then you have access to a set of prepared commands in the Makefile
+
+### Static analysis
+
+```bash
+make static-analyze v=80
+```
+
+### Unit tests
+
+```bash
+make test v=80
+```
+
+### Mutation tests
+
+```bash
+make mutation-test v=80
+```
+
+### Code coverage
+
+```bash
+make coverage v=80
+```

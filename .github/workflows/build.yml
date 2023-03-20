@@ -32,9 +32,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build
-        working-directory: ./tests
-        run: docker compose build
+
       - name: PHP Unit tests for PHP ${{ matrix.php }}
-        working-directory: ./tests
-        run: docker compose run --rm php${{ matrix.php }} vendor/bin/phpunit --colors=always -v --debug
+        run: |
+          make build
+          make test v=${{ matrix.php }}
