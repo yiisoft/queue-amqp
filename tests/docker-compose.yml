@@ -6,6 +6,8 @@ x-php: &php
     dockerfile: tests/docker/php/Dockerfile
     args:
       PHP_VERSION: '8.0'
+  volumes:
+    - ./runtime:tests/runtime
   dns:
     - 8.8.8.8
     - 1.1.1.1
