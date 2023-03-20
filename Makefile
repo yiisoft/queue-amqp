@@ -1,3 +1,5 @@
+export COMPOSE_PROJECT_NAME=yii-queue-amqp
+
 build:
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml up -d --build
 
@@ -5,9 +7,9 @@ down:
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml down
 
 test:
-	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml build --pull php$(v)
-	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml run php$(v) vendor/bin/phpunit --colors=always -v --debug
-	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml down
+	docker-compose -f tests/docker-compose.yml build --pull php$(v)
+	docker-compose -f tests/docker-compose.yml run php$(v) vendor/bin/phpunit --colors=always -v --debug
+	docker-compose -f tests/docker-compose.yml down
 
 run:
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml run php$(v)

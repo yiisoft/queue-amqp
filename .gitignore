@@ -31,6 +31,7 @@ phpunit.phar
 .phpunit.result.cache
 # coverage report
 coverage.xml
+/coverage.html
 
 # Phan
 analysis.txt

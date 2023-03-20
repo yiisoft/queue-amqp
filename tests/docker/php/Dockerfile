@@ -2,6 +2,7 @@ ARG PHP_VERSION
 FROM php:${PHP_VERSION}-cli-alpine
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
 RUN apk --no-cache add \
     git \
@@ -19,6 +20,6 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && pecl clear-cache \
     && apk del .build-dependencies
 
-ADD . /app
 WORKDIR /app
-RUN composer install --prefer-dist --no-interaction
+ENTRYPOINT ["tests/docker/php/entrypoint.sh"]
+CMD ["sleep", "infinity"]
