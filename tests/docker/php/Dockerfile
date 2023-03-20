@@ -1,7 +1,13 @@
 ARG PHP_VERSION
 FROM php:${PHP_VERSION}-cli-alpine
 
-RUN apk --no-cache add linux-headers
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+RUN apk --no-cache add \
+    git \
+    bash \
+    linux-headers \
+    > /dev/null
 
 # install xDebug
 ENV XDEBUG_MODE=coverage
@@ -13,10 +19,6 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && pecl clear-cache \
     && apk del .build-dependencies
 
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-
-ENV COMPOSER_ALLOW_SUPERUSER 1
-
-WORKDIR /var/www
-ENTRYPOINT ["tests/docker/php/entrypoint.sh"]
-CMD ["sleep", "infinity"]
+ADD . /app
+WORKDIR /app
+RUN composer install --prefer-dist --no-interaction

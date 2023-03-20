@@ -29,13 +29,16 @@ final class Adapter implements AdapterInterface
         return $instance;
     }
 
-    public function runExisting(callable $callback): void
+    /**
+     * @param callable(MessageInterface): bool  $handlerCallback
+     */
+    public function runExisting(callable $handlerCallback): void
     {
         $channel = $this->queueProvider->getChannel();
         (new ExistingMessagesConsumer($channel, $this->queueProvider
             ->getQueueSettings()
             ->getName(), $this->serializer))
-            ->consume($callback);
+            ->consume($handlerCallback);
     }
 
     /**
@@ -62,7 +65,7 @@ final class Adapter implements AdapterInterface
             );
     }
 
-    public function subscribe(callable $handler): void
+    public function subscribe(callable $handlerCallback): void
     {
         while ($this->loop->canContinue()) {
             $channel = $this->queueProvider->getChannel();
@@ -75,9 +78,9 @@ final class Adapter implements AdapterInterface
                 false,
                 false,
                 false,
-                function (AMQPMessage $amqpMessage) use ($handler, $channel): void {
+                function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
                     try {
-                        $handler($this->serializer->unserialize($amqpMessage->body));
+                        $handlerCallback($this->serializer->unserialize($amqpMessage->body));
                         $channel->basic_ack($amqpMessage->getDeliveryTag());
                     } catch (Throwable $exception) {
                         $consumerTag = $amqpMessage->getConsumerTag();

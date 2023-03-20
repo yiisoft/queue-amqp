@@ -19,13 +19,12 @@ build:
         docker: true
       dependencies:
         override:
-          - make build
-          - make test v=81
+          - cd tests && docker-compose build && docker-compose run --rm php82 vendor/bin/phpunit
 
       tests:
         override:
-          - command: make build && make coverage
+          - command: cd tests && docker-compose run --rm php82 vendor/bin/phpunit --coverage-clover tests/runtime/coverage.xml
             on_node: 1
             coverage:
-              file: coverage.xml
+              file: tests/runtime/coverage.xml
               format: php-clover

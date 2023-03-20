@@ -1,41 +1,25 @@
+x-php: &php
+  volumes:
+    - ..:/app
+  environment:
+    XDEBUG_MODE: develop,debug,coverage
+    XDEBUG_CONFIG: "client_host=host.docker.internal"
+    PHP_IDE_CONFIG: serverName=yii-queue-amqp
+  extra_hosts:
+    - host.docker.internal:${DOCKER_HOST_IP:-172.17.0.1}
+
 services:
   php80:
+    <<: *php
     volumes:
       - ./runtime/.composer80:/root/.composer
-      - ..:/app
-    environment:
-      XDEBUG_MODE: develop,debug,coverage
-      XDEBUG_CONFIG: "client_host=host.docker.internal"
-      XDEBUG_TRIGGER: yes
-      PHP_IDE_CONFIG: serverName=yii-queue-amqp
-    extra_hosts:
-      - host.docker.internal:${DOCKER_HOST_IP:-172.17.0.1}
 
   php81:
+    <<: *php
     volumes:
-      - ./runtime/.composer80:/root/.composer
-      - ..:/app
-    environment:
-      XDEBUG_MODE: develop,debug,coverage
-      XDEBUG_CONFIG: "client_host=host.docker.internal"
-      XDEBUG_TRIGGER: yes
-      PHP_IDE_CONFIG: serverName=yii-queue-amqp
-    extra_hosts:
-      - host.docker.internal:${DOCKER_HOST_IP:-172.17.0.1}
+      - ./runtime/.composer81:/root/.composer
 
   php82:
+    <<: *php
     volumes:
-      - ./runtime/.composer80:/root/.composer
-      - ..:/app
-    environment:
-      XDEBUG_MODE: develop,debug,coverage
-      XDEBUG_CONFIG: "client_host=host.docker.internal"
-      XDEBUG_TRIGGER: yes
-      PHP_IDE_CONFIG: serverName=yii-queue-amqp
-    extra_hosts:
-      - host.docker.internal:${DOCKER_HOST_IP:-172.17.0.1}
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - ${RABBIT_MANAGEMENT_PORT:-15672}:15672
+      - ./runtime/.composer82:/root/.composer
