@@ -1,13 +1,8 @@
 version: "3.5"
 
 x-php: &php
-  build:
-    context: ..
-    dockerfile: tests/docker/php/Dockerfile
-    args:
-      PHP_VERSION: '8.0'
   volumes:
-    - ./runtime:tests/runtime
+    - ./runtime:/app/tests/runtime
   dns:
     - 8.8.8.8
     - 1.1.1.1
@@ -25,6 +20,8 @@ services:
     <<: *php
     container_name: yii-queue-php80
     build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
       args:
         PHP_VERSION: '8.0'
 
@@ -32,6 +29,8 @@ services:
     <<: *php
     container_name: yii-queue-php81
     build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
       args:
         PHP_VERSION: '8.1'
 
@@ -39,6 +38,8 @@ services:
     <<: *php
     container_name: yii-queue-php82
     build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
       args:
         PHP_VERSION: '8.2'
 

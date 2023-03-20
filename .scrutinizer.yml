@@ -23,8 +23,8 @@ build:
 
       tests:
         override:
-          - command: docker compose run --rm php82 vendor/bin/phpunit --coverage-clover coverage.xml
+          - command: docker compose run --rm php82 vendor/bin/phpunit --coverage-clover tests/runtime/coverage.xml
             on_node: 1
             coverage:
-              file: coverage.xml
+              file: tests/runtime/coverage.xml
               format: php-clover
