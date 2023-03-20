@@ -29,13 +29,16 @@ final class Adapter implements AdapterInterface
         return $instance;
     }
 
-    public function runExisting(callable $callback): void
+    /**
+     * @param callable(MessageInterface): bool  $canContinueCallback
+     */
+    public function runExisting(callable $canContinueCallback): void
     {
         $channel = $this->queueProvider->getChannel();
         (new ExistingMessagesConsumer($channel, $this->queueProvider
             ->getQueueSettings()
             ->getName(), $this->serializer))
-            ->consume($callback);
+            ->consume($canContinueCallback);
     }
 
     /**

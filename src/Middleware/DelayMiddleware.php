@@ -21,7 +21,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     {
     }
 
-    public function withDelay(float $delayInSeconds): static
+    public function withDelay(float $seconds): static
     {
         $new = clone $this;
         $new->delayInSeconds = $this->delayInSeconds;
