@@ -24,7 +24,7 @@ final class ExistingMessagesConsumer
     }
 
     /**
-     * @param callable(MessageInterface): bool  $callback
+     * @param callable(MessageInterface): bool $callback
      */
     public function consume(callable $callback): void
     {

@@ -1,11 +1,7 @@
 ARG PHP_VERSION
 FROM php:${PHP_VERSION}-cli-alpine
 
-RUN apk --no-cache add \
-    git \
-    bash \
-    linux-headers \
-    > /dev/null
+RUN apk --no-cache add linux-headers
 
 # install xDebug
 ENV XDEBUG_MODE=coverage
@@ -21,6 +17,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-ADD . /app
-WORKDIR /app
-RUN composer install --prefer-dist --no-interaction
+WORKDIR /var/www
+
+CMD ["sleep", "infinity"]
