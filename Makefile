@@ -1,5 +1,5 @@
 build:
-	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml up --build
+	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml up -d --build
 
 down:
 	COMPOSE_PROJECT_NAME=yii-queue-amqp docker-compose -f tests/docker-compose.yml down

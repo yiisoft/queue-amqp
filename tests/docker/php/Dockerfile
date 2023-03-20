@@ -18,5 +18,5 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 WORKDIR /var/www
-
+ENTRYPOINT ["tests/docker/php/entrypoint.sh"]
 CMD ["sleep", "infinity"]
