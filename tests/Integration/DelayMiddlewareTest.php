@@ -70,7 +70,7 @@ final class DelayMiddlewareTest extends TestCase
         $result = $fileHelper->get('test-delay-middleware-main');
         self::assertNotNull($result);
         $result = (int) $result;
-        self::assertTrue($result >= $time + 3);
-        self::assertTrue($result <= $time + 5);
+        self::assertGreaterThanOrEqual($time + 3, $result);
+        self::assertLessThanOrEqual($time + 5, $result);
     }
 }

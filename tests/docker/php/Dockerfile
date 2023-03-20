@@ -1,6 +1,8 @@
 ARG PHP_VERSION
 FROM php:${PHP_VERSION}-cli-alpine
 
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
 RUN apk --no-cache add \
     git \
     bash \
@@ -16,8 +18,6 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && docker-php-ext-enable xdebug \
     && pecl clear-cache \
     && apk del .build-dependencies
-
-RUN curl -sS https://getcomposer.org/installer | php -- --2 --install-dir=/usr/local/bin --filename=composer
 
 ADD . /app
 WORKDIR /app
