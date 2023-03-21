@@ -26,8 +26,6 @@ use Yiisoft\Yii\Queue\Queue;
 use Yiisoft\Yii\Queue\Worker\Worker;
 use Yiisoft\Yii\Queue\Worker\WorkerInterface;
 
-
-
 abstract class TestCase extends PhpUnitTestCase
 {
     public AMQPStreamConnection $connection;
@@ -74,8 +72,9 @@ abstract class TestCase extends PhpUnitTestCase
     }
 
     /**
-     * @return AMQPStreamConnection
      * @throws Exception
+     *
+     * @return AMQPStreamConnection
      */
     private function createConnection(): AMQPStreamConnection
     {
