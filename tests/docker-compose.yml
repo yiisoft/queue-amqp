@@ -1,0 +1,52 @@
+version: "3.5"
+
+x-php: &php
+  volumes:
+    - ./runtime:/app/tests/runtime
+  dns:
+    - 8.8.8.8
+    - 1.1.1.1
+  environment:
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: 5672
+    RABBITMQ_USER: guest
+    RABBITMQ_PASSWORD: guest
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+
+services:
+  php80:
+    <<: *php
+    container_name: yii-queue-php80
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.0'
+
+  php81:
+    <<: *php
+    container_name: yii-queue-php81
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.1'
+
+  php82:
+    <<: *php
+    container_name: yii-queue-php82
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.2'
+
+  rabbitmq:
+    image: rabbitmq:alpine
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 3s
+      timeout: 5s
+      retries: 3

@@ -1,0 +1,78 @@
+#!/usr/bin/env php
+<?php
+
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use Psr\Log\NullLogger;
+use Yiisoft\Injector\Injector;
+use Yiisoft\Test\Support\Container\SimpleContainer;
+use Yiisoft\Yii\Console\Application;
+use Yiisoft\Yii\Queue\AMQP\Adapter;
+use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
+use Yiisoft\Yii\Queue\AMQP\QueueProvider;
+use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Yii\Queue\AMQP\Tests\Support\SimpleMessageHandler;
+use Yiisoft\Yii\Queue\Cli\SignalLoop;
+use Yiisoft\Yii\Queue\Command\ListenCommand;
+use Yiisoft\Yii\Queue\Command\RunCommand;
+use Yiisoft\Yii\Queue\Middleware\CallableFactory;
+use Yiisoft\Yii\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
+use Yiisoft\Yii\Queue\Middleware\Consume\MiddlewareFactoryConsume;
+use Yiisoft\Yii\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
+use Yiisoft\Yii\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
+use Yiisoft\Yii\Queue\Middleware\Push\MiddlewareFactoryPush;
+use Yiisoft\Yii\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Yii\Queue\Queue;
+use Yiisoft\Yii\Queue\QueueFactory;
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+$logger = new NullLogger();
+$container = new SimpleContainer([]);
+$injector = new Injector($container);
+$callableFactory = new CallableFactory($container);
+$worker = new \Yiisoft\Yii\Queue\Worker\Worker(
+    [
+        'simple' => new SimpleMessageHandler(new FileHelper()),
+    ],
+    $logger,
+    $injector,
+    $container,
+    new ConsumeMiddlewareDispatcher(new MiddlewareFactoryConsume($container, $callableFactory)),
+    new FailureMiddlewareDispatcher(new MiddlewareFactoryFailure($container, $callableFactory), []),
+);
+$loop = new SignalLoop();
+$pushMiddlewareDispatcher = new PushMiddlewareDispatcher(new MiddlewareFactoryPush($container, $callableFactory));
+$adapter = new Adapter(
+    new QueueProvider(
+        new AMQPStreamConnection(
+            getenv('RABBITMQ_HOST'),
+            getenv('RABBITMQ_PORT'),
+            getenv('RABBITMQ_USER'),
+            getenv('RABBITMQ_PASSWORD'),
+        ),
+        new QueueSettings(),
+    ),
+    new MessageSerializer(),
+    $loop,
+);
+$queue = new Queue(
+    $worker,
+    $loop,
+    $logger,
+    $pushMiddlewareDispatcher,
+    $adapter,
+);
+$queueFactory = new QueueFactory(
+    [],
+    $queue,
+    $container,
+    $callableFactory,
+    $injector,
+);
+
+$application = new Application();
+$application->add(new ListenCommand($queueFactory));
+$application->add(new RunCommand($queueFactory));
+
+$application->run();

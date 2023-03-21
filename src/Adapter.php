@@ -15,9 +15,9 @@ use Yiisoft\Yii\Queue\Message\MessageInterface;
 final class Adapter implements AdapterInterface
 {
     public function __construct(
-        protected QueueProviderInterface $queueProvider,
-        protected MessageSerializerInterface $serializer,
-        protected LoopInterface $loop,
+        private QueueProviderInterface $queueProvider,
+        private MessageSerializerInterface $serializer,
+        private LoopInterface $loop,
     ) {
     }
 
@@ -29,15 +29,21 @@ final class Adapter implements AdapterInterface
         return $instance;
     }
 
-    public function runExisting(callable $callback): void
+    /**
+     * @param callable(MessageInterface): bool  $handlerCallback
+     */
+    public function runExisting(callable $handlerCallback): void
     {
         $channel = $this->queueProvider->getChannel();
         (new ExistingMessagesConsumer($channel, $this->queueProvider
             ->getQueueSettings()
             ->getName(), $this->serializer))
-            ->consume($callback);
+            ->consume($handlerCallback);
     }
 
+    /**
+     * @return never
+     */
     public function status(string $id): JobStatus
     {
         throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
@@ -46,20 +52,20 @@ final class Adapter implements AdapterInterface
     public function push(MessageInterface $message): void
     {
         $payload = $this->serializer->serialize($message);
-        $amqpMessage = new AMQPMessage($payload);
+        $amqpMessage = new AMQPMessage($payload, $this->queueProvider->getMessageProperties());
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
         $this->queueProvider
             ->getChannel()
             ->basic_publish(
                 $amqpMessage,
-                $exchangeSettings ? $exchangeSettings->getName() : '',
+                $exchangeSettings?->getName() ?? '',
                 $exchangeSettings ? '' : $this->queueProvider
                     ->getQueueSettings()
                     ->getName()
             );
     }
 
-    public function subscribe(callable $handler): void
+    public function subscribe(callable $handlerCallback): void
     {
         while ($this->loop->canContinue()) {
             $channel = $this->queueProvider->getChannel();
@@ -72,9 +78,9 @@ final class Adapter implements AdapterInterface
                 false,
                 false,
                 false,
-                function (AMQPMessage $amqpMessage) use ($handler, $channel): void {
+                function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
                     try {
-                        $handler($this->serializer->unserialize($amqpMessage->body));
+                        $handlerCallback($this->serializer->unserialize($amqpMessage->body));
                         $channel->basic_ack($amqpMessage->getDeliveryTag());
                     } catch (Throwable $exception) {
                         $consumerTag = $amqpMessage->getConsumerTag();
@@ -89,5 +95,18 @@ final class Adapter implements AdapterInterface
 
             $channel->wait();
         }
+    }
+
+    public function getQueueProvider(): QueueProviderInterface
+    {
+        return $this->queueProvider;
+    }
+
+    public function withQueueProvider(QueueProviderInterface $queueProvider): self
+    {
+        $new = clone $this;
+        $new->queueProvider = $queueProvider;
+
+        return $new;
     }
 }

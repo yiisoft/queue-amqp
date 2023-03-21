@@ -28,10 +28,12 @@ class MessageSerializer implements MessageSerializerInterface
 
     /**
      * @throws JsonException
+     *
+     * @return Message
      */
     public function unserialize(string $value): MessageInterface
     {
-        /** @var array $payload */
+        /** @var array{id?: string, data?: mixed, meta?: array} $payload */
         $payload = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
         $name = $payload['name'] ?? null;

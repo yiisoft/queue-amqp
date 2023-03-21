@@ -6,24 +6,25 @@ namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
+use Yiisoft\Yii\Queue\AMQP\Settings\Exchange;
 use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 
 final class QueueProvider implements QueueProviderInterface
 {
-    private AbstractConnection $connection;
-    private QueueSettingsInterface $queueSettings;
-    private ?ExchangeSettingsInterface $exchangeSettings;
+    public const EXCHANGE_NAME_DEFAULT = 'yii-queue';
+
     private ?AMQPChannel $channel = null;
 
     public function __construct(
-        AbstractConnection $connection,
-        QueueSettingsInterface $queueSettings,
-        ?ExchangeSettingsInterface $exchangeSettings = null
+        private AbstractConnection $connection,
+        private QueueSettingsInterface $queueSettings,
+        private ?ExchangeSettingsInterface $exchangeSettings = null,
+        private array $messageProperties = [],
     ) {
-        $this->connection = $connection;
-        $this->queueSettings = $queueSettings;
-        $this->exchangeSettings = $exchangeSettings;
+        if ($this->exchangeSettings === null) {
+            $this->exchangeSettings = new Exchange(self::EXCHANGE_NAME_DEFAULT);
+        }
     }
 
     public function __destruct()
@@ -56,6 +57,11 @@ final class QueueProvider implements QueueProviderInterface
         return $this->exchangeSettings;
     }
 
+    public function getMessageProperties(): array
+    {
+        return $this->messageProperties;
+    }
+
     public function withChannelName(string $channel): self
     {
         if ($channel === $this->queueSettings->getName()) {
@@ -71,5 +77,38 @@ final class QueueProvider implements QueueProviderInterface
         $instance->queueSettings = $instance->queueSettings->withName($channel);
 
         return $instance;
+    }
+
+    /**
+     * @return self
+     */
+    public function withQueueSettings(QueueSettingsInterface $queueSettings): QueueProviderInterface
+    {
+        $new = clone $this;
+        $new->queueSettings = $queueSettings;
+
+        return $new;
+    }
+
+    /**
+     * @return self
+     */
+    public function withExchangeSettings(?ExchangeSettingsInterface $exchangeSettings): QueueProviderInterface
+    {
+        $new = clone $this;
+        $new->exchangeSettings = $exchangeSettings;
+
+        return $new;
+    }
+
+    /**
+     * @return self
+     */
+    public function withMessageProperties(array $properties): QueueProviderInterface
+    {
+        $new = clone $this;
+        $new->messageProperties = $properties;
+
+        return $new;
     }
 }

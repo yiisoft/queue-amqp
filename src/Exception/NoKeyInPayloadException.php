@@ -23,11 +23,17 @@ class NoKeyInPayloadException extends InvalidArgumentException implements Friend
         ) . '.', $code, $previous);
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return 'No key "' . $this->expectedKey . '" in payload';
     }
 
+    /**
+     * @return string
+     */
     public function getSolution(): ?string
     {
         return 'We have successfully unserialized a message, but there was no expected key "' . $this->expectedKey . '".
