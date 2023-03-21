@@ -66,8 +66,8 @@ final class Adapter implements AdapterInterface
                     ->getQueueSettings()
                     ->getName()
             );
-        //@todo Doesn't need to be cast to string
-        $messageId = (string)$amqpMessage->get('message_id');
+        /** @var string $messageId */
+        $messageId = $amqpMessage->get('message_id');
         $message->setId($messageId);
     }
 
