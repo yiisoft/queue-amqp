@@ -3,7 +3,6 @@ version: "3.5"
 x-php: &php
   volumes:
     - ./runtime:/app/tests/runtime
-    - ..:/app
   dns:
     - 8.8.8.8
     - 1.1.1.1
@@ -15,13 +14,11 @@ x-php: &php
   depends_on:
     rabbitmq:
       condition: service_healthy
-  networks:
-    net: { }
 
 services:
   php80:
     <<: *php
-    container_name: yii-queue-amqp-php80
+    container_name: yii-queue-php80
     build:
       context: ..
       dockerfile: tests/docker/php/Dockerfile
@@ -30,7 +27,7 @@ services:
 
   php81:
     <<: *php
-    container_name: yii-queue-amqp-php81
+    container_name: yii-queue-php81
     build:
       context: ..
       dockerfile: tests/docker/php/Dockerfile
@@ -39,7 +36,7 @@ services:
 
   php82:
     <<: *php
-    container_name: yii-queue-amqp-php82
+    container_name: yii-queue-php82
     build:
       context: ..
       dockerfile: tests/docker/php/Dockerfile
@@ -53,9 +50,3 @@ services:
       interval: 3s
       timeout: 5s
       retries: 3
-    networks:
-      net: { }
-
-networks:
-  net:
-    name: yii-queue-amqp

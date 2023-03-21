@@ -3,7 +3,7 @@ checks:
 
 filter:
   paths:
-    - "src/*"
+    - src/
 
 build:
   image: default-bionic
@@ -19,11 +19,11 @@ build:
         docker: true
       dependencies:
         override:
-          - cd tests && docker-compose build && docker-compose run --rm php82 vendor/bin/phpunit
+          - cd tests && docker-compose build php82
 
       tests:
         override:
-          - command: cd tests && docker-compose run --rm php82 vendor/bin/phpunit --coverage-clover tests/runtime/coverage.xml
+          - command: docker-compose run --rm php82 vendor/bin/phpunit --coverage-clover tests/runtime/coverage.xml
             on_node: 1
             coverage:
               file: tests/runtime/coverage.xml
