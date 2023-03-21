@@ -38,7 +38,7 @@ The code is statically analyzed with [Psalm](https://psalm.dev). To run static a
 ./vendor/bin/psalm
 ```
 
-## For Docker
+## Extra
 
 If you are using Docker, then you have access to a set of prepared commands in the Makefile
 
