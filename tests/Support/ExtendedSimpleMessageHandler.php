@@ -17,8 +17,6 @@ final class ExtendedSimpleMessageHandler
 
     /**
      * @param MessageInterface $message
-     *
-     * @return void
      */
     public function handle(MessageInterface $message): void
     {

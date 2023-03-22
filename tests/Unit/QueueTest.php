@@ -16,8 +16,6 @@ final class QueueTest extends TestCase
      * Testing getting status
      *
      * @throws Exception
-     *
-     * @return void
      */
     public function testStatus(): void
     {
@@ -37,8 +35,6 @@ final class QueueTest extends TestCase
 
     /**
      * @throws Exception
-     *
-     * @return void
      */
     public function testRun(): void
     {
