@@ -1,0 +1,44 @@
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'psalm.xml'
+
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'psalm.xml'
+
+name: Mutation test
+
+jobs:
+  mutation:
+    name: PHP ${{ matrix.php }}-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+
+        php:
+          - 80
+          - 81
+          - 82
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run infection
+        run: |
+          make build
+          make mutation-test v=${{ matrix.php }}
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
