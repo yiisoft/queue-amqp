@@ -45,7 +45,7 @@ class MessageSerializer implements MessageSerializerInterface
         }
 
         $id = $payload['id'] ?? null;
-        if (!is_string($id)) {
+        if ($id !== null && !is_string($id)) {
             throw new NoKeyInPayloadException('id', $payload);
         }
 
