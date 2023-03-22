@@ -36,7 +36,7 @@ class MessageSerializer implements MessageSerializerInterface
     {
         $payload = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
         if (!is_array($payload)) {
-            throw new InvalidArgumentException('Payload must be array. Got '.get_debug_type($payload).'.');
+            throw new InvalidArgumentException('Payload must be array. Got ' . get_debug_type($payload) . '.');
         }
 
         $name = $payload['name'] ?? null;
