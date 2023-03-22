@@ -29,6 +29,9 @@ phpunit.phar
 /phpunit.xml
 # phpunit cache
 .phpunit.result.cache
+# coverage report
+coverage.xml
+/coverage.html
 
 # Phan
 analysis.txt

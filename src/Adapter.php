@@ -52,7 +52,10 @@ final class Adapter implements AdapterInterface
     public function push(MessageInterface $message): void
     {
         $payload = $this->serializer->serialize($message);
-        $amqpMessage = new AMQPMessage($payload, $this->queueProvider->getMessageProperties());
+        $amqpMessage = new AMQPMessage(
+            $payload,
+            array_merge(['message_id' => uniqid(more_entropy: true)], $this->queueProvider->getMessageProperties())
+        );
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
         $this->queueProvider
             ->getChannel()
@@ -63,6 +66,9 @@ final class Adapter implements AdapterInterface
                     ->getQueueSettings()
                     ->getName()
             );
+        /** @var string $messageId */
+        $messageId = $amqpMessage->get('message_id');
+        $message->setId($messageId);
     }
 
     public function subscribe(callable $handlerCallback): void
