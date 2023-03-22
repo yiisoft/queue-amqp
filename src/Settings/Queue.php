@@ -73,6 +73,7 @@ final class Queue implements QueueSettingsInterface
 
     /**
      * @psalm-return array{0: string, 1: bool, 2: bool, 3: bool, 4: bool, 5: bool, 6: AMQPTable|array, 7: int|null}
+     *
      * @psalm-suppress LessSpecificImplementedReturnType Can be removed after raise Psalm version to ^5.0
      */
     public function getPositionalSettings(): array
