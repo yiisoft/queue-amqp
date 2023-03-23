@@ -54,9 +54,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     }
 
     /**
-     * @return (int|mixed)[]
-     *
-     * @psalm-return array{expiration: int, delivery_mode?: int}
+     * @psalm-return array{expiration: int, delivery_mode?: int}&array
      */
     private function getMessageProperties(QueueProviderInterface $queueProvider): array
     {
