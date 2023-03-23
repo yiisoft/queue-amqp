@@ -4,54 +4,56 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
 
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Yiisoft\Yii\Queue\AMQP\Adapter;
+use Exception;
 use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
-use Yiisoft\Yii\Queue\AMQP\QueueProvider;
-use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Yii\Queue\AMQP\Tests\Integration\TestCase;
-use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Cli\SignalLoop;
+use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Yii\Queue\Message\Message;
-use Yiisoft\Yii\Queue\Middleware\CallableFactory;
-use Yiisoft\Yii\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Yii\Queue\Middleware\Push\PushMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Queue;
-use Yiisoft\Yii\Queue\Worker\WorkerInterface;
 
 final class QueueTest extends TestCase
 {
+    /**
+     * Testing getting status
+     *
+     * @throws Exception
+     */
     public function testStatus(): void
     {
-        $adapter = new Adapter(
-            new QueueProvider(
-                $this->connection,
-                new QueueSettings(),
-            ),
-            new MessageSerializer(),
-            new SignalLoop(),
-        );
-        $queue = new Queue(
-            $this->createMock(WorkerInterface::class),
-            $this->createMock(LoopInterface::class),
-            $this->createMock(LoggerInterface::class),
-            new PushMiddlewareDispatcher(
-                new MiddlewareFactoryPush(
-                    $this->createMock(ContainerInterface::class),
-                    new CallableFactory($this->createMock(ContainerInterface::class)),
-                ),
-            ),
-            $adapter,
-        );
+        $adapter = $this->getAdapter();
+        $queue = $this
+            ->getQueue()
+            ->withAdapter($adapter);
 
-        $message = new Message('simple', 'middleware-main');
+        $message = new Message('ext-simple', null);
         $queue->push(
             $message,
         );
 
         $this->expectException(NotImplementedException::class);
         $adapter->status($message->getId());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testRun(): void
+    {
+        $fileHelper = new FileHelper();
+        $queue = $this
+            ->getQueue()
+            ->withAdapter($this->getAdapter());
+
+        $time = time();
+        $queue->push(
+            new Message('ext-simple', ['file_name' => 'test-run', 'payload' => ['time' => $time]])
+        );
+
+        self::assertNull($fileHelper->get('test-run'));
+
+        $queue->run();
+
+        $result = $fileHelper->get('test-run');
+        self::assertNotNull($result);
+        self::assertEquals($time, $result);
     }
 }

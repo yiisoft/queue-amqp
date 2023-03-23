@@ -4,17 +4,24 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Integration;
 
+use Exception;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PHPUnit\Framework\TestCase as PhpUnitTestCase;
 use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Process\Process;
 use Yiisoft\Injector\Injector;
 use Yiisoft\Test\Support\Container\SimpleContainer;
+use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
+use Yiisoft\Yii\Queue\AMQP\Adapter;
+use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
+use Yiisoft\Yii\Queue\AMQP\QueueProvider;
+use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Yii\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Exception;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
+use Yiisoft\Yii\Queue\Cli\SignalLoop;
+use Yiisoft\Yii\Queue\Cli\SimpleLoop;
 use Yiisoft\Yii\Queue\Middleware\CallableFactory;
 use Yiisoft\Yii\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
 use Yiisoft\Yii\Queue\Middleware\Consume\MiddlewareFactoryConsume;
@@ -28,10 +35,11 @@ use Yiisoft\Yii\Queue\Worker\WorkerInterface;
 
 abstract class TestCase extends PhpUnitTestCase
 {
-    public AMQPStreamConnection $connection;
     protected Queue|null $queue = null;
     protected ?WorkerInterface $worker = null;
     protected ?ContainerInterface $container = null;
+    protected ?AdapterInterface $adapter = null;
+    protected ?LoopInterface $loop = null;
     protected int $executionTimes;
 
     /** @var Process[] */
@@ -41,7 +49,6 @@ abstract class TestCase extends PhpUnitTestCase
     {
         parent::setUp();
 
-        $this->connection = $this->createConnection();
         $this->executionTimes = 0;
 
         (new FileHelper())->clear();
@@ -78,9 +85,17 @@ abstract class TestCase extends PhpUnitTestCase
      */
     private function createConnection(): AMQPStreamConnection
     {
-        return new AMQPStreamConnection('rabbitmq', 5672, 'guest', 'guest');
+        return new AMQPStreamConnection(
+            getenv('RABBITMQ_HOST'),
+            getenv('RABBITMQ_PORT'),
+            getenv('RABBITMQ_USER'),
+            getenv('RABBITMQ_PASSWORD')
+        );
     }
 
+    /**
+     * @return Queue
+     */
     protected function getQueue(): Queue
     {
         if ($this->queue === null) {
@@ -90,21 +105,22 @@ abstract class TestCase extends PhpUnitTestCase
         return $this->queue;
     }
 
+    /**
+     * @return Queue
+     */
     protected function createQueue(): Queue
     {
         return new Queue(
             $this->getWorker(),
-            $this->createMock(LoopInterface::class),
-            $this->createMock(LoggerInterface::class),
-            new PushMiddlewareDispatcher(
-                new MiddlewareFactoryPush(
-                    $this->createMock(ContainerInterface::class),
-                    new CallableFactory($this->createMock(ContainerInterface::class)),
-                ),
-            )
+            $this->getLoop(),
+            new NullLogger(),
+            $this->getPushMiddlewareDispatcher()
         );
     }
 
+    /**
+     * @return WorkerInterface
+     */
     protected function getWorker(): WorkerInterface
     {
         if ($this->worker === null) {
@@ -114,6 +130,9 @@ abstract class TestCase extends PhpUnitTestCase
         return $this->worker;
     }
 
+    /**
+     * @return WorkerInterface
+     */
     protected function createWorker(): WorkerInterface
     {
         return new Worker(
@@ -126,13 +145,19 @@ abstract class TestCase extends PhpUnitTestCase
         );
     }
 
+    /**
+     * @return array
+     */
     protected function getMessageHandlers(): array
     {
         return [
-            'simple' => fn () => $this->executionTimes++,
+            'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
         ];
     }
 
+    /**
+     * @return ContainerInterface
+     */
     protected function getContainer(): ContainerInterface
     {
         if ($this->container === null) {
@@ -147,6 +172,9 @@ abstract class TestCase extends PhpUnitTestCase
         return new SimpleContainer($this->getContainerDefinitions());
     }
 
+    /**
+     * @return array
+     */
     protected function getContainerDefinitions(): array
     {
         return [];
@@ -170,6 +198,67 @@ abstract class TestCase extends PhpUnitTestCase
                 new CallableFactory($this->getContainer()),
             ),
             [],
+        );
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @return AdapterInterface
+     */
+    protected function getAdapter(): AdapterInterface
+    {
+        if ($this->adapter === null) {
+            $this->adapter = $this->createAdapter();
+        }
+
+        return $this->adapter;
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @return AdapterInterface
+     */
+    protected function createAdapter(): AdapterInterface
+    {
+        return new Adapter(
+            new QueueProvider(
+                $this->createConnection(),
+                new QueueSettings(),
+            ),
+            new MessageSerializer(),
+            new SignalLoop(),
+        );
+    }
+
+    /**
+     * @return LoopInterface
+     */
+    protected function getLoop(): LoopInterface
+    {
+        if ($this->loop === null) {
+            $this->loop = $this->createLoop();
+        }
+
+        return $this->loop;
+    }
+
+    /**
+     * @return LoopInterface
+     */
+    protected function createLoop(): LoopInterface
+    {
+        return new SimpleLoop();
+    }
+
+    protected function getPushMiddlewareDispatcher(): PushMiddlewareDispatcher
+    {
+        return new PushMiddlewareDispatcher(
+            new MiddlewareFactoryPush(
+                $this->getContainer(),
+                new CallableFactory($this->getContainer()),
+            ),
         );
     }
 }
