@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Integration;
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Yii\Queue\AMQP\Adapter;
@@ -45,12 +44,7 @@ final class DelayMiddlewareTest extends TestCase
             ),
             new Adapter(
                 new QueueProvider(
-                    new AMQPStreamConnection(
-                        getenv('RABBITMQ_HOST'),
-                        getenv('RABBITMQ_PORT'),
-                        getenv('RABBITMQ_USER'),
-                        getenv('RABBITMQ_PASSWORD'),
-                    ),
+                    $this->createConnection(),
                     new QueueSettings(),
                 ),
                 new MessageSerializer(),
