@@ -5,23 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Queue\AMQP\Settings;
 
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Yii\Queue\AMQP\Exception\InvalidArgumentsTypeException;
-use Yiisoft\Yii\Queue\QueueFactory;
+use Yiisoft\Yii\Queue\QueueFactoryInterface;
 
 final class Queue implements QueueSettingsInterface
 {
-    private string $queueName;
-    private bool $passive;
-    private bool $durable;
-    private bool $exclusive;
-    private bool $autoDelete;
-    private bool $nowait;
-    /**
-     * @var AMQPTable|array
-     */
-    private $arguments;
-    private ?int $ticket;
-
     /**
      * @param string $queueName
      * @param bool $passive
@@ -33,30 +20,18 @@ final class Queue implements QueueSettingsInterface
      * @param int|null $ticket
      */
     public function __construct(
-        string $queueName = QueueFactory::DEFAULT_CHANNEL_NAME,
-        bool $passive = false,
-        bool $durable = false,
-        bool $exclusive = false,
-        bool $autoDelete = true,
-        bool $nowait = false,
-        $arguments = [],
-        ?int $ticket = null
+        private string $queueName = QueueFactoryInterface::DEFAULT_CHANNEL_NAME,
+        private bool $passive = false,
+        private bool $durable = false,
+        private bool $exclusive = false,
+        private bool $autoDelete = true,
+        private bool $nowait = false,
+        private AMQPTable|array $arguments = [],
+        private ?int $ticket = null
     ) {
-        if (!is_array($arguments) && !$arguments instanceof AMQPTable) {
-            throw new InvalidArgumentsTypeException();
-        }
-
-        $this->queueName = $queueName;
-        $this->passive = $passive;
-        $this->durable = $durable;
-        $this->exclusive = $exclusive;
-        $this->autoDelete = $autoDelete;
-        $this->nowait = $nowait;
-        $this->arguments = $arguments;
-        $this->ticket = $ticket;
     }
 
-    public function getArguments()
+    public function getArguments(): AMQPTable|array
     {
         return $this->arguments;
     }
@@ -96,6 +71,11 @@ final class Queue implements QueueSettingsInterface
         return $this->passive;
     }
 
+    /**
+     * @psalm-return array{0: string, 1: bool, 2: bool, 3: bool, 4: bool, 5: bool, 6: AMQPTable|array, 7: int|null}
+     *
+     * @psalm-suppress LessSpecificImplementedReturnType Can be removed after raise Psalm version to ^5.0
+     */
     public function getPositionalSettings(): array
     {
         return [
@@ -110,11 +90,67 @@ final class Queue implements QueueSettingsInterface
         ];
     }
 
-    public function withName(string $name): QueueSettingsInterface
+    public function withName(string $name): self
     {
         $instance = clone $this;
         $instance->queueName = $name;
 
         return $instance;
+    }
+
+    public function withArguments(AMQPTable|array $arguments): self
+    {
+        $new = clone $this;
+        $new->arguments = $arguments;
+
+        return $new;
+    }
+
+    public function withTicket(?int $ticket): self
+    {
+        $new = clone $this;
+        $new->ticket = $ticket;
+
+        return $new;
+    }
+
+    public function withAutoDeletable(bool $autoDeletable): self
+    {
+        $new = clone $this;
+        $new->autoDelete = $autoDeletable;
+
+        return $new;
+    }
+
+    public function withDurable(bool $durable): self
+    {
+        $new = clone $this;
+        $new->durable = $durable;
+
+        return $new;
+    }
+
+    public function withExclusive(bool $exclusive): self
+    {
+        $new = clone $this;
+        $new->exclusive = $exclusive;
+
+        return $new;
+    }
+
+    public function withNowait(bool $nowait): self
+    {
+        $new = clone $this;
+        $new->nowait = $nowait;
+
+        return $new;
+    }
+
+    public function withPassive(bool $passive): self
+    {
+        $new = clone $this;
+        $new->passive = $passive;
+
+        return $new;
     }
 }

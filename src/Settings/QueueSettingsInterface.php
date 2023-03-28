@@ -8,47 +8,46 @@ use PhpAmqpLib\Wire\AMQPTable;
 
 interface QueueSettingsInterface
 {
-    /**
-     * @return AMQPTable|array
-     */
-    public function getArguments();
+    public function getArguments(): AMQPTable|array;
 
-    /**
-     * @return string
-     */
     public function getName(): string;
 
-    /**
-     * @return int|null
-     */
     public function getTicket(): ?int;
 
-    /**
-     * @return bool
-     */
     public function isAutoDeletable(): bool;
 
-    /**
-     * @return bool
-     */
     public function isDurable(): bool;
 
-    /**
-     * @return bool
-     */
     public function isExclusive(): bool;
 
-    /**
-     * @return bool
-     */
     public function hasNowait(): bool;
 
-    /**
-     * @return bool
-     */
     public function isPassive(): bool;
 
+    /**
+     * Returns positional arguments to be used with {@see \PhpAmqpLib\Channel\AMQPChannel::queue_declare()}
+     *
+     * @see \Yiisoft\Yii\Queue\AMQP\QueueProvider::getChannel()
+     *
+     * @return (AMQPTable|array|bool|int|null|string)[]
+     *
+     * @psalm-return array{string, bool, bool, bool, bool, bool, AMQPTable|array, int|null}
+     */
     public function getPositionalSettings(): array;
 
+    public function withArguments(AMQPTable|array $arguments): self;
+
     public function withName(string $name): self;
+
+    public function withTicket(?int $ticket): self;
+
+    public function withAutoDeletable(bool $autoDeletable): self;
+
+    public function withDurable(bool $durable): self;
+
+    public function withExclusive(bool $exclusive): self;
+
+    public function withNowait(bool $nowait): self;
+
+    public function withPassive(bool $passive): self;
 }

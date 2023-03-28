@@ -7,24 +7,25 @@ namespace Yiisoft\Yii\Queue\AMQP;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
+use Yiisoft\Yii\Queue\Message\MessageInterface;
 
 /**
  * @internal
  */
 final class ExistingMessagesConsumer
 {
-    private string $queueName;
-    private AMQPChannel $channel;
-    private MessageSerializerInterface $serializer;
     private bool $messageConsumed = false;
 
-    public function __construct(AMQPChannel $channel, string $queueName, MessageSerializerInterface $serializer)
-    {
-        $this->channel = $channel;
-        $this->queueName = $queueName;
-        $this->serializer = $serializer;
+    public function __construct(
+        private AMQPChannel $channel,
+        private string $queueName,
+        private MessageSerializerInterface $serializer
+    ) {
     }
 
+    /**
+     * @param callable(MessageInterface): bool  $callback
+     */
     public function consume(callable $callback): void
     {
         $this->channel->basic_consume(
