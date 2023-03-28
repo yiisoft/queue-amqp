@@ -16,7 +16,11 @@ AMQP adapter based on [php-amqplib](https://github.com/php-amqplib/php-amqplib) 
 [![static analysis](https://github.com/yiisoft/yii-queue-amqp/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/yii-queue-amqp/actions?query=workflow%3A%22static+analysis%22)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fyii-queue-amqp%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/yii-queue-amqp/master)
 [![type-coverage](https://shepherd.dev/github/yiisoft/yii-queue-amqp/coverage.svg)](https://shepherd.dev/github/yiisoft/yii-queue-amqp)
-### Unit testing
+
+## Extra
+
+### Docker
+#### Unit testing
 
 The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 
@@ -30,38 +34,41 @@ To debug code with xDebug and to use volumes inside the built containers, you ca
 `docker compose -f docker-compose.yml -f docker-compose.development.yml run --rm php<version> vendor/bin/phpunit`
 or copy [tests/.env.example](tests/.env.example) into `tests/.env` and run tests as usual.
 
+
+Also, if you are using Docker, then you have access to a set of prepared commands in the Makefile
+
+#### Static analysis
+
+```bash
+# {{ v }} = 80, 81, 82
+make static-analyze v=80
+```
+
+#### Unit tests
+
+```bash
+# {{ v }} = 80, 81, 82
+make test v=80
+```
+
+#### Mutation tests
+
+```bash
+# {{ v }} = 80, 81, 82
+make mutation-test v=80
+```
+
+#### Code coverage
+
+```bash
+# {{ v }} = 80, 81, 82
+make coverage v=80
+```
+
 ### Static analysis
 
 The code is statically analyzed with [Psalm](https://psalm.dev). To run static analysis:
 
 ```php
 ./vendor/bin/psalm
-```
-
-## Extra
-
-If you are using Docker, then you have access to a set of prepared commands in the Makefile
-
-### Static analysis
-
-```bash
-make static-analyze v=80
-```
-
-### Unit tests
-
-```bash
-make test v=80
-```
-
-### Mutation tests
-
-```bash
-make mutation-test v=80
-```
-
-### Code coverage
-
-```bash
-make coverage v=80
 ```

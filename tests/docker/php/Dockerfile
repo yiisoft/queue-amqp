@@ -5,7 +5,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 RUN apk --no-cache add \
     git \
-    bash \
     linux-headers \
     > /dev/null
 
@@ -14,8 +13,8 @@ ENV XDEBUG_MODE=coverage
 ENV XDEBUG_CONFIG=""
 RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && docker-php-ext-install pcntl sockets \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
+    && pecl install xdebug pcov \
+    && docker-php-ext-enable xdebug pcov \
     && pecl clear-cache \
     && apk del .build-dependencies
 

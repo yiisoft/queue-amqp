@@ -21,7 +21,6 @@ use Yiisoft\Yii\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Cli\SignalLoop;
-use Yiisoft\Yii\Queue\Cli\SimpleLoop;
 use Yiisoft\Yii\Queue\Middleware\CallableFactory;
 use Yiisoft\Yii\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
 use Yiisoft\Yii\Queue\Middleware\Consume\MiddlewareFactoryConsume;
@@ -40,7 +39,7 @@ abstract class TestCase extends PhpUnitTestCase
     protected ?ContainerInterface $container = null;
     protected ?AdapterInterface $adapter = null;
     protected ?LoopInterface $loop = null;
-    protected int $executionTimes;
+    public ?QueueSettings $queueSettings = null;
 
     /** @var Process[] */
     private array $processes = [];
@@ -48,8 +47,6 @@ abstract class TestCase extends PhpUnitTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->executionTimes = 0;
 
         (new FileHelper())->clear();
     }
@@ -83,7 +80,7 @@ abstract class TestCase extends PhpUnitTestCase
      *
      * @return AMQPStreamConnection
      */
-    private function createConnection(): AMQPStreamConnection
+    protected function createConnection(): AMQPStreamConnection
     {
         return new AMQPStreamConnection(
             getenv('RABBITMQ_HOST'),
@@ -225,10 +222,10 @@ abstract class TestCase extends PhpUnitTestCase
         return new Adapter(
             new QueueProvider(
                 $this->createConnection(),
-                new QueueSettings(),
+                $this->getQueueSettings(),
             ),
             new MessageSerializer(),
-            new SignalLoop(),
+            $this->getLoop(),
         );
     }
 
@@ -249,7 +246,7 @@ abstract class TestCase extends PhpUnitTestCase
      */
     protected function createLoop(): LoopInterface
     {
-        return new SimpleLoop();
+        return new SignalLoop();
     }
 
     protected function getPushMiddlewareDispatcher(): PushMiddlewareDispatcher
@@ -260,5 +257,25 @@ abstract class TestCase extends PhpUnitTestCase
                 new CallableFactory($this->getContainer()),
             ),
         );
+    }
+
+    /**
+     * @return QueueSettings
+     */
+    protected function getQueueSettings(): QueueSettings
+    {
+        if (null === $this->queueSettings) {
+            $this->queueSettings = $this->createQueueSettings();
+        }
+
+        return $this->queueSettings;
+    }
+
+    /**
+     * @return QueueSettings
+     */
+    protected function createQueueSettings(): QueueSettings
+    {
+        return new QueueSettings();
     }
 }
