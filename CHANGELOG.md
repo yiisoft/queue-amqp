@@ -1,5 +1,5 @@
-# _____ Change Log
+# Yii Queue AMQP Adapter Change Log
 
 ## 1.0.0 under development
 
-- Enh: Add composer require checker into CI
+- Initial release.

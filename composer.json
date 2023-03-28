@@ -31,7 +31,7 @@
         "yiisoft/yii-queue": "dev-master"
     },
     "require-dev": {
-        "maglnet/composer-require-checker": "^4.2",
+        "maglnet/composer-require-checker": "^4.4",
         "phpunit/phpunit": "^9.5",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
@@ -67,9 +67,5 @@
             "infection/extension-installer": true,
             "composer/package-versions-deprecated": true
         }
-    },
-    "scripts": {
-        "test": "phpunit --testdox --no-interaction",
-        "test-watch": "phpunit-watcher watch"
     }
 }
