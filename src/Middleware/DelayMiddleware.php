@@ -21,6 +21,11 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     {
     }
 
+    /**
+     * @param float $seconds
+     *
+     * @return $this
+     */
     public function withDelay(float $seconds): self
     {
         $new = clone $this;
