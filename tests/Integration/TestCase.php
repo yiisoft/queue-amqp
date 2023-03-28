@@ -40,7 +40,6 @@ abstract class TestCase extends PhpUnitTestCase
     protected ?AdapterInterface $adapter = null;
     protected ?LoopInterface $loop = null;
     public ?QueueSettings $queueSettings = null;
-    protected int $executionTimes;
 
     /** @var Process[] */
     private array $processes = [];
@@ -48,8 +47,6 @@ abstract class TestCase extends PhpUnitTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->executionTimes = 0;
 
         (new FileHelper())->clear();
     }
