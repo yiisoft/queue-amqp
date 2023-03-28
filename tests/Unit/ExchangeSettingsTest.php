@@ -35,7 +35,7 @@ final class ExchangeSettingsTest extends TestCase
                         internal: true,
                         nowait: true,
                         arguments: new AMQPTable([
-                            'alternate-exchange' => 'yii-queue-test-common-settings-alt'
+                            'alternate-exchange' => 'yii-queue-test-common-settings-alt',
                         ])
                     )
                 ),

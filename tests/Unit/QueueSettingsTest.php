@@ -34,7 +34,7 @@ final class QueueSettingsTest extends TestCase
                         arguments: new AMQPTable([
                             'x-dead-letter-exchange' => 'yii-queue-test-queue-common-settings-dead-letter-exc',
                             'x-message-ttl' => 15000,
-                            'x-expires' => 16000
+                            'x-expires' => 16000,
                         ])
                     )
                 )
@@ -79,7 +79,7 @@ final class QueueSettingsTest extends TestCase
                     new QueueSettings(
                         queueName: 'yii-queue-test-queue-settings-arg',
                         arguments: new AMQPTable([
-                            'x-expires' => 1600
+                            'x-expires' => 1600,
                         ])
                     )
                 )
