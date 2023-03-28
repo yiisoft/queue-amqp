@@ -21,7 +21,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     {
     }
 
-    public function withDelay(float $seconds): DelayMiddleware
+    public function withDelay(float $seconds): self
     {
         $new = clone $this;
         $new->delayInSeconds = $seconds;
@@ -74,8 +74,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     private function getQueueSettings(
         QueueSettingsInterface $queueSettings,
         ?ExchangeSettingsInterface $exchangeSettings
-    ): QueueSettingsInterface
-    {
+    ): QueueSettingsInterface {
         $deliveryTime = time() + $this->delayInSeconds;
 
         return $queueSettings
