@@ -17,16 +17,26 @@ use Yiisoft\Yii\Queue\Middleware\Push\PushRequest;
 
 final class DelayMiddleware implements DelayMiddlewareInterface
 {
-    public function __construct(private int $delayInSeconds, private bool $forcePersistentMessages = true)
+    public function __construct(private float $delayInSeconds, private bool $forcePersistentMessages = true)
     {
     }
 
-    public function withDelay(float $seconds): static
+    /**
+     * @param float $seconds
+     *
+     * @return $this
+     */
+    public function withDelay(float $seconds): self
     {
         $new = clone $this;
-        $new->delayInSeconds = $this->delayInSeconds;
+        $new->delayInSeconds = $seconds;
 
         return $new;
+    }
+
+    public function getDelay(): float
+    {
+        return $this->delayInSeconds;
     }
 
     public function processPush(PushRequest $request, MessageHandlerPushInterface $handler): PushRequest
@@ -54,7 +64,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
     }
 
     /**
-     * @psalm-return array{expiration: int, delivery_mode?: int}&array
+     * @psalm-return array{expiration: int|float, delivery_mode?: int}&array
      */
     private function getMessageProperties(QueueProviderInterface $queueProvider): array
     {
@@ -66,8 +76,10 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         return array_merge($queueProvider->getMessageProperties(), $messageProperties);
     }
 
-    private function getQueueSettings(QueueSettingsInterface $queueSettings, ?ExchangeSettingsInterface $exchangeSettings): QueueSettingsInterface
-    {
+    private function getQueueSettings(
+        QueueSettingsInterface $queueSettings,
+        ?ExchangeSettingsInterface $exchangeSettings
+    ): QueueSettingsInterface {
         $deliveryTime = time() + $this->delayInSeconds;
 
         return $queueSettings
