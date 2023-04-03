@@ -37,9 +37,7 @@ final class MessageSerializerTest extends TestCase
             ->channel();
         $channel->queue_declare($queue);
         $channel->exchange_declare($exchange, AMQPExchangeType::DIRECT);
-
         $channel->queue_bind($queue, $exchange);
-
         $channel->basic_publish($message, $exchange);
     }
 
@@ -77,12 +75,11 @@ final class MessageSerializerTest extends TestCase
             )
         );
 
-        $queue = $this
-            ->getQueue()
-            ->withAdapter($this->getCustomAdapter($queueExchangeName));
-
         $this->expectException(NoKeyInPayloadException::class);
-        $queue->run();
+        $this
+            ->getQueue()
+            ->withAdapter($this->getCustomAdapter($queueExchangeName))
+            ->run();
     }
 
     public function testNoKeyInPayloadExceptionId(): void
@@ -97,12 +94,11 @@ final class MessageSerializerTest extends TestCase
             )
         );
 
-        $queue = $this
-            ->getQueue()
-            ->withAdapter($this->getCustomAdapter($queueExchangeName));
-
         $this->expectException(NoKeyInPayloadException::class);
-        $queue->run();
+        $this
+            ->getQueue()
+            ->withAdapter($this->getCustomAdapter($queueExchangeName))
+            ->run();
     }
 
     public function testNoKeyInPayloadExceptionMeta(): void
@@ -117,12 +113,11 @@ final class MessageSerializerTest extends TestCase
             )
         );
 
-        $queue = $this
-            ->getQueue()
-            ->withAdapter($this->getCustomAdapter($queueExchangeName));
-
         $this->expectException(NoKeyInPayloadException::class);
-        $queue->run();
+        $this
+            ->getQueue()
+            ->withAdapter($this->getCustomAdapter($queueExchangeName))
+            ->run();
     }
 
     public function testInvalidArgumentException(): void
@@ -137,11 +132,10 @@ final class MessageSerializerTest extends TestCase
             )
         );
 
-        $queue = $this
-            ->getQueue()
-            ->withAdapter($this->getCustomAdapter($queueExchangeName));
-
         $this->expectException(InvalidArgumentException::class);
-        $queue->run();
+        $this
+            ->getQueue()
+            ->withAdapter($this->getCustomAdapter($queueExchangeName))
+            ->run();
     }
 }
