@@ -7,6 +7,7 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'psalm.xml'
+      - 'Makefile'
 
   push:
     paths-ignore:
@@ -16,27 +17,31 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'psalm.xml'
+      - 'Makefile'
 
 name: Mutation test
 
 jobs:
   mutation:
-    name: PHP ${{ matrix.php }}-${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
+    uses: yiisoft/actions/.github/workflows/roave-infection.yml@master
+    with:
+      os: >-
+        ['ubuntu-latest']
+      php: >-
+        ['8.0', '8.1', '8.2']
 
-        php:
-          - 80
-          - 81
-          - 82
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Run infection
-        run: make mutation-test v=${{ matrix.php }}
+    services:
+      rabbitmq:
+        image: rabbitmq:latest
         env:
-          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        ports:
+          - 5672
+
+    secrets:
+      STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
