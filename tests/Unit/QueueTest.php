@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
 
 use Exception;
+use Yiisoft\Yii\Queue\AMQP\Adapter;
 use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
+use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
+use Yiisoft\Yii\Queue\AMQP\QueueProvider;
+use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Yii\Queue\AMQP\Tests\Integration\TestCase;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Yii\Queue\Exception\JobFailureException;
 use Yiisoft\Yii\Queue\Message\Message;
 
 final class QueueTest extends TestCase
@@ -55,5 +61,32 @@ final class QueueTest extends TestCase
         $result = $fileHelper->get('test-run');
         self::assertNotNull($result);
         self::assertEquals($time, $result);
+    }
+
+    public function testListen(): void
+    {
+        $queueProvider = new QueueProvider(
+            $this->createConnection(),
+            $this->getQueueSettings(),
+        );
+        $adapter = new Adapter(
+            $queueProvider
+                ->withQueueSettings(new QueueSettings('yii-queue-test-listen'))
+                ->withExchangeSettings(new ExchangeSettings('yii-queue-test-listen')),
+            new MessageSerializer(),
+            $this->getLoop(),
+        );
+        $queue = $this
+            ->getQueue()
+            ->withAdapter($adapter);
+
+        $time = time();
+        $queue->push(new Message('simple-listen', ['payload' => ['time' => $time]]));
+
+        $this->expectException(JobFailureException::class);
+
+        $queue->listen();
+
+        $this->expectExceptionMessage((string)$time);
     }
 }

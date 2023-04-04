@@ -7,6 +7,7 @@ namespace Yiisoft\Yii\Queue\AMQP\Tests\Integration;
 use Exception;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PHPUnit\Framework\TestCase as PhpUnitTestCase;
+use PHPUnit\Util\Exception as PHPUnitException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Process\Process;
@@ -21,6 +22,7 @@ use Yiisoft\Yii\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Cli\SignalLoop;
+use Yiisoft\Yii\Queue\Message\MessageInterface;
 use Yiisoft\Yii\Queue\Middleware\CallableFactory;
 use Yiisoft\Yii\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
 use Yiisoft\Yii\Queue\Middleware\Consume\MiddlewareFactoryConsume;
@@ -149,6 +151,12 @@ abstract class TestCase extends PhpUnitTestCase
     {
         return [
             'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
+            'simple-listen' => static function (MessageInterface $message) {
+                $data = $message->getData();
+                if (null !== $data) {
+                    throw new PHPUnitException((string)$data['payload']['time']);
+                }
+            },
         ];
     }
 
