@@ -59,7 +59,7 @@ jobs:
           vendor/bin/roave-infection-static-analysis-plugin -j2 --ignore-msi-with-no-mutations --only-covered
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
-          RABBITMQ_HOST: localhost
-          RABBITMQ_PORT: 5672
+          RABBITMQ_HOST: 127.0.0.1
+          RABBITMQ_PORT: ${{ job.services.rabbitmq.ports['5672'] }}
           RABBITMQ_USER: guest
           RABBITMQ_PASSWORD: guest
