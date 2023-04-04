@@ -156,7 +156,7 @@ abstract class TestCase extends PhpUnitTestCase
                 if (null !== $data) {
                     throw new PHPUnitException((string)$data['payload']['time']);
                 }
-            }
+            },
         ];
     }
 
