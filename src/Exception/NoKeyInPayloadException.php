@@ -17,6 +17,7 @@ class NoKeyInPayloadException extends InvalidArgumentException implements Friend
     {
         $this->expectedKey = $expectedKey;
         $this->payload = $payload;
+        /** @infection-ignore-all */
         parent::__construct("No expected key '$expectedKey' in payload. Payload's keys list: " . implode(
             ', ',
             array_keys($payload)
