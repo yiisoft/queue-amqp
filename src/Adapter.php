@@ -43,6 +43,7 @@ final class Adapter implements AdapterInterface
 
     /**
      * @return never
+     * @infection-ignore-all
      */
     public function status(string $id): JobStatus
     {
