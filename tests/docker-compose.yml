@@ -44,10 +44,7 @@ services:
         PHP_VERSION: '8.2'
 
   rabbitmq:
-    image: rabbitmq:3.9.13-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    image: rabbitmq:3-alpine
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 3s

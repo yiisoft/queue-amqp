@@ -25,3 +25,14 @@ services:
     volumes:
       - ..:/app
       - ./runtime/.composer82:/root/.composer
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - ${RABBIT_PORT:-5672}:5672
+      - ${RABBIT_MANAGEMENT_PORT:-15672}:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 3s
+      timeout: 5s
+      retries: 3
