@@ -1,6 +1,5 @@
 x-php: &php
-  volumes:
-    - ..:/app
+  user: ${USER_ID:-root}:${GROUP_ID:-root}
   environment:
     XDEBUG_MODE: develop,debug,coverage
     XDEBUG_CONFIG: "client_host=host.docker.internal"
@@ -12,14 +11,17 @@ services:
   php80:
     <<: *php
     volumes:
+      - ..:/app
       - ./runtime/.composer80:/root/.composer
 
   php81:
     <<: *php
     volumes:
+      - ..:/app
       - ./runtime/.composer81:/root/.composer
 
   php82:
     <<: *php
     volumes:
+      - ..:/app
       - ./runtime/.composer82:/root/.composer
