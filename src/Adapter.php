@@ -56,9 +56,7 @@ final class Adapter implements AdapterInterface
         $payload = $this->serializer->serialize($message);
         $amqpMessage = $this->getAmqpMessage();
         $amqpMessage->setBody($payload);
-        if ($message->getId() !== null) {
-            $amqpMessage->set('message_id', $message->getId());
-        }
+        $amqpMessage->set('message_id', $message->getId());
 
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
         $this->queueProvider
@@ -70,9 +68,6 @@ final class Adapter implements AdapterInterface
                     ->getQueueSettings()
                     ->getName()
             );
-        /** @var string $messageId */
-        $messageId = $amqpMessage->get('message_id');
-        $message->setId($messageId);
     }
 
     public function subscribe(callable $handlerCallback): void
