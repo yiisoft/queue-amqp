@@ -2,10 +2,8 @@ x-php: &php
   user: ${USER_ID:-root}:${GROUP_ID:-root}
   environment:
     XDEBUG_MODE: develop,debug,coverage
-    XDEBUG_CONFIG: "client_host=host.docker.internal"
+    XDEBUG_CONFIG: client_host=host.docker.internal
     PHP_IDE_CONFIG: serverName=yii-queue-amqp
-  extra_hosts:
-    - host.docker.internal:${DOCKER_HOST_IP:-172.17.0.1}
 
 services:
   php80:
