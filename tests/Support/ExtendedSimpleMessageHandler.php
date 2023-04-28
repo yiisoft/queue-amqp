@@ -15,9 +15,6 @@ final class ExtendedSimpleMessageHandler
     {
     }
 
-    /**
-     * @param MessageInterface $message
-     */
     public function handle(MessageInterface $message): void
     {
         $data = $message->getData();
