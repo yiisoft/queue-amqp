@@ -15,8 +15,7 @@ class NoKeyInPayloadException extends InvalidArgumentException implements Friend
         protected array $payload,
         int $code = 0,
         Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct(
             "No expected key '$expectedKey' in payload. Payload's keys list: " .
             implode(', ', array_keys($payload)) .
