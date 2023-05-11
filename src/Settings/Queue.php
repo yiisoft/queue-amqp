@@ -9,16 +9,6 @@ use Yiisoft\Yii\Queue\QueueFactoryInterface;
 
 final class Queue implements QueueSettingsInterface
 {
-    /**
-     * @param string $queueName
-     * @param bool $passive
-     * @param bool $durable
-     * @param bool $exclusive
-     * @param bool $autoDelete
-     * @param bool $nowait
-     * @param AMQPTable|array $arguments
-     * @param int|null $ticket
-     */
     public function __construct(
         private string $queueName = QueueFactoryInterface::DEFAULT_CHANNEL_NAME,
         private bool $passive = false,

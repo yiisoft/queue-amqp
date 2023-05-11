@@ -24,10 +24,6 @@ final class MessageSerializerTest extends TestCase
     /**
      * Publishing a message using AMQPLib
      *
-     * @param string $queue
-     * @param string $exchange
-     * @param AMQPMessage $message
-     *
      * @throws Exception
      */
     private function publishWithAMQPLib(string $queue, string $exchange, AMQPMessage $message): void
@@ -42,11 +38,7 @@ final class MessageSerializerTest extends TestCase
     }
 
     /**
-     * @param string $queueExchangeName
-     *
      * @throws Exception
-     *
-     * @return Adapter
      */
     private function getCustomAdapter(string $queueExchangeName): Adapter
     {
