@@ -8,6 +8,7 @@ use Exception;
 use Yiisoft\Yii\Queue\AMQP\Adapter;
 use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
+use Yiisoft\Yii\Queue\AMQP\Middleware\MessageIdGeneratingMiddleware;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
@@ -33,10 +34,13 @@ final class QueueTest extends TestCase
         $message = new Message('ext-simple', null);
         $queue->push(
             $message,
+            new MessageIdGeneratingMiddleware()
         );
 
+        $messageId = $message->getId();
+        $this->assertNotNull($messageId);
         $this->expectException(NotImplementedException::class);
-        $adapter->status($message->getId());
+        $adapter->status($messageId);
     }
 
     /**
