@@ -42,6 +42,7 @@ to the `require` section of your `composer.json` file.
 _Don't forget you have to have the latest version of `docker` installed and running on your computer in order to use it._
 
 #### Developer environment
+
 This project has ready to use docker environment inside the `tests` directory.  
 It uses `docker-compose.yml` by default, which is meant to work fine inside CI steps.
 
