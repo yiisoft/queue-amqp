@@ -56,6 +56,7 @@ Then you can use docker compose as always. To execute unit tests, run the comman
 You can also choose the needed version of php instead of 8.2.
 
 #### xDebug and PhpStorm
+
 For xDebug to work properly with PhpStorm, you have to additionally configure your PhpStorm.
 Open Settings and add a new Server in the PHP settings block:
 - Set server name to `yii-queue-amqp`.
