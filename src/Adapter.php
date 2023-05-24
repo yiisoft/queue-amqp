@@ -78,7 +78,9 @@ final class Adapter implements AdapterInterface
             $this->queueProvider
                 ->getQueueSettings()
                 ->getName(),
-            '',
+            $this->queueProvider
+                ->getQueueSettings()
+                ->getName(),
             false,
             false,
             false,
