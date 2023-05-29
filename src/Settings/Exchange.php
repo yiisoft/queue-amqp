@@ -9,17 +9,6 @@ use PhpAmqpLib\Wire\AMQPTable;
 
 final class Exchange implements ExchangeSettingsInterface
 {
-    /**
-     * @param string $exchangeName
-     * @param string $type
-     * @param bool $passive
-     * @param bool $durable
-     * @param bool $autoDelete
-     * @param bool $internal
-     * @param bool $nowait
-     * @param AMQPTable|array $arguments
-     * @param int|null $ticket
-     */
     public function __construct(
         private string $exchangeName,
         private string $type = AMQPExchangeType::DIRECT,

@@ -1,25 +1,36 @@
 x-php: &php
-  volumes:
-    - ..:/app
+  user: ${USER_ID:-root}:${GROUP_ID:-root}
   environment:
     XDEBUG_MODE: develop,debug,coverage
-    XDEBUG_CONFIG: "client_host=host.docker.internal"
+    XDEBUG_CONFIG: client_host=host.docker.internal
     PHP_IDE_CONFIG: serverName=yii-queue-amqp
-  extra_hosts:
-    - host.docker.internal:${DOCKER_HOST_IP:-172.17.0.1}
 
 services:
   php80:
     <<: *php
     volumes:
+      - ..:/app
       - ./runtime/.composer80:/root/.composer
 
   php81:
     <<: *php
     volumes:
+      - ..:/app
       - ./runtime/.composer81:/root/.composer
 
   php82:
     <<: *php
     volumes:
+      - ..:/app
       - ./runtime/.composer82:/root/.composer
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - ${RABBIT_PORT:-5672}:5672
+      - ${RABBIT_MANAGEMENT_PORT:-15672}:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 3s
+      timeout: 5s
+      retries: 3
