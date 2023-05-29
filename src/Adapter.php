@@ -72,32 +72,34 @@ final class Adapter implements AdapterInterface
 
     public function subscribe(callable $handlerCallback): void
     {
-        while ($this->loop->canContinue()) {
-            $channel = $this->queueProvider->getChannel();
-            $channel->basic_consume(
-                $this->queueProvider
-                    ->getQueueSettings()
-                    ->getName(),
-                '',
-                false,
-                false,
-                false,
-                false,
-                function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
-                    try {
-                        $handlerCallback($this->serializer->unserialize($amqpMessage->body));
-                        $channel->basic_ack($amqpMessage->getDeliveryTag());
-                    } catch (Throwable $exception) {
-                        $consumerTag = $amqpMessage->getConsumerTag();
-                        if ($consumerTag !== null) {
-                            $channel->basic_cancel($consumerTag);
-                        }
-
-                        throw $exception;
+        $channel = $this->queueProvider->getChannel();
+        $channel->basic_consume(
+            $this->queueProvider
+                ->getQueueSettings()
+                ->getName(),
+            $this->queueProvider
+                ->getQueueSettings()
+                ->getName(),
+            false,
+            false,
+            false,
+            true,
+            function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
+                try {
+                    $handlerCallback($this->serializer->unserialize($amqpMessage->body));
+                    $channel->basic_ack($amqpMessage->getDeliveryTag());
+                } catch (Throwable $exception) {
+                    $consumerTag = $amqpMessage->getConsumerTag();
+                    if ($consumerTag !== null) {
+                        $channel->basic_cancel($consumerTag);
                     }
-                }
-            );
 
+                    throw $exception;
+                }
+            }
+        );
+
+        while ($this->loop->canContinue()) {
             $channel->wait();
         }
     }
