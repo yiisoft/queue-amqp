@@ -14,12 +14,11 @@ use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Tests\Integration\TestCase;
 
 /**
  * Testing message serialization options
  */
-final class MessageSerializerTest extends TestCase
+final class MessageSerializerTest extends UnitTestCase
 {
     /**
      * Publishing a message using AMQPLib

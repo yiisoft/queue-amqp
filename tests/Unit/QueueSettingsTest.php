@@ -11,10 +11,9 @@ use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Tests\Integration\TestCase;
 use Yiisoft\Yii\Queue\Message\Message;
 
-final class QueueSettingsTest extends TestCase
+final class QueueSettingsTest extends UnitTestCase
 {
     public function testCommonSettings(): void
     {

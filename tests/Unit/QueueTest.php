@@ -11,12 +11,11 @@ use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Tests\Integration\TestCase;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Yii\Queue\Exception\JobFailureException;
 use Yiisoft\Yii\Queue\Message\Message;
 
-final class QueueTest extends TestCase
+final class QueueTest extends UnitTestCase
 {
     /**
      * Testing getting status
@@ -38,7 +37,7 @@ final class QueueTest extends TestCase
         );
 
         $this->expectException(NotImplementedException::class);
-        $this->expectExceptionMessage("Status check is not supported by the adapter $adapterClass");
+        $this->expectExceptionMessage("Status check is not supported by the adapter $adapterClass.");
         $adapter->status($message->getId());
     }
 
