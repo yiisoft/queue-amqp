@@ -26,6 +26,8 @@ final class QueueTest extends TestCase
     public function testStatus(): void
     {
         $adapter = $this->getAdapter();
+        $adapterClass = $adapter::class;
+
         $queue = $this
             ->getQueue()
             ->withAdapter($adapter);
@@ -36,6 +38,7 @@ final class QueueTest extends TestCase
         );
 
         $this->expectException(NotImplementedException::class);
+        $this->expectExceptionMessage("Status check is not supported by the adapter $adapterClass");
         $adapter->status($message->getId());
     }
 
