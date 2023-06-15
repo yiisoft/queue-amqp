@@ -47,7 +47,7 @@ final class QueueTest extends UnitTestCase
     public function testRun(): void
     {
         $time = time();
-        $fileName = 'test-run'.$time;
+        $fileName = 'test-run' . $time;
         $fileHelper = new FileHelper();
 
         $this->queueSettings = new QueueSettings('yii-test-run');
