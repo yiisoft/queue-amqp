@@ -35,6 +35,8 @@ class NoKeyInPayloadException extends InvalidArgumentException implements Friend
 
     /**
      * @return string
+     *
+     * @infection-ignore-all
      */
     public function getSolution(): ?string
     {

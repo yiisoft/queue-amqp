@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
 
 use Yiisoft\Yii\Queue\AMQP\Middleware\DelayMiddleware;
-use Yiisoft\Yii\Queue\AMQP\Tests\Integration\TestCase;
 
-final class DelayMiddlewareTest extends TestCase
+final class DelayMiddlewareTest extends UnitTestCase
 {
     public function testWithDelay(): void
     {

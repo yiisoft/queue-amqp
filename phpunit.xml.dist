@@ -11,24 +11,26 @@
     executionOrder="default"
     resolveDependencies="true"
 >
-  <coverage>
-    <include>
-      <directory>./</directory>
-    </include>
-    <exclude>
-      <directory>./tests</directory>
-      <directory>./vendor</directory>
-    </exclude>
-  </coverage>
-  <php>
-    <ini name="error_reporting" value="-1"/>
-  </php>
-  <testsuites>
-    <testsuite name="Yii Integration tests">
-      <directory>./tests/Integration</directory>
-    </testsuite>
-    <testsuite name="Unit">
-      <directory>./tests/Unit</directory>
-    </testsuite>
-  </testsuites>
+    <coverage>
+        <include>
+            <directory>./</directory>
+        </include>
+        <exclude>
+            <directory>./tests</directory>
+            <directory>./vendor</directory>
+            <directory>./config</directory>
+            <file>./rector.php</file>
+        </exclude>
+    </coverage>
+    <php>
+        <ini name="error_reporting" value="-1"/>
+    </php>
+    <testsuites>
+        <testsuite name="Yii Integration tests">
+            <directory>./tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory>./tests/Unit</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>

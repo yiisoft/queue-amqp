@@ -31,7 +31,7 @@ interface ExchangeSettingsInterface
      *
      * @see \Yiisoft\Yii\Queue\AMQP\QueueProvider::getChannel()
      *
-     * @return (AMQPTable|array|bool|int|null|string)[]
+     * @return (AMQPTable|array|bool|int|string|null)[]
      *
      * @psalm-return array{string, string, bool, bool, bool, bool, bool, AMQPTable|array, int|null}
      */
