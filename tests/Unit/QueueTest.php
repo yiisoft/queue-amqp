@@ -47,10 +47,10 @@ final class QueueTest extends UnitTestCase
     public function testRun(): void
     {
         $time = time();
-        $fileName = 'test-run'.$time;
+        $fileName = 'test-run' . $time;
         $fileHelper = new FileHelper();
         $queue = $this
-            ->getQueue()->withChannelName('yii-test-run'.$time)
+            ->getQueue()->withChannelName('yii-test-run' . $time)
             ->withAdapter($this->getAdapter());
 
         $queue->push(
