@@ -44,6 +44,7 @@ abstract class UnitTestCase extends PhpUnitTestCase
     protected ?AdapterInterface $adapter = null;
     protected ?LoopInterface $loop = null;
     public ?QueueSettings $queueSettings = null;
+    public ?QueueProvider $queueProvider = null;
 
     protected function setUp(): void
     {
@@ -210,10 +211,7 @@ abstract class UnitTestCase extends PhpUnitTestCase
     protected function createAdapter(): AdapterInterface
     {
         return new Adapter(
-            new QueueProvider(
-                $this->createConnection(),
-                $this->getQueueSettings(),
-            ),
+            $this->getQueueProvider(),
             new MessageSerializer(),
             $this->getLoop(),
         );
@@ -267,5 +265,32 @@ abstract class UnitTestCase extends PhpUnitTestCase
     protected function createQueueSettings(): QueueSettings
     {
         return new QueueSettings();
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @return QueueProvider
+     */
+    protected function getQueueProvider(): QueueProvider
+    {
+        if (null === $this->queueProvider) {
+            $this->queueProvider = $this->createQueueProvider();
+        }
+
+        return $this->queueProvider;
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @return QueueProvider
+     */
+    protected function createQueueProvider(): QueueProvider
+    {
+        return new QueueProvider(
+            $this->createConnection(),
+            $this->getQueueSettings(),
+        );
     }
 }
