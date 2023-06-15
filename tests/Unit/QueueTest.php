@@ -46,21 +46,22 @@ final class QueueTest extends UnitTestCase
      */
     public function testRun(): void
     {
+        $time = time();
+        $fileName = 'test-run'.$time;
         $fileHelper = new FileHelper();
         $queue = $this
-            ->getQueue()->withChannelName('yii-test-run')
+            ->getQueue()->withChannelName('yii-test-run'.$time)
             ->withAdapter($this->getAdapter());
 
-        $time = time();
         $queue->push(
-            new Message('ext-simple', ['file_name' => 'test-run', 'payload' => ['time' => $time]])
+            new Message('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
         );
 
-        self::assertNull($fileHelper->get('test-run'));
+        self::assertNull($fileHelper->get($fileName));
 
         $queue->run();
 
-        $result = $fileHelper->get('test-run');
+        $result = $fileHelper->get($fileName);
         self::assertNotNull($result);
         self::assertEquals($time, $result);
     }

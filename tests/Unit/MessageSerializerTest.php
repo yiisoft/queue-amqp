@@ -106,6 +106,7 @@ final class MessageSerializerTest extends UnitTestCase
         );
 
         $this->expectException(NoKeyInPayloadException::class);
+        $this->expectExceptionMessage("No expected key 'meta' in payload. Payload's keys list: name, meta.");
         $this
             ->getQueue()
             ->withAdapter($this->getCustomAdapter($queueExchangeName))
