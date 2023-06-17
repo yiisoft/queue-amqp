@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP;
+namespace Yiisoft\Yii\Queue\AMQP\Exception;
 
 use InvalidArgumentException;
 use Yiisoft\FriendlyException\FriendlyExceptionInterface;
