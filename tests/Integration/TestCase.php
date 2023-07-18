@@ -37,7 +37,7 @@ abstract class TestCase extends PhpUnitTestCase
     protected function queueListen(?string $queue = null): void
     {
         // TODO Fail test on subprocess error exit code
-        $command = [PHP_BINARY, dirname(__DIR__) . '/yii', 'queue/listen'];
+        $command = [PHP_BINARY, dirname(__DIR__) . '/yii', 'queue:listen'];
         if ($queue !== null) {
             $command[] = "--channel=$queue";
         }
