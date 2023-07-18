@@ -21,4 +21,3 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
 ADD . /app
 WORKDIR /app
 RUN composer install --prefer-dist --no-interaction
-CMD ["sleep", "infinity"]
