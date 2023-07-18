@@ -12,6 +12,7 @@ use Yiisoft\Yii\Queue\AMQP\Adapter;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\Middleware\DelayMiddleware;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
+use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FakeAdapter;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
@@ -69,7 +70,8 @@ final class DelayMiddlewareTest extends TestCase
         $adapter = new FakeAdapter(
             new QueueProvider(
                 $this->createConnection(),
-                new QueueSettings(),
+                new QueueSettings('yii-test'),
+                new ExchangeSettings('yii-test')
             ),
             new MessageSerializer(),
             new SignalLoop(),
