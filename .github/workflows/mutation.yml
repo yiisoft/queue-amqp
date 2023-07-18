@@ -10,6 +10,7 @@ on:
       - 'Makefile'
 
   push:
+    branches: [ 'master' ]
     paths-ignore:
       - 'docs/**'
       - 'README.md'
