@@ -8,7 +8,7 @@
     bootstrap="vendor/autoload.php"
     failOnRisky="true"
     failOnWarning="true"
-    executionOrder="default"
+    executionOrder="random"
     resolveDependencies="true"
 >
     <coverage>

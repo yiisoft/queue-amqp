@@ -134,7 +134,7 @@ abstract class UnitTestCase extends PhpUnitTestCase
     {
         return [
             'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
-            'simple-listen' => static function (MessageInterface $message) {
+            'exception-listen' => static function (MessageInterface $message) {
                 $data = $message->getData();
                 if (null !== $data) {
                     throw new PHPUnitException((string)$data['payload']['time']);
