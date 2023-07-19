@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Integration;
 
-use Exception;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PHPUnit\Framework\TestCase as PhpUnitTestCase;
 use Symfony\Component\Process\Process;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Yii\Queue\AMQP\Tests\Support\MainTestCase;
 
-abstract class TestCase extends PhpUnitTestCase
+abstract class TestCase extends MainTestCase
 {
     /** @var Process[] */
     private array $processes = [];
 
     protected function setUp(): void
     {
+        $this->deleteQueue();
+        $this->deleteExchange();
+
         parent::setUp();
 
         (new FileHelper())->clear();
@@ -31,6 +32,9 @@ abstract class TestCase extends PhpUnitTestCase
 
         (new FileHelper())->clear();
 
+        $this->deleteQueue();
+        $this->deleteExchange();
+
         parent::tearDown();
     }
 
@@ -44,20 +48,5 @@ abstract class TestCase extends PhpUnitTestCase
         $process = new Process($command);
         $this->processes[] = $process;
         $process->start();
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @return AMQPStreamConnection
-     */
-    protected function createConnection(): AMQPStreamConnection
-    {
-        return new AMQPStreamConnection(
-            getenv('RABBITMQ_HOST'),
-            getenv('RABBITMQ_PORT'),
-            getenv('RABBITMQ_USER'),
-            getenv('RABBITMQ_PASSWORD')
-        );
     }
 }

@@ -47,11 +47,12 @@ final class QueueTest extends UnitTestCase
      */
     public function testRun(): void
     {
+        $this->queueName = 'yii-test-run';
         $time = time();
         $fileName = 'test-run' . $time;
         $fileHelper = new FileHelper();
 
-        $this->queueSettings = new QueueSettings('yii-test-run');
+        $this->queueSettings = new QueueSettings($this->queueName);
 
         $queue = $this->getDefaultQueue($this->getAdapter());
 
@@ -70,14 +71,17 @@ final class QueueTest extends UnitTestCase
 
     public function testListenWithException(): void
     {
+        $this->queueName = 'yii-test-exception-listen';
+        $this->exchangeName = 'yii-test-exception-listen';
+
         $queueProvider = new QueueProvider(
             $this->createConnection(),
             $this->getQueueSettings(),
         );
         $adapter = new Adapter(
             $queueProvider
-                ->withQueueSettings(new QueueSettings('yii-test-exception-listen'))
-                ->withExchangeSettings(new ExchangeSettings('yii-test-exception-listen')),
+                ->withQueueSettings(new QueueSettings($this->queueName))
+                ->withExchangeSettings(new ExchangeSettings($this->exchangeName)),
             new MessageSerializer(),
             $this->getLoop(),
         );

@@ -17,6 +17,9 @@ final class QueueProviderTest extends UnitTestCase
 {
     public function testWithQueueAndExchangeSettings(): void
     {
+        $this->queueName = 'yii-queue-test-with-queue-settings';
+        $this->exchangeName = 'yii-queue-test-with-queue-settings';
+
         $queueProvider = new QueueProvider(
             $this->createConnection(),
             $this->getQueueSettings(),
@@ -24,10 +27,10 @@ final class QueueProviderTest extends UnitTestCase
         $adapter = new Adapter(
             $queueProvider
                 ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-with-queue-settings')
+                    new QueueSettings($this->queueName)
                 )
                 ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-with-queue-settings')
+                    new ExchangeSettings($this->exchangeName)
                 ),
             new MessageSerializer(),
             $this->getLoop(),
@@ -44,7 +47,7 @@ final class QueueProviderTest extends UnitTestCase
         $message = $this
             ->createConnection()
             ->channel()
-            ->basic_get('yii-queue-test-with-queue-settings');
+            ->basic_get($this->queueName);
         $message->nack(true);
 
         self::assertNull($fileHelper->get('test-with-queue-settings'));
