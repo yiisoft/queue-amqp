@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
 
 use Exception;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PHPUnit\Framework\TestCase as PhpUnitTestCase;
 use PHPUnit\Util\Exception as PHPUnitException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
@@ -19,6 +17,7 @@ use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Yii\Queue\AMQP\Tests\Support\MainTestCase;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Cli\SignalLoop;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
@@ -36,7 +35,7 @@ use Yiisoft\Yii\Queue\Worker\WorkerInterface;
 /**
  * Test case for unit tests
  */
-abstract class UnitTestCase extends PhpUnitTestCase
+abstract class UnitTestCase extends MainTestCase
 {
     protected Queue|null $queue = null;
     protected ?WorkerInterface $worker = null;
@@ -48,31 +47,22 @@ abstract class UnitTestCase extends PhpUnitTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         (new FileHelper())->clear();
+
+        $this->deleteQueue();
+        $this->deleteExchange();
+
+        parent::setUp();
     }
 
     protected function tearDown(): void
     {
         (new FileHelper())->clear();
 
-        parent::tearDown();
-    }
+        $this->deleteQueue();
+        $this->deleteExchange();
 
-    /**
-     * @throws Exception
-     *
-     * @return AMQPStreamConnection
-     */
-    protected function createConnection(): AMQPStreamConnection
-    {
-        return new AMQPStreamConnection(
-            getenv('RABBITMQ_HOST'),
-            getenv('RABBITMQ_PORT'),
-            getenv('RABBITMQ_USER'),
-            getenv('RABBITMQ_PASSWORD')
-        );
+        parent::tearDown();
     }
 
     /**
@@ -134,7 +124,7 @@ abstract class UnitTestCase extends PhpUnitTestCase
     {
         return [
             'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
-            'simple-listen' => static function (MessageInterface $message) {
+            'exception-listen' => static function (MessageInterface $message) {
                 $data = $message->getData();
                 if (null !== $data) {
                     throw new PHPUnitException((string)$data['payload']['time']);
