@@ -62,4 +62,19 @@ final class ExchangeSettingsTest extends UnitTestCase
         self::assertArrayHasKey('alternate-exchange', $exchangeSettings->getArguments());
         self::assertEmpty($exchangeSettings->withArguments([])->getArguments());
     }
+
+    public function testImmutable(): void
+    {
+        $exchangeSettings = new ExchangeSettings($this->exchangeName);
+
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withTicket(0));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withPassive(false));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withArguments([]));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withName('test'));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withDurable(false));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withNowait(false));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withAutoDelete(false));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withInternal(false));
+        self::assertNotSame($exchangeSettings, $exchangeSettings->withType(AMQPExchangeType::DIRECT));
+    }
 }

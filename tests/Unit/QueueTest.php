@@ -9,7 +9,9 @@ use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
 use Yiisoft\Yii\Queue\AMQP\Adapter;
 use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
+use Yiisoft\Yii\Queue\AMQP\MessageSerializerInterface;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
+use Yiisoft\Yii\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
@@ -126,5 +128,18 @@ final class QueueTest extends UnitTestCase
         return $this
             ->getQueue()
             ->withAdapter($adapter);
+    }
+
+    public function testImmutable(): void
+    {
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $adapter = new Adapter(
+            $queueProvider,
+            $this->createMock(MessageSerializerInterface::class),
+            $this->createMock(LoopInterface::class)
+        );
+
+        self::assertNotSame($adapter, $adapter->withChannel('test'));
+        self::assertNotSame($adapter, $adapter->withQueueProvider($queueProvider));
     }
 }
