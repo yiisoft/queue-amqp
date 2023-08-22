@@ -6,6 +6,7 @@ namespace Yiisoft\Yii\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
+use Yiisoft\Yii\Queue\AMQP\Exception\ExchangeDeclaredException;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange;
 use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;

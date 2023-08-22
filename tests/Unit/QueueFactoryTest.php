@@ -32,6 +32,7 @@ class QueueFactoryTest extends UnitTestCase
 
     public function testDifferentChannel(): void
     {
+        $this->queueName = 'yii-queue-channel2';
         $fileHelper = new FileHelper();
 
         $queueProvider = new QueueProvider(
@@ -47,7 +48,7 @@ class QueueFactoryTest extends UnitTestCase
         $factory = new QueueFactory(
             [
                 'channel1' => $adapter,
-                'channel2' => $adapter->withChannel('yii-queue-channel2'),
+                'channel2' => $adapter->withChannel($this->queueName),
             ],
             $this->getQueue(),
             $container,

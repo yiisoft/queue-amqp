@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
 
 use Yiisoft\Yii\Queue\AMQP\Adapter;
-use Yiisoft\Yii\Queue\AMQP\ExchangeDeclaredException;
+use Yiisoft\Yii\Queue\AMQP\Exception\ExchangeDeclaredException;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Yii\Queue\Message\Message;
 
@@ -17,6 +19,9 @@ final class QueueProviderTest extends UnitTestCase
 {
     public function testWithQueueAndExchangeSettings(): void
     {
+        $this->queueName = 'yii-queue-test-with-queue-settings';
+        $this->exchangeName = 'yii-queue-test-with-queue-settings';
+
         $queueProvider = new QueueProvider(
             $this->createConnection(),
             $this->getQueueSettings(),
@@ -24,10 +29,10 @@ final class QueueProviderTest extends UnitTestCase
         $adapter = new Adapter(
             $queueProvider
                 ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-with-queue-settings')
+                    new QueueSettings($this->queueName)
                 )
                 ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-with-queue-settings')
+                    new ExchangeSettings($this->exchangeName)
                 ),
             new MessageSerializer(),
             $this->getLoop(),
@@ -44,7 +49,7 @@ final class QueueProviderTest extends UnitTestCase
         $message = $this
             ->createConnection()
             ->channel()
-            ->basic_get('yii-queue-test-with-queue-settings');
+            ->basic_get($this->queueName);
         $message->nack(true);
 
         self::assertNull($fileHelper->get('test-with-queue-settings'));
@@ -79,5 +84,18 @@ final class QueueProviderTest extends UnitTestCase
             new MessageSerializer(),
             $this->getLoop(),
         );
+    }
+
+    public function testImmutable(): void
+    {
+        $queueSettings = $this->createMock(QueueSettingsInterface::class);
+        $queueProvider = new QueueProvider(
+            $this->createConnection(),
+            $queueSettings
+        );
+
+        self::assertNotSame($queueProvider, $queueProvider->withQueueSettings($queueSettings));
+        self::assertNotSame($queueProvider, $queueProvider->withExchangeSettings($this->createMock(ExchangeSettingsInterface::class)));
+        self::assertNotSame($queueProvider, $queueProvider->withMessageProperties([]));
     }
 }

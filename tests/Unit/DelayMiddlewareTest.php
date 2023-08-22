@@ -17,4 +17,11 @@ final class DelayMiddlewareTest extends UnitTestCase
         $delayMiddlewareWithDelay = $delayMiddleware->withDelay(10);
         self::assertEquals(10, $delayMiddlewareWithDelay->getDelay());
     }
+
+    public function testImmutable(): void
+    {
+        $delayMiddleware = new DelayMiddleware(0);
+
+        self::assertNotSame($delayMiddleware, $delayMiddleware->withDelay(1));
+    }
 }

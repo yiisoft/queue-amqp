@@ -34,6 +34,8 @@ final class DelayMiddlewareTest extends TestCase
 
     public function testMainFlow(): void
     {
+        $this->exchangeName = 'yii-queue.dlx';
+
         $fileHelper = new FileHelper();
         $adapter = new Adapter(
             new QueueProvider(
