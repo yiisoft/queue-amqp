@@ -14,3 +14,4 @@
 | Version          | 1.0.?
 | PHP version      | 
 | Operating system |
+| RabbitMQ version |
