@@ -9,7 +9,9 @@ use Yiisoft\Yii\Queue\AMQP\Exception\ExchangeDeclaredException;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Yii\Queue\Message\Message;
 
@@ -82,5 +84,18 @@ final class QueueProviderTest extends UnitTestCase
             new MessageSerializer(),
             $this->getLoop(),
         );
+    }
+
+    public function testImmutable(): void
+    {
+        $queueSettings = $this->createMock(QueueSettingsInterface::class);
+        $queueProvider = new QueueProvider(
+            $this->createConnection(),
+            $queueSettings
+        );
+
+        self::assertNotSame($queueProvider, $queueProvider->withQueueSettings($queueSettings));
+        self::assertNotSame($queueProvider, $queueProvider->withExchangeSettings($this->createMock(ExchangeSettingsInterface::class)));
+        self::assertNotSame($queueProvider, $queueProvider->withMessageProperties([]));
     }
 }

@@ -101,4 +101,18 @@ final class QueueSettingsTest extends UnitTestCase
             ->channel()
             ->basic_get('yii-queue-test-queue-settings-arg');
     }
+
+    public function testImmutable(): void
+    {
+        $queueSettings = new QueueSettings();
+
+        self::assertNotSame($queueSettings, $queueSettings->withPassive(true));
+        self::assertNotSame($queueSettings, $queueSettings->withNowait(true));
+        self::assertNotSame($queueSettings, $queueSettings->withExclusive(true));
+        self::assertNotSame($queueSettings, $queueSettings->withDurable(true));
+        self::assertNotSame($queueSettings, $queueSettings->withTicket(0));
+        self::assertNotSame($queueSettings, $queueSettings->withName('test'));
+        self::assertNotSame($queueSettings, $queueSettings->withAutoDeletable(false));
+        self::assertNotSame($queueSettings, $queueSettings->withArguments([]));
+    }
 }
