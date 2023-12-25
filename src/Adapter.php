@@ -11,6 +11,7 @@ use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Yii\Queue\Cli\LoopInterface;
 use Yiisoft\Yii\Queue\Enum\JobStatus;
 use Yiisoft\Yii\Queue\Message\MessageInterface;
+use Yiisoft\Yii\Queue\Message\ParametrizedMessageInterface;
 
 final class Adapter implements AdapterInterface
 {
@@ -66,9 +67,11 @@ final class Adapter implements AdapterInterface
                     ->getQueueSettings()
                     ->getName()
             );
-        /** @var string $messageId */
-        $messageId = $amqpMessage->get('message_id');
-        $message->setId($messageId);
+        if ($message instanceof ParametrizedMessageInterface) {
+            /** @var string $messageId */
+            $messageId = $amqpMessage->get('message_id');
+            $message->setId($messageId);
+        }
     }
 
     public function subscribe(callable $handlerCallback): void

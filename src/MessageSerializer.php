@@ -18,11 +18,13 @@ class MessageSerializer implements MessageSerializerInterface
     public function serialize(MessageInterface $message): string
     {
         $payload = [
-            'id' => $message->getId(),
             'name' => $message->getHandlerName(),
             'data' => $message->getData(),
             'meta' => $message->getMetadata(),
         ];
+        if ($message instanceof ParametricMessageInterface) {
+            $payload['id'] = $message->getId();
+        }
 
         return json_encode($payload, JSON_THROW_ON_ERROR);
     }
