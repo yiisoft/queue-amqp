@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Settings;
+namespace Yiisoft\Queue\AMQP\Settings;
 
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Yii\Queue\QueueFactoryInterface;
+use Yiisoft\Queue\QueueFactoryInterface;
 
 final class Queue implements QueueSettingsInterface
 {

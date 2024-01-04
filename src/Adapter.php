@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP;
+namespace Yiisoft\Queue\AMQP;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
-use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
-use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
-use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Enum\JobStatus;
-use Yiisoft\Yii\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Adapter\AdapterInterface;
+use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
+use Yiisoft\Queue\Cli\LoopInterface;
+use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\Message\MessageInterface;
 
 final class Adapter implements AdapterInterface
 {

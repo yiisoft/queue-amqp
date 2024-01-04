@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Exception;
-use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
-use Yiisoft\Yii\Queue\AMQP\Adapter;
-use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializerInterface;
-use Yiisoft\Yii\Queue\AMQP\QueueProvider;
-use Yiisoft\Yii\Queue\AMQP\QueueProviderInterface;
-use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
-use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Exception\JobFailureException;
-use Yiisoft\Yii\Queue\Message\Message;
-use Yiisoft\Yii\Queue\Queue;
+use Yiisoft\Queue\Adapter\AdapterInterface;
+use Yiisoft\Queue\AMQP\Adapter;
+use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
+use Yiisoft\Queue\AMQP\MessageSerializer;
+use Yiisoft\Queue\AMQP\MessageSerializerInterface;
+use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\QueueProviderInterface;
+use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\Cli\LoopInterface;
+use Yiisoft\Queue\Exception\JobFailureException;
+use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Queue;
 
 final class QueueTest extends UnitTestCase
 {

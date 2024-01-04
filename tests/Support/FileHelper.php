@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Support;
+namespace Yiisoft\Queue\AMQP\Tests\Support;
 
 use RuntimeException;
 

@@ -1,4 +1,4 @@
-# Yii Queue AMQP Adapter Change Log
+# Queue AMQP Adapter Change Log
 
 ## 1.0.0 under development
 

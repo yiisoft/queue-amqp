@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
-use Yiisoft\Yii\Queue\AMQP\Exception\ExchangeDeclaredException;
-use Yiisoft\Yii\Queue\AMQP\Exception\NoKeyInPayloadException;
+use Yiisoft\Queue\AMQP\Exception\ExchangeDeclaredException;
+use Yiisoft\Queue\AMQP\Exception\NoKeyInPayloadException;
 
 final class FriendlyExceptionTest extends UnitTestCase
 {

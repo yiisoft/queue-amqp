@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
-use Yiisoft\Yii\Queue\AMQP\Middleware\DelayMiddleware;
+use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
 
 final class DelayMiddlewareTest extends UnitTestCase
 {

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
-use Yiisoft\Yii\Queue\AMQP\Adapter;
-use Yiisoft\Yii\Queue\AMQP\Exception\ExchangeDeclaredException;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
-use Yiisoft\Yii\Queue\AMQP\QueueProvider;
-use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
-use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Yii\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Adapter;
+use Yiisoft\Queue\AMQP\Exception\ExchangeDeclaredException;
+use Yiisoft\Queue\AMQP\MessageSerializer;
+use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
+use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\Message\Message;
 
 final class QueueProviderTest extends UnitTestCase
 {

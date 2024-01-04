@@ -1,3 +1,3 @@
-# Yii Queue AMQP Adapter documentation
+# Queue AMQP Adapter documentation
 
 - [Internals](internals.md)

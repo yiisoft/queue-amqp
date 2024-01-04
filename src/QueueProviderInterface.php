@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP;
+namespace Yiisoft\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
-use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
+use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 
 interface QueueProviderInterface
 {

@@ -6,24 +6,24 @@ use Psr\Log\NullLogger;
 use Yiisoft\Injector\Injector;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 use Yiisoft\Yii\Console\Application;
-use Yiisoft\Yii\Queue\AMQP\Adapter;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
-use Yiisoft\Yii\Queue\AMQP\QueueProvider;
-use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\SimpleMessageHandler;
-use Yiisoft\Yii\Queue\Cli\SignalLoop;
-use Yiisoft\Yii\Queue\Command\ListenCommand;
-use Yiisoft\Yii\Queue\Command\RunCommand;
-use Yiisoft\Yii\Queue\Middleware\CallableFactory;
-use Yiisoft\Yii\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Middleware\Consume\MiddlewareFactoryConsume;
-use Yiisoft\Yii\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
-use Yiisoft\Yii\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Yii\Queue\Middleware\Push\PushMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Queue;
-use Yiisoft\Yii\Queue\QueueFactory;
+use Yiisoft\Queue\AMQP\Adapter;
+use Yiisoft\Queue\AMQP\MessageSerializer;
+use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\AMQP\Tests\Support\SimpleMessageHandler;
+use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Command\ListenCommand;
+use Yiisoft\Queue\Command\RunCommand;
+use Yiisoft\Queue\Middleware\CallableFactory;
+use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\Consume\MiddlewareFactoryConsume;
+use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
+use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\QueueFactory;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -31,7 +31,7 @@ $logger = new NullLogger();
 $container = new SimpleContainer([]);
 $injector = new Injector($container);
 $callableFactory = new CallableFactory($container);
-$worker = new \Yiisoft\Yii\Queue\Worker\Worker(
+$worker = new \Yiisoft\Queue\Worker\Worker(
     [
         'simple' => new SimpleMessageHandler(new FileHelper()),
     ],

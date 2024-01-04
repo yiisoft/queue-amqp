@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Middleware;
+namespace Yiisoft\Queue\AMQP\Middleware;
 
 use InvalidArgumentException;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
-use Yiisoft\Yii\Queue\AMQP\Adapter;
-use Yiisoft\Yii\Queue\AMQP\QueueProviderInterface;
-use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
-use Yiisoft\Yii\Queue\Middleware\Push\Implementation\DelayMiddlewareInterface;
-use Yiisoft\Yii\Queue\Middleware\Push\MessageHandlerPushInterface;
-use Yiisoft\Yii\Queue\Middleware\Push\PushRequest;
+use Yiisoft\Queue\AMQP\Adapter;
+use Yiisoft\Queue\AMQP\QueueProviderInterface;
+use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
+use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\Middleware\Push\Implementation\DelayMiddlewareInterface;
+use Yiisoft\Queue\Middleware\Push\MessageHandlerPushInterface;
+use Yiisoft\Queue\Middleware\Push\PushRequest;
 
 final class DelayMiddleware implements DelayMiddlewareInterface
 {

@@ -2,35 +2,34 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
-use Exception;
 use PHPUnit\Util\Exception as PHPUnitException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use Yiisoft\Injector\Injector;
+use Yiisoft\Queue\Adapter\AdapterInterface;
+use Yiisoft\Queue\AMQP\Adapter;
+use Yiisoft\Queue\AMQP\MessageSerializer;
+use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
+use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\AMQP\Tests\Support\MainTestCase;
+use Yiisoft\Queue\Cli\LoopInterface;
+use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Middleware\CallableFactory;
+use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\Consume\MiddlewareFactoryConsume;
+use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
+use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\Worker\Worker;
+use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
-use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
-use Yiisoft\Yii\Queue\AMQP\Adapter;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
-use Yiisoft\Yii\Queue\AMQP\QueueProvider;
-use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\MainTestCase;
-use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Cli\SignalLoop;
-use Yiisoft\Yii\Queue\Message\MessageInterface;
-use Yiisoft\Yii\Queue\Middleware\CallableFactory;
-use Yiisoft\Yii\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Middleware\Consume\MiddlewareFactoryConsume;
-use Yiisoft\Yii\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
-use Yiisoft\Yii\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Yii\Queue\Middleware\Push\PushMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Queue;
-use Yiisoft\Yii\Queue\Worker\Worker;
-use Yiisoft\Yii\Queue\Worker\WorkerInterface;
 
 /**
  * Test case for unit tests
@@ -65,24 +64,9 @@ abstract class UnitTestCase extends MainTestCase
         parent::tearDown();
     }
 
-    /**
-     * @return Queue
-     */
     protected function getQueue(): Queue
     {
-        if ($this->queue === null) {
-            $this->queue = $this->createQueue();
-        }
-
-        return $this->queue;
-    }
-
-    /**
-     * @return Queue
-     */
-    protected function createQueue(): Queue
-    {
-        return new Queue(
+        return $this->queue ??= new Queue(
             $this->getWorker(),
             $this->getLoop(),
             new NullLogger(),
@@ -90,24 +74,9 @@ abstract class UnitTestCase extends MainTestCase
         );
     }
 
-    /**
-     * @return WorkerInterface
-     */
     protected function getWorker(): WorkerInterface
     {
-        if ($this->worker === null) {
-            $this->worker = $this->createWorker();
-        }
-
-        return $this->worker;
-    }
-
-    /**
-     * @return WorkerInterface
-     */
-    protected function createWorker(): WorkerInterface
-    {
-        return new Worker(
+        return $this->worker ??= new Worker(
             $this->getMessageHandlers(),
             new NullLogger(),
             new Injector($this->getContainer()),
@@ -117,9 +86,6 @@ abstract class UnitTestCase extends MainTestCase
         );
     }
 
-    /**
-     * @return array
-     */
     protected function getMessageHandlers(): array
     {
         return [
@@ -127,32 +93,17 @@ abstract class UnitTestCase extends MainTestCase
             'exception-listen' => static function (MessageInterface $message) {
                 $data = $message->getData();
                 if (null !== $data) {
-                    throw new PHPUnitException((string)$data['payload']['time']);
+                    throw new PHPUnitException((string) $data['payload']['time']);
                 }
             },
         ];
     }
 
-    /**
-     * @return ContainerInterface
-     */
     protected function getContainer(): ContainerInterface
     {
-        if ($this->container === null) {
-            $this->container = $this->createContainer();
-        }
-
-        return $this->container;
+        return $this->container ??= new SimpleContainer($this->getContainerDefinitions());
     }
 
-    protected function createContainer(): ContainerInterface
-    {
-        return new SimpleContainer($this->getContainerDefinitions());
-    }
-
-    /**
-     * @return array
-     */
     protected function getContainerDefinitions(): array
     {
         return [];
@@ -179,52 +130,18 @@ abstract class UnitTestCase extends MainTestCase
         );
     }
 
-    /**
-     * @throws Exception
-     *
-     * @return AdapterInterface
-     */
     protected function getAdapter(): AdapterInterface
     {
-        if ($this->adapter === null) {
-            $this->adapter = $this->createAdapter();
-        }
-
-        return $this->adapter;
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @return AdapterInterface
-     */
-    protected function createAdapter(): AdapterInterface
-    {
-        return new Adapter(
+        return $this->adapter ??= new Adapter(
             $this->getQueueProvider(),
             new MessageSerializer(),
             $this->getLoop(),
         );
     }
 
-    /**
-     * @return LoopInterface
-     */
     protected function getLoop(): LoopInterface
     {
-        if ($this->loop === null) {
-            $this->loop = $this->createLoop();
-        }
-
-        return $this->loop;
-    }
-
-    /**
-     * @return LoopInterface
-     */
-    protected function createLoop(): LoopInterface
-    {
-        return new SignalLoop();
+        return $this->loop ??= new SignalLoop();
     }
 
     protected function getPushMiddlewareDispatcher(): PushMiddlewareDispatcher
@@ -237,48 +154,14 @@ abstract class UnitTestCase extends MainTestCase
         );
     }
 
-    /**
-     * @return QueueSettings
-     */
     protected function getQueueSettings(): QueueSettings
     {
-        if (null === $this->queueSettings) {
-            $this->queueSettings = $this->createQueueSettings();
-        }
-
-        return $this->queueSettings;
+        return $this->queueSettings ??= new QueueSettings();
     }
 
-    /**
-     * @return QueueSettings
-     */
-    protected function createQueueSettings(): QueueSettings
-    {
-        return new QueueSettings();
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @return QueueProvider
-     */
     protected function getQueueProvider(): QueueProvider
     {
-        if (null === $this->queueProvider) {
-            $this->queueProvider = $this->createQueueProvider();
-        }
-
-        return $this->queueProvider;
-    }
-
-    /**
-     * @throws Exception
-     *
-     * @return QueueProvider
-     */
-    protected function createQueueProvider(): QueueProvider
-    {
-        return new QueueProvider(
+        return $this->queueProvider ??= new QueueProvider(
             $this->createConnection(),
             $this->getQueueSettings(),
         );
