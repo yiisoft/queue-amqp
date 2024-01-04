@@ -14,6 +14,8 @@ use Yiisoft\Yii\Queue\Message\MessageInterface;
 
 final class Adapter implements AdapterInterface
 {
+    private ?AMQPMessage $message = null;
+
     public function __construct(
         private QueueProviderInterface $queueProvider,
         private MessageSerializerInterface $serializer,
@@ -52,10 +54,10 @@ final class Adapter implements AdapterInterface
     public function push(MessageInterface $message): void
     {
         $payload = $this->serializer->serialize($message);
-        $amqpMessage = new AMQPMessage(
-            $payload,
-            array_merge(['message_id' => uniqid(more_entropy: true)], $this->queueProvider->getMessageProperties())
-        );
+        $amqpMessage = $this->getAmqpMessage();
+        $amqpMessage->setBody($payload);
+        $amqpMessage->set('message_id', $message->getId());
+
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
         $this->queueProvider
             ->getChannel()
@@ -66,9 +68,6 @@ final class Adapter implements AdapterInterface
                     ->getQueueSettings()
                     ->getName()
             );
-        /** @var string $messageId */
-        $messageId = $amqpMessage->get('message_id');
-        $message->setId($messageId);
     }
 
     public function subscribe(callable $handlerCallback): void
@@ -116,5 +115,14 @@ final class Adapter implements AdapterInterface
         $new->queueProvider = $queueProvider;
 
         return $new;
+    }
+
+    private function getAmqpMessage(): AMQPMessage
+    {
+        if ($this->message === null) {
+            $this->message = new AMQPMessage('', $this->queueProvider->getMessageProperties());
+        }
+
+        return $this->message;
     }
 }

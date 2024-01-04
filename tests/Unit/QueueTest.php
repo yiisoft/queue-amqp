@@ -10,6 +10,7 @@ use Yiisoft\Yii\Queue\AMQP\Adapter;
 use Yiisoft\Yii\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
 use Yiisoft\Yii\Queue\AMQP\MessageSerializerInterface;
+use Yiisoft\Yii\Queue\AMQP\Middleware\MessageIdGeneratingMiddleware;
 use Yiisoft\Yii\Queue\AMQP\QueueProvider;
 use Yiisoft\Yii\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Yii\Queue\AMQP\Settings\Exchange as ExchangeSettings;
@@ -37,11 +38,14 @@ final class QueueTest extends UnitTestCase
         $message = new Message('ext-simple', null);
         $queue->push(
             $message,
+            new MessageIdGeneratingMiddleware()
         );
 
+        $messageId = $message->getId();
+        $this->assertNotNull($messageId);
         $this->expectException(NotImplementedException::class);
         $this->expectExceptionMessage("Status check is not supported by the adapter $adapterClass.");
-        $adapter->status($message->getId());
+        $adapter->status($messageId);
     }
 
     /**
