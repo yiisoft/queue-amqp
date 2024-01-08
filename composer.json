@@ -1,7 +1,7 @@
 {
     "name": "yiisoft/queue-amqp",
     "type": "library",
-    "description": "Queue amqp adapter based on amqp-lib package",
+    "description": "Yii Queue AMQP adapter based on amqp-lib package",
     "keywords": [
         "yii",
         "queue",

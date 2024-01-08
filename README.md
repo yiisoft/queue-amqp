@@ -2,11 +2,11 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://github.com/yiisoft.png" height="100px">
     </a>
-    <h1 align="center">Queue AMQP Adapter</h1>
+    <h1 align="center">Yii Queue AMQP Adapter</h1>
     <br>
 </p>
 
-AMQP adapter based on [php-amqplib](https://github.com/php-amqplib/php-amqplib) package for [Queue](https://github.com/yiisoft/queue).
+AMQP adapter based on [php-amqplib](https://github.com/php-amqplib/php-amqplib) package for [Yii Queue](https://github.com/yiisoft/queue).
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/queue-amqp/v/stable.png)](https://packagist.org/packages/yiisoft/queue-amqp)
 [![Total Downloads](https://poser.pugx.org/yiisoft/queue-amqp/downloads.png)](https://packagist.org/packages/yiisoft/queue-amqp)
@@ -57,7 +57,7 @@ to the `require` section of your `composer.json` file.
 
 ## License
 
-The Queue AMQP Adapter is free software. It is released under the terms of the BSD License.
+The Yii Queue AMQP Adapter is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
