@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Exception;
+namespace Yiisoft\Queue\AMQP\Exception;
 
 use InvalidArgumentException;
 use Throwable;
 use Yiisoft\FriendlyException\FriendlyExceptionInterface;
+use Yiisoft\Queue\AMQP\MessageSerializerInterface;
 
 class NoKeyInPayloadException extends InvalidArgumentException implements FriendlyExceptionInterface
 {
@@ -40,9 +41,14 @@ class NoKeyInPayloadException extends InvalidArgumentException implements Friend
      */
     public function getSolution(): ?string
     {
-        return 'We have successfully unserialized a message, but there was no expected key "' . $this->expectedKey . '".
-        There are the following keys in the message: ' . implode(', ', array_keys($this->payload)) . '.
-        You might want to change message\'s structure, or make your own implementation of \\Yiisoft\\Yii\\Queue\\AMQP\\MessageSerializerInterface,
-        which won\'t rely on this key in the message.';
+        return sprintf(
+            "We have successfully unserialized a message, but there was no expected key \"%s\".
+        There are the following keys in the message: %s.
+        You might want to change message's structure, or make your own implementation of %s,
+        which won't rely on this key in the message.",
+            $this->expectedKey,
+            implode(', ', array_keys($this->payload)),
+            MessageSerializerInterface::class
+        );
     }
 }

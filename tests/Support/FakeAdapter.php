@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Support;
+namespace Yiisoft\Queue\AMQP\Tests\Support;
 
-use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializerInterface;
-use Yiisoft\Yii\Queue\AMQP\QueueProviderInterface;
-use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Enum\JobStatus;
-use Yiisoft\Yii\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Adapter\AdapterInterface;
+use Yiisoft\Queue\AMQP\MessageSerializerInterface;
+use Yiisoft\Queue\AMQP\QueueProviderInterface;
+use Yiisoft\Queue\Cli\LoopInterface;
+use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\Message\MessageInterface;
 
 final class FakeAdapter implements AdapterInterface
 {

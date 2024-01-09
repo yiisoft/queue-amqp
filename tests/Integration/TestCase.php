@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Integration;
+namespace Yiisoft\Queue\AMQP\Tests\Integration;
 
 use Symfony\Component\Process\Process;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\MainTestCase;
+use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\AMQP\Tests\Support\MainTestCase;
 
 abstract class TestCase extends MainTestCase
 {

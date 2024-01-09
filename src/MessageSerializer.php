@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP;
+namespace Yiisoft\Queue\AMQP;
 
 use InvalidArgumentException;
 use JsonException;
-use Yiisoft\Yii\Queue\AMQP\Exception\NoKeyInPayloadException;
-use Yiisoft\Yii\Queue\Message\Message;
-use Yiisoft\Yii\Queue\Message\MessageInterface;
+use Yiisoft\Queue\AMQP\Exception\NoKeyInPayloadException;
+use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Message\MessageInterface;
 
 class MessageSerializer implements MessageSerializerInterface
 {

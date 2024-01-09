@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Yiisoft\Injector\Injector;
-use Yiisoft\Yii\Queue\AMQP\QueueProvider;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Yii\Queue\Message\Message;
-use Yiisoft\Yii\Queue\Middleware\CallableFactory;
-use Yiisoft\Yii\Queue\QueueFactory;
+use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Middleware\CallableFactory;
+use Yiisoft\Queue\QueueFactory;
 
 class QueueFactoryTest extends UnitTestCase
 {

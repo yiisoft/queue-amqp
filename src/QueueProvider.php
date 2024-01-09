@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP;
+namespace Yiisoft\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
-use Yiisoft\Yii\Queue\AMQP\Exception\ExchangeDeclaredException;
-use Yiisoft\Yii\Queue\AMQP\Settings\Exchange;
-use Yiisoft\Yii\Queue\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Yii\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\AMQP\Exception\ExchangeDeclaredException;
+use Yiisoft\Queue\AMQP\Settings\Exchange;
+use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
+use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 
 final class QueueProvider implements QueueProviderInterface
 {

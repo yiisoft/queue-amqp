@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Support;
+namespace Yiisoft\Queue\AMQP\Tests\Support;
 
-use Yiisoft\Yii\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageInterface;
 
 final class SimpleMessageHandler
 {

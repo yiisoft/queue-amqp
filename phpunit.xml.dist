@@ -13,14 +13,8 @@
 >
     <coverage>
         <include>
-            <directory>./</directory>
+            <directory>src</directory>
         </include>
-        <exclude>
-            <directory>./tests</directory>
-            <directory>./vendor</directory>
-            <directory>./config</directory>
-            <file>./rector.php</file>
-        </exclude>
     </coverage>
     <php>
         <ini name="error_reporting" value="-1"/>

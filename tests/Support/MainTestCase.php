@@ -2,22 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Support;
+namespace Yiisoft\Queue\AMQP\Tests\Support;
 
-use Exception;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PHPUnit\Framework\TestCase as PhpUnitTestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class MainTestCase extends PhpUnitTestCase
+abstract class MainTestCase extends TestCase
 {
     public ?string $queueName = 'yii-queue';
     public ?string $exchangeName = 'yii-queue';
 
-    /**
-     * @throws Exception
-     *
-     * @return AMQPStreamConnection
-     */
     protected function createConnection(): AMQPStreamConnection
     {
         return new AMQPStreamConnection(

@@ -41,7 +41,7 @@ You can use any of the supported PHP versions with service names `php80`, `php81
 To debug code with xDebug and to use volumes inside the built containers, you can use
 `test/docker-compose.development.yml`. To do so you should either run
 `docker compose -f docker-compose.yml -f docker-compose.development.yml run --rm php<version> vendor/bin/phpunit`
-or copy [tests/.env.example](tests/.env.example) into `tests/.env` and run tests as usual.
+or copy [tests/.env.example](../../tests/.env.example) into `tests/.env` and run tests as usual.
 
 Also, if you are using Docker, then you have access to a set of prepared commands in the Makefile
 

@@ -2,27 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP\Tests\Integration;
+namespace Yiisoft\Queue\AMQP\Tests\Integration;
 
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Yiisoft\Yii\Queue\Adapter\AdapterInterface;
-use Yiisoft\Yii\Queue\AMQP\Adapter;
-use Yiisoft\Yii\Queue\AMQP\MessageSerializer;
-use Yiisoft\Yii\Queue\AMQP\Middleware\DelayMiddleware;
-use Yiisoft\Yii\Queue\AMQP\QueueProvider;
-use Yiisoft\Yii\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FakeAdapter;
-use Yiisoft\Yii\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Yii\Queue\Cli\LoopInterface;
-use Yiisoft\Yii\Queue\Cli\SignalLoop;
-use Yiisoft\Yii\Queue\Message\Message;
-use Yiisoft\Yii\Queue\Middleware\CallableFactory;
-use Yiisoft\Yii\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Yii\Queue\Middleware\Push\PushMiddlewareDispatcher;
-use Yiisoft\Yii\Queue\Queue;
-use Yiisoft\Yii\Queue\Worker\WorkerInterface;
+use Yiisoft\Queue\Adapter\AdapterInterface;
+use Yiisoft\Queue\AMQP\Adapter;
+use Yiisoft\Queue\AMQP\MessageSerializer;
+use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
+use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\FakeAdapter;
+use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\AMQP\Tests\Support\SimpleMessageHandler;
+use Yiisoft\Queue\Cli\LoopInterface;
+use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Middleware\CallableFactory;
+use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\Worker\WorkerInterface;
+use Yiisoft\Test\Support\Container\SimpleContainer;
 
 final class DelayMiddlewareTest extends TestCase
 {
@@ -94,7 +96,9 @@ final class DelayMiddlewareTest extends TestCase
             $this->createMock(LoggerInterface::class),
             new PushMiddlewareDispatcher(
                 new MiddlewareFactoryPush(
-                    $this->createMock(ContainerInterface::class),
+                    new SimpleContainer([
+                        'simple' => new SimpleMessageHandler(new FileHelper()),
+                    ]),
                     new CallableFactory($this->createMock(ContainerInterface::class)),
                 ),
             ),

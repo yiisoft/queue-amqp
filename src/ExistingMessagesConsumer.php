@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Yii\Queue\AMQP;
+namespace Yiisoft\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
-use Yiisoft\Yii\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageInterface;
 
 /**
  * @internal
