@@ -31,6 +31,7 @@ final class QueueProvider implements QueueProviderInterface
     public function __destruct()
     {
         $this->channel?->close();
+        unset($this->channel);
     }
 
     public function getChannel(): AMQPChannel
