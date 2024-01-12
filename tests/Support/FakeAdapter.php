@@ -25,12 +25,12 @@ final class FakeAdapter implements AdapterInterface
         // TODO: Implement runExisting() method.
     }
 
-    public function status(string $id): JobStatus
+    public function status(string|int $id): JobStatus
     {
         // TODO: Implement status() method.
     }
 
-    public function push(MessageInterface $message): void
+    public function push(MessageInterface $message): MessageInterface
     {
         // TODO: Implement push() method.
     }
