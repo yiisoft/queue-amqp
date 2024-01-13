@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
-use PHPUnit\Util\Exception as PHPUnitException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use Yiisoft\Injector\Injector;
@@ -19,7 +18,6 @@ use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\AMQP\Tests\Support\MainTestCase;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
-use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
 use Yiisoft\Queue\Middleware\Consume\MiddlewareFactoryConsume;
