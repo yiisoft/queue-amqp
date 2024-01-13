@@ -40,7 +40,6 @@ abstract class TestCase extends MainTestCase
 
     protected function queueListen(?string $queue = null): void
     {
-        // TODO Fail test on subprocess error exit code
         $command = [PHP_BINARY, dirname(__DIR__) . '/yii', 'queue:listen'];
         if ($queue !== null) {
             $command[] = "--channel=$queue";
@@ -48,5 +47,14 @@ abstract class TestCase extends MainTestCase
         $process = new Process($command);
         $this->processes[] = $process;
         $process->start();
+
+        if ($process->isTerminated()) {
+            throw new \RuntimeException(
+                sprintf(
+                    "Failed to start queue:listen process: \n%s",
+                    !empty($process->getErrorOutput()) ? $process->getErrorOutput() : $process->getOutput()
+                )
+            );
+        }
     }
 }

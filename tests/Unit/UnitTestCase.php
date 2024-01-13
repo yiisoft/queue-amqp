@@ -13,6 +13,7 @@ use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\ExceptionListener;
 use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\AMQP\Tests\Support\MainTestCase;
@@ -77,26 +78,12 @@ abstract class UnitTestCase extends MainTestCase
     protected function getWorker(): WorkerInterface
     {
         return $this->worker ??= new Worker(
-            $this->getMessageHandlers(),
             new NullLogger(),
             new Injector($this->getContainer()),
             $this->getContainer(),
             $this->getConsumeMiddlewareDispatcher(),
             $this->getFailureMiddlewareDispatcher(),
         );
-    }
-
-    protected function getMessageHandlers(): array
-    {
-        return [
-            'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
-            'exception-listen' => static function (MessageInterface $message) {
-                $data = $message->getData();
-                if (null !== $data) {
-                    throw new PHPUnitException((string) $data['payload']['time']);
-                }
-            },
-        ];
     }
 
     protected function getContainer(): ContainerInterface
@@ -106,7 +93,10 @@ abstract class UnitTestCase extends MainTestCase
 
     protected function getContainerDefinitions(): array
     {
-        return [];
+        return [
+            ExtendedSimpleMessageHandler::class => new ExtendedSimpleMessageHandler(new FileHelper()),
+            ExceptionListener::class => new ExceptionListener(),
+        ];
     }
 
     protected function getConsumeMiddlewareDispatcher(): ConsumeMiddlewareDispatcher

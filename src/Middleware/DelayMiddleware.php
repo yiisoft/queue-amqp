@@ -85,20 +85,17 @@ final class DelayMiddleware implements DelayMiddlewareInterface
 
     private function getQueueSettings(
         QueueSettingsInterface $queueSettings,
-        ?ExchangeSettingsInterface $exchangeSettings
+        ?ExchangeSettingsInterface $originalExchangeSettings
     ): QueueSettingsInterface {
-        $deliveryTime = time() + $this->delayInSeconds;
-
+        $arguments = [
+            'x-dead-letter-exchange' => ['S', $originalExchangeSettings?->getName() ?? ''],
+            'x-dead-routing-key' => ['S', $queueSettings->getName()],
+            'x-expires' => ['I', $this->delayInSeconds * 1000 + 30_000],
+            'x-message-ttl' => ['I', $this->delayInSeconds * 1000],
+        ];
         return $queueSettings
-            ->withName("{$queueSettings->getName()}.dlx.$deliveryTime")
-            ->withAutoDeletable(true)
-            ->withArguments(
-                [
-                    'x-dead-letter-exchange' => ['S', $exchangeSettings?->getName() ?? ''],
-                    'x-expires' => ['I', $this->delayInSeconds * 1000 + 30000],
-                    'x-message-ttl' => ['I', $this->delayInSeconds * 1000],
-                ]
-            );
+            ->withName("{$queueSettings->getName()}.dlx")
+            ->withArguments($arguments);
     }
 
     /**
@@ -111,7 +108,6 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         /** @noinspection NullPointerExceptionInspection */
         return $exchangeSettings
             ?->withName("{$exchangeSettings->getName()}.dlx")
-            ->withAutoDelete(true)
             ->withType(AMQPExchangeType::TOPIC);
     }
 }

@@ -6,6 +6,7 @@ namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
@@ -58,7 +59,7 @@ class QueueFactoryTest extends UnitTestCase
 
         $time = time();
         $queue = $factory->get('channel2');
-        $queue->push(new Message('ext-simple', ['file_name' => 'test-channel-run', 'payload' => ['time' => $time]]));
+        $queue->push(new Message(ExtendedSimpleMessageHandler::class, ['file_name' => 'test-channel-run', 'payload' => ['time' => $time]]));
 
         self::assertNull($fileHelper->get('test-channel-run'));
 

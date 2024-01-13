@@ -3,9 +3,9 @@
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\NullLogger;
+use Symfony\Component\Console\Application;
 use Yiisoft\Injector\Injector;
 use Yiisoft\Test\Support\Container\SimpleContainer;
-use Yiisoft\Yii\Console\Application;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
@@ -28,13 +28,12 @@ use Yiisoft\Queue\QueueFactory;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 $logger = new NullLogger();
-$container = new SimpleContainer([]);
+$container = new SimpleContainer([
+    SimpleMessageHandler::class => new SimpleMessageHandler(new FileHelper()),
+]);
 $injector = new Injector($container);
 $callableFactory = new CallableFactory($container);
 $worker = new \Yiisoft\Queue\Worker\Worker(
-    [
-        'simple' => new SimpleMessageHandler(new FileHelper()),
-    ],
     $logger,
     $injector,
     $container,

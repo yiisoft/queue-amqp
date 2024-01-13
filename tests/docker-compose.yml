@@ -3,9 +3,6 @@ version: "3.5"
 x-php: &php
   volumes:
     - ./runtime:/app/tests/runtime
-  dns:
-    - 8.8.8.8
-    - 1.1.1.1
   environment:
     RABBITMQ_HOST: rabbitmq
     RABBITMQ_PORT: 5672
