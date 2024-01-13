@@ -51,7 +51,7 @@ final class DelayMiddlewareTest extends TestCase
 
         $time = time();
         $queue->push(
-            new Message('simple', 'test-delay-middleware-main'),
+            new Message(SimpleMessageHandler::class, 'test-delay-middleware-main'),
             new DelayMiddleware(3),
         );
 
@@ -96,9 +96,7 @@ final class DelayMiddlewareTest extends TestCase
             $this->createMock(LoggerInterface::class),
             new PushMiddlewareDispatcher(
                 new MiddlewareFactoryPush(
-                    new SimpleContainer([
-                        'simple' => new SimpleMessageHandler(new FileHelper()),
-                    ]),
+                    new SimpleContainer([]),
                     new CallableFactory($this->createMock(ContainerInterface::class)),
                 ),
             ),

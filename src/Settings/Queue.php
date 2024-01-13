@@ -14,7 +14,7 @@ final class Queue implements QueueSettingsInterface
         private bool $passive = false,
         private bool $durable = false,
         private bool $exclusive = false,
-        private bool $autoDelete = true,
+        private bool $autoDelete = false,
         private bool $nowait = false,
         private AMQPTable|array $arguments = [],
         private ?int $ticket = null

@@ -4,22 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\AMQP\Tests\Support;
 
+use PHPUnit\Util\Exception as PHPUnitException;
 use Yiisoft\Queue\Message\MessageInterface;
 
-/**
- * Accepts any values from the queue and writes to the file
- */
-final class ExtendedSimpleMessageHandler
+final class ExceptionListener
 {
-    public function __construct(private FileHelper $fileHelper)
-    {
-    }
-
     public function __invoke(MessageInterface $message): void
     {
         $data = $message->getData();
         if (null !== $data) {
-            $this->fileHelper->put($data['file_name'], $data['payload']['time']);
+            throw new PHPUnitException((string) $data['payload']['time']);
         }
     }
 }

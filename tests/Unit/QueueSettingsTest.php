@@ -11,6 +11,7 @@ use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Queue\Message\Message;
 
 final class QueueSettingsTest extends UnitTestCase
@@ -49,7 +50,7 @@ final class QueueSettingsTest extends UnitTestCase
         self::assertTrue($queueSettings->isDurable());
         self::assertTrue($queueSettings->isPassive());
         self::assertTrue($queueSettings->isExclusive());
-        self::assertTrue($queueSettings->isAutoDeletable());
+        self::assertFalse($queueSettings->isAutoDeletable());
         self::assertTrue($queueSettings->hasNowait());
         self::assertNull($queueSettings->getTicket());
 
@@ -92,7 +93,7 @@ final class QueueSettingsTest extends UnitTestCase
         $this->getQueue()
             ->withAdapter($adapter)
             ->push(
-                new Message('ext-simple', ['payload' => time()])
+                new Message(ExtendedSimpleMessageHandler::class, ['payload' => time()])
             );
 
         sleep(2);
