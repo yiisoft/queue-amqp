@@ -44,20 +44,27 @@ final class DelayMiddleware implements MiddlewareInterface, DelayMiddlewareInter
     {
         $adapter = $request->getAdapter();
         if (!$adapter instanceof Adapter) {
-            $type = get_debug_type($adapter);
-            $class = Adapter::class;
             throw new InvalidArgumentException(
-                "This middleware works only with the $class. $type given."
+                sprintf(
+                    'This middleware works only with the %s. %s given.',
+                    Adapter::class,
+                    get_debug_type($adapter)
+                )
             );
         }
 
         $queueProvider = $adapter->getQueueProvider();
-        $exchangeSettings = $this->getExchangeSettings($queueProvider->getExchangeSettings());
-        $queueSettings = $this->getQueueSettings($queueProvider->getQueueSettings(), $queueProvider->getExchangeSettings());
+        $originalExchangeSettings = $queueProvider->getExchangeSettings();
+        $delayedExchangeSettings = $this->getExchangeSettings($originalExchangeSettings);
+        $queueSettings = $this->getQueueSettings(
+            $queueProvider->getQueueSettings(),
+            $originalExchangeSettings
+        );
+
         $adapter = $adapter->withQueueProvider(
             $queueProvider
                 ->withMessageProperties($this->getMessageProperties($queueProvider))
-                ->withExchangeSettings($exchangeSettings)
+                ->withExchangeSettings($delayedExchangeSettings)
                 ->withQueueSettings($queueSettings)
         );
 
@@ -105,7 +112,7 @@ final class DelayMiddleware implements MiddlewareInterface, DelayMiddlewareInter
         /** @noinspection NullPointerExceptionInspection */
         return $exchangeSettings
             ?->withName("{$exchangeSettings->getName()}.dlx")
-            ->withAutoDelete(true)
+            ->withAutoDelete(false)
             ->withType(AMQPExchangeType::TOPIC);
     }
 }
