@@ -11,11 +11,12 @@ use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\Middleware\MessageHandlerInterface;
+use Yiisoft\Queue\Middleware\MiddlewareInterface;
 use Yiisoft\Queue\Middleware\Push\Implementation\DelayMiddlewareInterface;
-use Yiisoft\Queue\Middleware\Push\MessageHandlerPushInterface;
-use Yiisoft\Queue\Middleware\Push\PushRequest;
+use Yiisoft\Queue\Middleware\Request;
 
-final class DelayMiddleware implements DelayMiddlewareInterface
+final class DelayMiddleware implements MiddlewareInterface, DelayMiddlewareInterface
 {
     public function __construct(private float $delayInSeconds, private bool $forcePersistentMessages = true)
     {
@@ -39,7 +40,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         return $this->delayInSeconds;
     }
 
-    public function processPush(PushRequest $request, MessageHandlerPushInterface $handler): PushRequest
+    public function process(Request $request, MessageHandlerInterface $handler): Request
     {
         $adapter = $request->getAdapter();
         if (!$adapter instanceof Adapter) {
@@ -60,7 +61,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
                 ->withQueueSettings($queueSettings)
         );
 
-        return $handler->handlePush($request->withAdapter($adapter));
+        return $handler->handle($request->withAdapter($adapter));
     }
 
     /**
