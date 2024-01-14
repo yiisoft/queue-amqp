@@ -44,7 +44,7 @@ final class QueueProviderTest extends UnitTestCase
         $fileHelper = new FileHelper();
         $time = time();
         $queue->push(
-            new Message('ext-simple', ['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
+            new Message(['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
         );
 
         $message = $this

@@ -93,7 +93,7 @@ final class QueueSettingsTest extends UnitTestCase
         $this->getQueue()
             ->withAdapter($adapter)
             ->push(
-                new Message('ext-simple', ['payload' => time()])
+                new Message(['payload' => time()])
             );
 
         sleep(2);

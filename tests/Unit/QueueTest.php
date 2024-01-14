@@ -36,7 +36,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $message = new IdEnvelope(
-            new Message('ext-simple', null),
+            new Message(null),
             'test-id',
         );
         $queue->push($message);
@@ -61,7 +61,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($this->getAdapter());
 
         $queue->push(
-            new Message('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
+            new Message(['file_name' => $fileName, 'payload' => ['time' => $time]])
         );
 
         self::assertNull($fileHelper->get($fileName));
@@ -119,7 +119,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $queue->push(
-            new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
+            new Message(['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
         );
         $queue->listen();
     }

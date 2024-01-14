@@ -58,7 +58,7 @@ class QueueFactoryTest extends UnitTestCase
 
         $time = time();
         $queue = $factory->get('channel2');
-        $queue->push(new Message('ext-simple', ['file_name' => 'test-channel-run', 'payload' => ['time' => $time]]));
+        $queue->push(new Message(['file_name' => 'test-channel-run', 'payload' => ['time' => $time]]));
 
         self::assertNull($fileHelper->get('test-channel-run'));
 

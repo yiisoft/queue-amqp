@@ -52,7 +52,7 @@ final class DelayMiddlewareTest extends TestCase
 
         $time = time();
         $queue->push(
-            new Message('simple', 'test-delay-middleware-main'),
+            new Message('test-delay-middleware-main'),
             new DelayMiddleware(3),
         );
 
@@ -84,7 +84,7 @@ final class DelayMiddlewareTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("This middleware works only with the $adapterClass. $fakeAdapterClass given.");
         $queue->push(
-            new Message(SimpleMessageHandler::class, 'test-delay-middleware-main'),
+            new Message('test-delay-middleware-main'),
             new DelayMiddleware(3),
         );
     }
