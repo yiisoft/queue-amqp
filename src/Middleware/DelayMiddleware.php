@@ -111,7 +111,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         /** @noinspection NullPointerExceptionInspection */
         return $exchangeSettings
             ?->withName("{$exchangeSettings->getName()}.dlx")
-            ->withAutoDelete(true)
+            ->withAutoDelete(false)
             ->withType(AMQPExchangeType::TOPIC);
     }
 }

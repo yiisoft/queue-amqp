@@ -4,6 +4,7 @@
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\NullLogger;
 use Yiisoft\Injector\Injector;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 use Yiisoft\Yii\Console\Application;
 use Yiisoft\Queue\AMQP\Adapter;
@@ -53,7 +54,7 @@ $adapter = new Adapter(
         ),
         new QueueSettings(),
     ),
-    new MessageSerializer(),
+    new JsonMessageSerializer(),
     $loop,
 );
 $queue = new Queue(
