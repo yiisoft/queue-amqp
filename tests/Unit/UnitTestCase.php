@@ -188,15 +188,6 @@ abstract class UnitTestCase extends MainTestCase
             ->add(fn (ExtendedSimpleMessage $message) => $container->get(ExtendedSimpleMessageHandler::class)->handle($message))
             ->add(fn (ExceptionMessage $message) => $container->get(ExceptionMessageHandler::class)->handle($message));
 
-
-    //    'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
-    //        'exception-listen' => static function (MessageInterface $message) {
-    //    $data = $message->getData();
-    //    if (null !== $data) {
-    //        throw new PHPUnitException((string) $data['payload']['time']);
-    //    }
-    //},
-
         return $this->eventDispatcher ??= new Dispatcher(new Provider($listeners));
     }
 }

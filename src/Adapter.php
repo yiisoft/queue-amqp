@@ -49,7 +49,7 @@ final class Adapter implements AdapterInterface
 
     public function status(string|int $id): JobStatus
     {
-        throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
+        throw new NotImplementedException(sprintf('Status check is not supported by the adapter %s.', self::class));
     }
 
     public function push(MessageInterface $message): MessageInterface

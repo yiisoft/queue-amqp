@@ -23,8 +23,7 @@ final class DelayMiddleware implements MiddlewareInterface, DelayMiddlewareInter
         private AdapterInterface $adapter,
         private float $delayInSeconds,
         private bool $forcePersistentMessages = true
-    )
-    {
+    ) {
         if (!$adapter instanceof Adapter) {
             throw new InvalidArgumentException(
                 sprintf(
@@ -56,7 +55,6 @@ final class DelayMiddleware implements MiddlewareInterface, DelayMiddlewareInter
 
     public function process(Request $request, MessageHandlerInterface $handler): Request
     {
-
         $queueProvider = $this->adapter->getQueueProvider();
         $originalExchangeSettings = $queueProvider->getExchangeSettings();
         $delayedExchangeSettings = $this->getExchangeSettings($originalExchangeSettings);
@@ -72,7 +70,11 @@ final class DelayMiddleware implements MiddlewareInterface, DelayMiddlewareInter
                 ->withQueueSettings($queueSettings)
         );
 
-        return $handler->handle($request->withAdapter($adapter));
+        return $handler->handle(
+            $request->withQueue(
+                $request->getQueue()->withAdapter($adapter)
+            )
+        );
     }
 
     /**

@@ -39,7 +39,8 @@
         "symfony/console": "^6.0",
         "symfony/process": "^6.0",
         "vimeo/psalm": "^4.30|^5.8",
-        "yiisoft/test-support": "^3.0"
+        "yiisoft/test-support": "^3.0",
+        "yiisoft/yii-console": "^2.1"
     },
     "autoload": {
         "psr-4": {

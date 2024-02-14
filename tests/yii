@@ -10,6 +10,7 @@ use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Middleware\MiddlewareDispatcher;
 use Yiisoft\Queue\Middleware\MiddlewareFactory;
+use Yiisoft\Queue\QueueFactoryInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 use Yiisoft\Yii\Console\Application;
 use Yiisoft\Queue\AMQP\Adapter;
@@ -31,7 +32,7 @@ $callableFactory = new CallableFactory($container);
 $worker = new \Yiisoft\Queue\Worker\Worker(
     $logger,
     new Dispatcher(new Provider(new ListenerCollection())),
-    new SimpleContainer([]),
+    $container,
     new MiddlewareDispatcher(new MiddlewareFactory($container, $callableFactory)),
     new MiddlewareDispatcher(new MiddlewareFactory($container, $callableFactory), []),
 );
@@ -67,6 +68,6 @@ $queueFactory = new QueueFactory(
 
 $application = new Application();
 $application->add(new ListenCommand($queueFactory));
-$application->add(new RunCommand($queueFactory));
+$application->add(new RunCommand($queueFactory, [QueueFactoryInterface::DEFAULT_CHANNEL_NAME]));
 
 $application->run();
