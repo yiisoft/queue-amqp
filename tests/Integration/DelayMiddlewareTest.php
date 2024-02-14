@@ -22,8 +22,6 @@ use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\MiddlewareDispatcher;
 use Yiisoft\Queue\Middleware\MiddlewareFactory;
-use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;

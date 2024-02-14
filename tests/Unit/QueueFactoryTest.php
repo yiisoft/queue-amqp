@@ -8,7 +8,6 @@ use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessage;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\QueueFactory;
 

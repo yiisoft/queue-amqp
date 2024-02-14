@@ -15,7 +15,6 @@ use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessage;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
 
 final class QueueProviderTest extends UnitTestCase
 {

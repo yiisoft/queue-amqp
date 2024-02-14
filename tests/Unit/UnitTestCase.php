@@ -11,7 +11,6 @@ use Psr\Log\NullLogger;
 use Yiisoft\EventDispatcher\Dispatcher\Dispatcher;
 use Yiisoft\EventDispatcher\Provider\ListenerCollection;
 use Yiisoft\EventDispatcher\Provider\Provider;
-use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
