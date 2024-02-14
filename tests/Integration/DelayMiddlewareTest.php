@@ -7,20 +7,21 @@ namespace Yiisoft\Queue\AMQP\Tests\Integration;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-
 use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FakeAdapter;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Queue\AMQP\Tests\Support\SimpleMessageHandler;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
+use Yiisoft\Queue\Middleware\MiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\MiddlewareFactory;
 use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
 use Yiisoft\Queue\Queue;
@@ -53,7 +54,7 @@ final class DelayMiddlewareTest extends TestCase
         $time = time();
         $queue->push(
             new Message('test-delay-middleware-main'),
-            new DelayMiddleware(3),
+            fn (Injector $injector) => $injector->make(DelayMiddleware::class, ['delayInSeconds' => 3]),
         );
 
         sleep(2);
@@ -68,24 +69,19 @@ final class DelayMiddlewareTest extends TestCase
 
     public function testMainFlowWithFakeAdapter(): void
     {
-        $adapterClass = Adapter::class;
-        $fakeAdapterClass = FakeAdapter::class;
-
-        $adapter = new FakeAdapter(
-            new QueueProvider(
-                $this->createConnection(),
-                new QueueSettings(),
-            ),
-            new JsonMessageSerializer(),
-            new SignalLoop(),
-        );
-        $queue = $this->makeQueue($adapter);
+        $queue = $this->makeQueue(new FakeAdapter());
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("This middleware works only with the $adapterClass. $fakeAdapterClass given.");
+        $this->expectExceptionMessage(
+            sprintf(
+                'This middleware works only with the %s. %s given.',
+                Adapter::class,
+                FakeAdapter::class,
+            )
+        );
         $queue->push(
             new Message('test-delay-middleware-main'),
-            new DelayMiddleware(3),
+            fn (Injector $injector) => $injector->make(DelayMiddleware::class, ['delayInSeconds' => 3]),
         );
     }
 
@@ -95,10 +91,15 @@ final class DelayMiddlewareTest extends TestCase
             $this->createMock(WorkerInterface::class),
             $this->createMock(LoopInterface::class),
             $this->createMock(LoggerInterface::class),
-            new PushMiddlewareDispatcher(
-                new MiddlewareFactoryPush(
+            new MiddlewareDispatcher(
+                new MiddlewareFactory(
                     new SimpleContainer([
-                        'simple' => new SimpleMessageHandler(new FileHelper()),
+                        AdapterInterface::class => $adapter,
+                        Injector::class => new Injector(
+                            new SimpleContainer([
+                                AdapterInterface::class => $adapter,
+                            ])
+                        ),
                     ]),
                     new CallableFactory($this->createMock(ContainerInterface::class)),
                 ),

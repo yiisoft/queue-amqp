@@ -12,6 +12,7 @@ use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessage;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
@@ -44,7 +45,7 @@ final class QueueProviderTest extends UnitTestCase
         $fileHelper = new FileHelper();
         $time = time();
         $queue->push(
-            new Message(['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
+            new ExtendedSimpleMessage(['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
         );
 
         $message = $this

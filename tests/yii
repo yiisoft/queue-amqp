@@ -31,6 +31,7 @@ $callableFactory = new CallableFactory($container);
 $worker = new \Yiisoft\Queue\Worker\Worker(
     $logger,
     new Dispatcher(new Provider(new ListenerCollection())),
+    new SimpleContainer([]),
     new MiddlewareDispatcher(new MiddlewareFactory($container, $callableFactory)),
     new MiddlewareDispatcher(new MiddlewareFactory($container, $callableFactory), []),
 );

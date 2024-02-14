@@ -12,6 +12,7 @@ use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessage;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\JobFailureException;
@@ -20,6 +21,7 @@ use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\Tests\Shared\ExceptionMessage;
 
 final class QueueTest extends UnitTestCase
 {
@@ -61,7 +63,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($this->getAdapter());
 
         $queue->push(
-            new Message(['file_name' => $fileName, 'payload' => ['time' => $time]])
+            new ExtendedSimpleMessage(['file_name' => $fileName, 'payload' => ['time' => $time]])
         );
 
         self::assertNull($fileHelper->get($fileName));
@@ -92,7 +94,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $time = time();
-        $queue->push(new Message('exception-listen', ['payload' => ['time' => $time]]));
+        $queue->push(new ExceptionMessage(['payload' => ['time' => $time]]));
 
         $this->expectException(JobFailureException::class);
 
@@ -119,7 +121,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $queue->push(
-            new Message(['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
+            new ExtendedSimpleMessage(['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
         );
         $queue->listen();
     }
