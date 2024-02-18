@@ -3,11 +3,11 @@ x-php: &php
     - host.docker.internal:${DOCKER_HOST_IP:-172.17.0.1}
 
 services:
-  php80:
-    <<: *php
-
   php81:
     <<: *php
 
   php82:
+    <<: *php
+
+  php83:
     <<: *php

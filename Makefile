@@ -27,5 +27,5 @@ coverage:		## Run code coverage. Params: {{ v=8.1 }}. Default latest PHP 8.1
 	make down
 
 static-analyze:		## Run code static analyze. Params: {{ v=8.1 }}. Default latest PHP 8.1
-	docker-compose -f tests/docker-compose.yml run php$(v) vendor/bin/psalm --config=psalm.xml --shepherd --stats --php-version=8.0
+	docker-compose -f tests/docker-compose.yml run php$(v) vendor/bin/psalm --config=psalm.xml --shepherd --stats --php-version=8.1
 	make down

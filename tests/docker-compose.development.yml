@@ -6,12 +6,6 @@ x-php: &php
     PHP_IDE_CONFIG: serverName=yii-queue-amqp
 
 services:
-  php80:
-    <<: *php
-    volumes:
-      - ..:/app
-      - ./runtime/.composer80:/root/.composer
-
   php81:
     <<: *php
     volumes:
@@ -23,6 +17,12 @@ services:
     volumes:
       - ..:/app
       - ./runtime/.composer82:/root/.composer
+
+  php83:
+    <<: *php
+    volumes:
+      - ..:/app
+      - ./runtime/.composer83:/root/.composer
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
