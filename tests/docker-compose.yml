@@ -16,15 +16,6 @@ x-php: &php
       condition: service_healthy
 
 services:
-  php80:
-    <<: *php
-    container_name: yii-queue-amqp-php80
-    build:
-      context: ..
-      dockerfile: tests/docker/php/Dockerfile
-      args:
-        PHP_VERSION: '8.0'
-
   php81:
     <<: *php
     container_name: yii-queue-amqp-php81
@@ -42,6 +33,15 @@ services:
       dockerfile: tests/docker/php/Dockerfile
       args:
         PHP_VERSION: '8.2'
+
+  php83:
+    <<: *php
+    container_name: yii-queue-amqp-php83
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.3'
 
   rabbitmq:
     image: rabbitmq:3-alpine
