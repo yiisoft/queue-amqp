@@ -33,14 +33,13 @@
     "require-dev": {
         "maglnet/composer-require-checker": "^4.4",
         "phpunit/phpunit": "^9.5",
-        "rector/rector": "^0.19.0",
+        "rector/rector": "^1.0",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
         "symfony/console": "^6.0",
         "symfony/process": "^6.0",
-        "vimeo/psalm": "^4.30|^5.8",
-        "yiisoft/test-support": "^3.0",
-        "yiisoft/yii-console": "^2.1"
+        "vimeo/psalm": "^5.22",
+        "yiisoft/test-support": "^3.0"
     },
     "autoload": {
         "psr-4": {

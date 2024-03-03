@@ -50,27 +50,27 @@ Also, if you are using Docker, then you have access to a set of prepared command
 The code is statically analyzed with [Psalm](https://psalm.dev). To run static analysis:
 
 ```bash
-# {{ v }} = 80, 81, 82
-make static-analyze v=80
+# {{ v }} = 81, 82, 83
+make static-analyze v=81
 ```
 
 ### Unit tests
 
 ```bash
-# {{ v }} = 80, 81, 82
-make test v=80
+# {{ v }} = 81, 82, 83
+make test v=81
 ```
 
 ### Mutation tests
 
 ```bash
-# {{ v }} = 80, 81, 82
-make mutation-test v=80
+# {{ v }} = 81, 82, 83
+make mutation-test v=83
 ```
 
 ### Code coverage
 
 ```bash
-# {{ v }} = 80, 81, 82
-make coverage v=80
+# {{ v }} = 81, 82, 83
+make coverage v=81
 ```
