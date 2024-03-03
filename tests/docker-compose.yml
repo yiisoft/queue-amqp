@@ -18,7 +18,6 @@ x-php: &php
 services:
   php81:
     <<: *php
-    container_name: yii-queue-amqp-php81
     build:
       context: ..
       dockerfile: tests/docker/php/Dockerfile
@@ -27,7 +26,6 @@ services:
 
   php82:
     <<: *php
-    container_name: yii-queue-amqp-php82
     build:
       context: ..
       dockerfile: tests/docker/php/Dockerfile
@@ -44,9 +42,12 @@ services:
         PHP_VERSION: '8.3'
 
   rabbitmq:
-    image: rabbitmq:3-alpine
+    image: rabbitmq:3-management
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 3s
       timeout: 5s
       retries: 3
+    ports:
+      - 5672:5672
+      - 5673:15672

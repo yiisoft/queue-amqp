@@ -7,18 +7,32 @@ namespace Yiisoft\Queue\AMQP\Middleware;
 use InvalidArgumentException;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
+use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
-use Yiisoft\Queue\Middleware\Push\Implementation\DelayMiddlewareInterface;
-use Yiisoft\Queue\Middleware\Push\MessageHandlerPushInterface;
-use Yiisoft\Queue\Middleware\Push\PushRequest;
+use Yiisoft\Queue\Middleware\DelayMiddlewareInterface;
+use Yiisoft\Queue\Middleware\MessageHandlerInterface;
+use Yiisoft\Queue\Middleware\MiddlewareInterface;
+use Yiisoft\Queue\Middleware\Request;
 
-final class DelayMiddleware implements DelayMiddlewareInterface
+final class DelayMiddleware implements MiddlewareInterface, DelayMiddlewareInterface
 {
-    public function __construct(private float $delayInSeconds, private bool $forcePersistentMessages = true)
-    {
+    public function __construct(
+        private AdapterInterface $adapter,
+        private float $delayInSeconds,
+        private bool $forcePersistentMessages = true
+    ) {
+        if (!$adapter instanceof Adapter) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'This middleware works only with the %s. %s given.',
+                    Adapter::class,
+                    get_debug_type($adapter)
+                )
+            );
+        }
     }
 
     /**
@@ -39,28 +53,28 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         return $this->delayInSeconds;
     }
 
-    public function processPush(PushRequest $request, MessageHandlerPushInterface $handler): PushRequest
+    public function process(Request $request, MessageHandlerInterface $handler): Request
     {
-        $adapter = $request->getAdapter();
-        if (!$adapter instanceof Adapter) {
-            $type = get_debug_type($adapter);
-            $class = Adapter::class;
-            throw new InvalidArgumentException(
-                "This middleware works only with the $class. $type given."
-            );
-        }
+        $queueProvider = $this->adapter->getQueueProvider();
+        $originalExchangeSettings = $queueProvider->getExchangeSettings();
+        $delayedExchangeSettings = $this->getExchangeSettings($originalExchangeSettings);
+        $queueSettings = $this->getQueueSettings(
+            $queueProvider->getQueueSettings(),
+            $originalExchangeSettings
+        );
 
-        $queueProvider = $adapter->getQueueProvider();
-        $exchangeSettings = $this->getExchangeSettings($queueProvider->getExchangeSettings());
-        $queueSettings = $this->getQueueSettings($queueProvider->getQueueSettings(), $queueProvider->getExchangeSettings());
-        $adapter = $adapter->withQueueProvider(
+        $adapter = $this->adapter->withQueueProvider(
             $queueProvider
                 ->withMessageProperties($this->getMessageProperties($queueProvider))
-                ->withExchangeSettings($exchangeSettings)
+                ->withExchangeSettings($delayedExchangeSettings)
                 ->withQueueSettings($queueSettings)
         );
 
-        return $handler->handlePush($request->withAdapter($adapter));
+        return $handler->handle(
+            $request->withQueue(
+                $request->getQueue()->withAdapter($adapter)
+            )
+        );
     }
 
     /**
@@ -104,7 +118,7 @@ final class DelayMiddleware implements DelayMiddlewareInterface
         /** @noinspection NullPointerExceptionInspection */
         return $exchangeSettings
             ?->withName("{$exchangeSettings->getName()}.dlx")
-            ->withAutoDelete(true)
+            ->withAutoDelete(false)
             ->withType(AMQPExchangeType::TOPIC);
     }
 }
