@@ -14,6 +14,7 @@ use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 
 /**
  * Testing message serialization options
@@ -27,11 +28,10 @@ final class MessageSerializerTest extends UnitTestCase
      */
     private function publishWithAMQPLib(string $queue, string $exchange, AMQPMessage $message): void
     {
-        $channel = $this
-            ->createConnection()
-            ->channel();
+        $channel = $this->createConnection()->channel();
+
         $channel->queue_declare($queue);
-        $channel->exchange_declare($exchange, AMQPExchangeType::DIRECT);
+        $channel->exchange_declare($exchange, AMQPExchangeType::DIRECT, auto_delete: true);
         $channel->queue_bind($queue, $exchange);
         $channel->basic_publish($message, $exchange);
     }
@@ -47,8 +47,8 @@ final class MessageSerializerTest extends UnitTestCase
         );
         return new Adapter(
             $queueProvider
-                ->withQueueSettings(new QueueSettings($queueExchangeName))
-                ->withExchangeSettings(new ExchangeSettings($queueExchangeName)),
+                ->withQueueSettings(new QueueSettings($queueExchangeName, autoDelete: true))
+                ->withExchangeSettings(new ExchangeSettings($queueExchangeName, autoDelete: true)),
             new MessageSerializer(),
             $this->getLoop(),
         );
@@ -80,7 +80,7 @@ final class MessageSerializerTest extends UnitTestCase
             $queueExchangeName,
             $queueExchangeName,
             new AMQPMessage(
-                json_encode(['name' => 'ext-simple', 'id' => 1], JSON_THROW_ON_ERROR),
+                json_encode(['name' => ExtendedSimpleMessageHandler::class, 'id' => 1], JSON_THROW_ON_ERROR),
                 ['content_type' => 'text/json', 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]
             )
         );
@@ -100,7 +100,7 @@ final class MessageSerializerTest extends UnitTestCase
             $queueExchangeName,
             $queueExchangeName,
             new AMQPMessage(
-                json_encode(['name' => 'ext-simple', 'meta' => ''], JSON_THROW_ON_ERROR),
+                json_encode(['name' => ExtendedSimpleMessageHandler::class, 'meta' => ''], JSON_THROW_ON_ERROR),
                 ['content_type' => 'text/json', 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT]
             )
         );
