@@ -8,9 +8,9 @@
 
 AMQP adapter based on [php-amqplib](https://github.com/php-amqplib/php-amqplib) package for [Yii Queue](https://github.com/yiisoft/queue).
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/queue-amqp/v/stable.png)](https://packagist.org/packages/yiisoft/queue-amqp)
-[![Total Downloads](https://poser.pugx.org/yiisoft/queue-amqp/downloads.png)](https://packagist.org/packages/yiisoft/queue-amqp)
-[![Build status](https://github.com/yiisoft/queue-amqp/workflows/build/badge.svg)](https://github.com/yiisoft/queue-amqp/actions?query=workflow%3Abuild)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/queue-amqp/v)](https://packagist.org/packages/yiisoft/queue-amqp)
+[![Total Downloads](https://poser.pugx.org/yiisoft/queue-amqp/downloads)](https://packagist.org/packages/yiisoft/queue-amqp)
+[![Build status](https://github.com/yiisoft/queue-amqp/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/queue-amqp/actions/workflows/build.yml)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/queue-amqp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/queue-amqp/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/queue-amqp/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/queue-amqp/?branch=master)
 [![static analysis](https://github.com/yiisoft/queue-amqp/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/queue-amqp/actions?query=workflow%3A%22static+analysis%22)
