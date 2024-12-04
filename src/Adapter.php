@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App;
+namespace Yiisoft\Queue\AMQP;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
