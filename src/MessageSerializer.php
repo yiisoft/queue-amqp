@@ -7,6 +7,7 @@ namespace Yiisoft\Queue\AMQP;
 use InvalidArgumentException;
 use JsonException;
 use Yiisoft\Queue\AMQP\Exception\NoKeyInPayloadException;
+use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Message\MessageInterface;
 
@@ -18,7 +19,7 @@ class MessageSerializer implements MessageSerializerInterface
     public function serialize(MessageInterface $message): string
     {
         $payload = [
-            'id' => $message->getId(),
+            'id' => $message->getMetadata()[IdEnvelope::MESSAGE_ID_KEY] ?? null,
             'name' => $message->getHandlerName(),
             'data' => $message->getData(),
             'meta' => $message->getMetadata(),

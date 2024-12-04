@@ -3,9 +3,6 @@ version: "3.5"
 x-php: &php
   volumes:
     - ./runtime:/app/tests/runtime
-  dns:
-    - 8.8.8.8
-    - 1.1.1.1
   environment:
     RABBITMQ_HOST: rabbitmq
     RABBITMQ_PORT: 5672
@@ -44,9 +41,12 @@ services:
         PHP_VERSION: '8.3'
 
   rabbitmq:
-    image: rabbitmq:3-alpine
+    image: rabbitmq:3-management
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 3s
       timeout: 5s
       retries: 3
+    ports:
+      - 5672:5672
+      - 5673:15672
