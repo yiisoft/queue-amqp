@@ -15,10 +15,10 @@ abstract class MainTestCase extends TestCase
     protected function createConnection(): AMQPStreamConnection
     {
         return new AMQPStreamConnection(
-            getenv('RABBITMQ_HOST'),
-            getenv('RABBITMQ_PORT'),
-            getenv('RABBITMQ_USER'),
-            getenv('RABBITMQ_PASSWORD')
+            getenv('RABBITMQ_HOST') ?: '127.0.0.1',
+            getenv('RABBITMQ_PORT') ?: 5672,
+            getenv('RABBITMQ_USER') ?: 'guest',
+            getenv('RABBITMQ_PASSWORD') ?: 'guest',
         );
     }
 

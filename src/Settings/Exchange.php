@@ -14,7 +14,7 @@ final class Exchange implements ExchangeSettingsInterface
         private string $type = AMQPExchangeType::DIRECT,
         private bool $passive = false,
         private bool $durable = false,
-        private bool $autoDelete = true,
+        private bool $autoDelete = false,
         private bool $internal = false,
         private bool $nowait = false,
         private AMQPTable|array $arguments = [],

@@ -6,27 +6,33 @@ namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use PHPUnit\Util\Exception as PHPUnitException;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\NullLogger;
-use Yiisoft\Injector\Injector;
+use Yiisoft\EventDispatcher\Dispatcher\Dispatcher;
+use Yiisoft\EventDispatcher\Provider\ListenerCollection;
+use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessage;
 use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\AMQP\Tests\Support\MainTestCase;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Middleware\CallableFactory;
-use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
-use Yiisoft\Queue\Middleware\Consume\MiddlewareFactoryConsume;
-use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
-use Yiisoft\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
-use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\MiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\MiddlewareFactory;
 use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\Tests\Shared\ExceptionMessage;
+use Yiisoft\Queue\Tests\Shared\ExceptionMessageHandler;
+use Yiisoft\Queue\Tests\Shared\NullMessage;
+use Yiisoft\Queue\Tests\Shared\NullMessageHandler;
+use Yiisoft\Queue\Tests\Shared\StackMessage;
+use Yiisoft\Queue\Tests\Shared\StackMessageHandler;
 use Yiisoft\Queue\Worker\Worker;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
@@ -36,6 +42,7 @@ use Yiisoft\Test\Support\Container\SimpleContainer;
  */
 abstract class UnitTestCase extends MainTestCase
 {
+    protected Dispatcher $eventDispatcher;
     protected Queue|null $queue = null;
     protected ?WorkerInterface $worker = null;
     protected ?ContainerInterface $container = null;
@@ -77,10 +84,9 @@ abstract class UnitTestCase extends MainTestCase
     protected function getWorker(): WorkerInterface
     {
         return $this->worker ??= new Worker(
-            $this->getMessageHandlers(),
             new NullLogger(),
-            new Injector($this->getContainer()),
-            $this->getContainer(),
+            $this->createEventDispatcher(),
+            $this->createContainer(),
             $this->getConsumeMiddlewareDispatcher(),
             $this->getFailureMiddlewareDispatcher(),
         );
@@ -99,34 +105,38 @@ abstract class UnitTestCase extends MainTestCase
         ];
     }
 
-    protected function getContainer(): ContainerInterface
+    protected function createContainer(): ContainerInterface
     {
         return $this->container ??= new SimpleContainer($this->getContainerDefinitions());
     }
 
     protected function getContainerDefinitions(): array
     {
-        return [];
+        return [
+            ExtendedSimpleMessageHandler::class => new ExtendedSimpleMessageHandler(new FileHelper()),
+            ExceptionMessageHandler::class => new ExceptionMessageHandler(),
+            StackMessageHandler::class => new StackMessageHandler(),
+            NullMessageHandler::class => new NullMessageHandler(),
+        ];
     }
 
-    protected function getConsumeMiddlewareDispatcher(): ConsumeMiddlewareDispatcher
+    protected function getConsumeMiddlewareDispatcher(): MiddlewareDispatcher
     {
-        return new ConsumeMiddlewareDispatcher(
-            new MiddlewareFactoryConsume(
-                $this->getContainer(),
-                new CallableFactory($this->getContainer()),
+        return new MiddlewareDispatcher(
+            new MiddlewareFactory(
+                $this->createContainer(),
+                new CallableFactory($this->createContainer()),
             ),
         );
     }
 
-    protected function getFailureMiddlewareDispatcher(): FailureMiddlewareDispatcher
+    protected function getFailureMiddlewareDispatcher(): MiddlewareDispatcher
     {
-        return new FailureMiddlewareDispatcher(
-            new MiddlewareFactoryFailure(
-                $this->getContainer(),
-                new CallableFactory($this->getContainer()),
+        return new MiddlewareDispatcher(
+            new MiddlewareFactory(
+                $this->createContainer(),
+                new CallableFactory($this->createContainer()),
             ),
-            [],
         );
     }
 
@@ -134,7 +144,7 @@ abstract class UnitTestCase extends MainTestCase
     {
         return $this->adapter ??= new Adapter(
             $this->getQueueProvider(),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
     }
@@ -144,12 +154,12 @@ abstract class UnitTestCase extends MainTestCase
         return $this->loop ??= new SignalLoop();
     }
 
-    protected function getPushMiddlewareDispatcher(): PushMiddlewareDispatcher
+    protected function getPushMiddlewareDispatcher(): MiddlewareDispatcher
     {
-        return new PushMiddlewareDispatcher(
-            new MiddlewareFactoryPush(
-                $this->getContainer(),
-                new CallableFactory($this->getContainer()),
+        return new MiddlewareDispatcher(
+            new MiddlewareFactory(
+                $this->createContainer(),
+                new CallableFactory($this->createContainer()),
             ),
         );
     }
@@ -165,5 +175,18 @@ abstract class UnitTestCase extends MainTestCase
             $this->createConnection(),
             $this->getQueueSettings(),
         );
+    }
+
+    protected function createEventDispatcher(): EventDispatcherInterface
+    {
+        $container = $this->createContainer();
+        $listeners = new ListenerCollection();
+        $listeners = $listeners
+            ->add(fn (NullMessage $message) => $container->get(NullMessageHandler::class)->handle($message))
+            ->add(fn (StackMessage $message) => $container->get(StackMessageHandler::class)->handle($message))
+            ->add(fn (ExtendedSimpleMessage $message) => $container->get(ExtendedSimpleMessageHandler::class)->handle($message))
+            ->add(fn (ExceptionMessage $message) => $container->get(ExceptionMessageHandler::class)->handle($message));
+
+        return $this->eventDispatcher ??= new Dispatcher(new Provider($listeners));
     }
 }
