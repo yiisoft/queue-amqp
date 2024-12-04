@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\MessageSerializer;
+
 use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
@@ -18,6 +18,7 @@ use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\AMQP\Tests\Support\SimpleMessageHandler;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
@@ -44,7 +45,7 @@ final class DelayMiddlewareTest extends TestCase
                 $this->createConnection(),
                 new QueueSettings(),
             ),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             new SignalLoop(),
         );
         $queue = $this->makeQueue($adapter);
@@ -75,7 +76,7 @@ final class DelayMiddlewareTest extends TestCase
                 $this->createConnection(),
                 new QueueSettings(),
             ),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             new SignalLoop(),
         );
         $queue = $this->makeQueue($adapter);
@@ -83,7 +84,7 @@ final class DelayMiddlewareTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("This middleware works only with the $adapterClass. $fakeAdapterClass given.");
         $queue->push(
-            new Message('simple', 'test-delay-middleware-main'),
+            new Message(SimpleMessageHandler::class, 'test-delay-middleware-main'),
             new DelayMiddleware(3),
         );
     }
