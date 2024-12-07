@@ -10,7 +10,6 @@ use Psr\Log\NullLogger;
 use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
@@ -18,6 +17,7 @@ use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\AMQP\Tests\Support\MainTestCase;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
@@ -134,7 +134,7 @@ abstract class UnitTestCase extends MainTestCase
     {
         return $this->adapter ??= new Adapter(
             $this->getQueueProvider(),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
     }

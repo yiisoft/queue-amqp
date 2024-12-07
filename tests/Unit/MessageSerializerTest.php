@@ -10,10 +10,10 @@ use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\Exception\NoKeyInPayloadException;
-use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 
 /**
  * Testing message serialization options
@@ -49,7 +49,7 @@ final class MessageSerializerTest extends UnitTestCase
             $queueProvider
                 ->withQueueSettings(new QueueSettings($queueExchangeName))
                 ->withExchangeSettings(new ExchangeSettings($queueExchangeName)),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
     }
