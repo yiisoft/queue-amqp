@@ -15,6 +15,7 @@ use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\JobFailureException;
+use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
@@ -41,7 +42,9 @@ final class QueueTest extends UnitTestCase
 
         $this->expectException(NotImplementedException::class);
         $this->expectExceptionMessage("Status check is not supported by the adapter $adapterClass.");
-        $adapter->status($message->getId());
+
+        $messageId = (string)($message->getMetadata()[IdEnvelope::MESSAGE_ID_KEY] ?? 'null');
+        $adapter->status($messageId);
     }
 
     /**
