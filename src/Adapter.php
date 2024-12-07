@@ -8,12 +8,11 @@ use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
-use Yiisoft\Queue\AMQP\ExistingMessagesConsumer;
-use Yiisoft\Queue\AMQP\MessageSerializerInterface;
-use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 
 final class Adapter implements AdapterInterface {
     /**
@@ -33,10 +32,10 @@ final class Adapter implements AdapterInterface {
      * @return $this
      */
     public function withChannel(string $channel): self {
-        $instance = clone $this;
-        $instance->queueProvider = $this->queueProvider->withChannelName($channel);
+        $new = clone $this;
+        $new->queueProvider = $this->queueProvider->withChannelName($channel);
 
-        return $instance;
+        return $new;
     }
 
     /**
@@ -44,10 +43,14 @@ final class Adapter implements AdapterInterface {
      */
     public function runExisting(callable $handlerCallback): void {
         $channel = $this->queueProvider->getChannel();
-        (new ExistingMessagesConsumer($channel, $this->queueProvider
-            ->getQueueSettings()
-            ->getName(), $this->serializer))
-            ->consume($handlerCallback);
+        $queueName = $this->queueProvider->getQueueSettings()->getName();
+        $consumer = new ExistingMessagesConsumer(
+            $channel,
+            $queueName,
+            $this->serializer
+        );
+
+        $consumer->consume($handlerCallback);
     }
 
     /**
@@ -55,7 +58,7 @@ final class Adapter implements AdapterInterface {
      * @return JobStatus
      */
     public function status(string|int $id): JobStatus {
-        throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
+        throw new NotImplementedException(sprintf('Status check is not supported by the adapter %s.', self::class));
     }
 
     /**
@@ -69,20 +72,18 @@ final class Adapter implements AdapterInterface {
             array_merge(['message_id' => uniqid('', true)], $this->queueProvider->getMessageProperties())
         );
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
-        $this->queueProvider
-            ->getChannel()
-            ->basic_publish(
-                $amqpMessage,
-                $exchangeSettings?->getName() ?? '',
-                $exchangeSettings ? '' : $this->queueProvider
-                    ->getQueueSettings()
-                    ->getName()
-            );
+        $channel = $this->queueProvider->getChannel();
+        $channel->basic_publish(
+            $amqpMessage,
+            $exchangeSettings?->getName() ?? '',
+            $exchangeSettings ? '' : $this->queueProvider
+                ->getQueueSettings()
+                ->getName()
+        );
         /** @var string $messageId */
         $messageId = $amqpMessage->get('message_id');
-        $message->setId($messageId);
 
-        return $message;
+        return new IdEnvelope($message, $messageId);
     }
 
     /**
@@ -91,20 +92,18 @@ final class Adapter implements AdapterInterface {
      */
     public function subscribe(callable $handlerCallback): void {
         $channel = $this->queueProvider->getChannel();
+        $queueName = $this->queueProvider->getQueueSettings()->getName();
+
         $channel->basic_consume(
-            $this->queueProvider
-                ->getQueueSettings()
-                ->getName(),
-            $this->queueProvider
-                ->getQueueSettings()
-                ->getName(),
+            $queueName,
+            $queueName,
             false,
             false,
             false,
             true,
             function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
                 try {
-                    $handlerCallback($this->serializer->unserialize($amqpMessage->body));
+                    $handlerCallback($this->serializer->unserialize($amqpMessage->getBody()));
                     $channel->basic_ack($amqpMessage->getDeliveryTag());
                 } catch (Throwable $exception) {
                     $consumerTag = $amqpMessage->getConsumerTag();
