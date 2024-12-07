@@ -8,8 +8,6 @@ use Exception;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
-use Yiisoft\Queue\AMQP\MessageSerializer;
-use Yiisoft\Queue\AMQP\MessageSerializerInterface;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
@@ -17,7 +15,9 @@ use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\JobFailureException;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
 
 final class QueueTest extends UnitTestCase
@@ -84,7 +84,7 @@ final class QueueTest extends UnitTestCase
             $queueProvider
                 ->withQueueSettings(new QueueSettings($this->queueName))
                 ->withExchangeSettings(new ExchangeSettings($this->exchangeName)),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
         $queue = $this->getDefaultQueue($adapter);
@@ -112,7 +112,7 @@ final class QueueTest extends UnitTestCase
         $adapter = new Adapter(
             $queueProvider
                 ->withChannelName('yii-queue'),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $mockLoop,
         );
         $queue = $this->getDefaultQueue($adapter);

@@ -7,7 +7,7 @@ namespace Yiisoft\Queue\AMQP\Exception;
 use InvalidArgumentException;
 use Throwable;
 use Yiisoft\FriendlyException\FriendlyExceptionInterface;
-use Yiisoft\Queue\AMQP\MessageSerializerInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 
 class NoKeyInPayloadException extends InvalidArgumentException implements FriendlyExceptionInterface
 {
