@@ -19,12 +19,22 @@ final class Adapter implements AdapterInterface {
      * @param QueueProviderInterface $queueProvider
      * @param MessageSerializerInterface $serializer
      * @param LoopInterface $loop
+     * @param string $channel
      */
     public function __construct(
         private QueueProviderInterface              $queueProvider,
         private readonly MessageSerializerInterface $serializer,
         private readonly LoopInterface              $loop,
+        private string $channel
     ) {
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getChannelName(): string {
+        return $this->channel;
     }
 
     /**
@@ -32,8 +42,12 @@ final class Adapter implements AdapterInterface {
      * @return $this
      */
     public function withChannel(string $channel): self {
+        if ($channel === $this->channel) {
+            return $this;
+        }
+
         $new = clone $this;
-        $new->queueProvider = $this->queueProvider->withChannelName($channel);
+        $new->channel = $channel;
 
         return $new;
     }
