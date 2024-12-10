@@ -10,84 +10,114 @@ use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 
-final class Adapter implements AdapterInterface
-{
+final class Adapter implements AdapterInterface {
+    /**
+     * @param QueueProviderInterface $queueProvider
+     * @param MessageSerializerInterface $serializer
+     * @param LoopInterface $loop
+     * @param string $channel
+     */
     public function __construct(
-        private QueueProviderInterface $queueProvider,
-        private MessageSerializerInterface $serializer,
-        private LoopInterface $loop,
+        private QueueProviderInterface              $queueProvider,
+        private readonly MessageSerializerInterface $serializer,
+        private readonly LoopInterface              $loop,
+        private string $channel
     ) {
-    }
 
-    public function withChannel(string $channel): self
-    {
-        $instance = clone $this;
-        $instance->queueProvider = $this->queueProvider->withChannelName($channel);
-
-        return $instance;
     }
 
     /**
-     * @param callable(MessageInterface): bool  $handlerCallback
+     * @return string
      */
-    public function runExisting(callable $handlerCallback): void
-    {
+    public function getChannelName(): string {
+        return $this->channel;
+    }
+
+    /**
+     * @param string $channel
+     * @return $this
+     */
+    public function withChannel(string $channel): self {
+        if ($channel === $this->channel) {
+            return $this;
+        }
+
+        $new = clone $this;
+        $new->channel = $channel;
+
+        return $new;
+    }
+
+    /**
+     * @param callable(MessageInterface): bool $handlerCallback
+     */
+    public function runExisting(callable $handlerCallback): void {
         $channel = $this->queueProvider->getChannel();
-        (new ExistingMessagesConsumer($channel, $this->queueProvider
-            ->getQueueSettings()
-            ->getName(), $this->serializer))
-            ->consume($handlerCallback);
+        $queueName = $this->queueProvider->getQueueSettings()->getName();
+        $consumer = new ExistingMessagesConsumer(
+            $channel,
+            $queueName,
+            $this->serializer
+        );
+
+        $consumer->consume($handlerCallback);
     }
 
     /**
-     * @return never
+     * @param string|int $id
+     * @return JobStatus
      */
-    public function status(string $id): JobStatus
-    {
-        throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
+    public function status(string|int $id): JobStatus {
+        throw new NotImplementedException(sprintf('Status check is not supported by the adapter %s.', self::class));
     }
 
-    public function push(MessageInterface $message): void
-    {
+    /**
+     * @param MessageInterface $message
+     * @return MessageInterface
+     */
+    public function push(MessageInterface $message): MessageInterface {
         $payload = $this->serializer->serialize($message);
         $amqpMessage = new AMQPMessage(
             $payload,
-            array_merge(['message_id' => uniqid(more_entropy: true)], $this->queueProvider->getMessageProperties())
+            array_merge(['message_id' => uniqid('', true)], $this->queueProvider->getMessageProperties())
         );
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
-        $this->queueProvider
-            ->getChannel()
-            ->basic_publish(
-                $amqpMessage,
-                $exchangeSettings?->getName() ?? '',
-                $exchangeSettings ? '' : $this->queueProvider
-                    ->getQueueSettings()
-                    ->getName()
-            );
+        $channel = $this->queueProvider->getChannel();
+        $channel->basic_publish(
+            $amqpMessage,
+            $exchangeSettings?->getName() ?? '',
+            $exchangeSettings ? '' : $this->queueProvider
+                ->getQueueSettings()
+                ->getName()
+        );
         /** @var string $messageId */
         $messageId = $amqpMessage->get('message_id');
-        $message->setId($messageId);
+
+        return new IdEnvelope($message, $messageId);
     }
 
-    public function subscribe(callable $handlerCallback): void
-    {
+    /**
+     * @param callable $handlerCallback
+     * @return void
+     */
+    public function subscribe(callable $handlerCallback): void {
         $channel = $this->queueProvider->getChannel();
+        $queueName = $this->queueProvider->getQueueSettings()->getName();
+
         $channel->basic_consume(
-            $this->queueProvider
-                ->getQueueSettings()
-                ->getName(),
-            $this->queueProvider
-                ->getQueueSettings()
-                ->getName(),
+            $queueName,
+            $queueName,
             false,
             false,
             false,
             true,
             function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
                 try {
-                    $handlerCallback($this->serializer->unserialize($amqpMessage->body));
+                    $handlerCallback($this->serializer->unserialize($amqpMessage->getBody()));
                     $channel->basic_ack($amqpMessage->getDeliveryTag());
                 } catch (Throwable $exception) {
                     $consumerTag = $amqpMessage->getConsumerTag();
@@ -105,13 +135,18 @@ final class Adapter implements AdapterInterface
         }
     }
 
-    public function getQueueProvider(): QueueProviderInterface
-    {
+    /**
+     * @return QueueProviderInterface
+     */
+    public function getQueueProvider(): QueueProviderInterface {
         return $this->queueProvider;
     }
 
-    public function withQueueProvider(QueueProviderInterface $queueProvider): self
-    {
+    /**
+     * @param QueueProviderInterface $queueProvider
+     * @return $this
+     */
+    public function withQueueProvider(QueueProviderInterface $queueProvider): self {
         $new = clone $this;
         $new->queueProvider = $queueProvider;
 
