@@ -17,9 +17,9 @@ final class ExistingMessagesConsumer
     private bool $messageConsumed = false;
 
     public function __construct(
-        private AMQPChannel $channel,
-        private string $queueName,
-        private MessageSerializerInterface $serializer
+        private readonly AMQPChannel $channel,
+        private readonly string $queueName,
+        private readonly MessageSerializerInterface $serializer
     ) {
     }
 
@@ -37,7 +37,7 @@ final class ExistingMessagesConsumer
             false,
             function (AMQPMessage $amqpMessage) use ($callback): void {
                 try {
-                    $message = $this->serializer->unserialize($amqpMessage->body);
+                    $message = $this->serializer->unserialize($amqpMessage->getBody());
                     if ($this->messageConsumed = $callback($message)) {
                         $this->channel->basic_ack($amqpMessage->getDeliveryTag());
                     }

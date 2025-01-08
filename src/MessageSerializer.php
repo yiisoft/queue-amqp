@@ -7,6 +7,7 @@ namespace Yiisoft\Queue\AMQP;
 use InvalidArgumentException;
 use JsonException;
 use Yiisoft\Queue\AMQP\Exception\NoKeyInPayloadException;
+use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Message\MessageInterface;
 
@@ -18,7 +19,7 @@ class MessageSerializer implements MessageSerializerInterface
     public function serialize(MessageInterface $message): string
     {
         $payload = [
-            'id' => $message->getId(),
+            'id' => IdEnvelope::fromMessage($message)->getId(),
             'name' => $message->getHandlerName(),
             'data' => $message->getData(),
             'meta' => $message->getMetadata(),
@@ -32,7 +33,7 @@ class MessageSerializer implements MessageSerializerInterface
      * @throws NoKeyInPayloadException
      * @throws InvalidArgumentException
      */
-    public function unserialize(string $value): Message
+    public function unserialize(string $value): MessageInterface
     {
         $payload = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
         if (!is_array($payload)) {
@@ -45,7 +46,7 @@ class MessageSerializer implements MessageSerializerInterface
         }
 
         $id = $payload['id'] ?? null;
-        if ($id !== null && !is_string($id)) {
+        if ($id !== null && !is_string($id) && !is_int($id)) {
             throw new NoKeyInPayloadException('id', $payload);
         }
 
@@ -54,11 +55,12 @@ class MessageSerializer implements MessageSerializerInterface
             throw new NoKeyInPayloadException('meta', $payload);
         }
 
-        return new Message(
+        $message = new Message(
             $name,
             $payload['data'] ?? null,
             $meta,
-            $id,
         );
+
+        return $id === null ? $message : new IdEnvelope($message, $id);
     }
 }

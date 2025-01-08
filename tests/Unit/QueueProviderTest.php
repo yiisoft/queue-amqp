@@ -60,7 +60,7 @@ final class QueueProviderTest extends UnitTestCase
         self::assertNotNull($result);
         self::assertEquals($time, $result);
 
-        $messageBody = json_decode($message->body, true, 512, JSON_THROW_ON_ERROR);
+        $messageBody = json_decode($message->getBody(), true, 512, JSON_THROW_ON_ERROR);
         self::assertEquals($messageBody['data']['payload']['time'], $result);
     }
 
