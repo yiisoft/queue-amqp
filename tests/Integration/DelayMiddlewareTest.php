@@ -9,7 +9,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;

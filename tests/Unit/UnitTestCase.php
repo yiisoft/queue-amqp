@@ -10,7 +10,6 @@ use Psr\Log\NullLogger;
 use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
