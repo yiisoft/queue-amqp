@@ -8,6 +8,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface as MessageSerializerInterfaceAlias;
 
 /**
  * @internal
@@ -19,7 +20,7 @@ final class ExistingMessagesConsumer
     public function __construct(
         private readonly AMQPChannel $channel,
         private readonly string $queueName,
-        private readonly MessageSerializerInterface $serializer
+        private readonly MessageSerializerInterfaceAlias $serializer
     ) {
     }
 

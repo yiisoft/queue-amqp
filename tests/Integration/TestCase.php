@@ -48,5 +48,10 @@ abstract class TestCase extends MainTestCase
         $process = new Process($command);
         $this->processes[] = $process;
         $process->start();
+
+        usleep(500000);
+        if (!$process->isRunning()) {
+            throw new \Exception('Failed to start queue listener process');
+        }
     }
 }

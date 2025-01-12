@@ -13,6 +13,7 @@ use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 
 final class QueueProviderTest extends UnitTestCase
@@ -34,7 +35,7 @@ final class QueueProviderTest extends UnitTestCase
                 ->withExchangeSettings(
                     new ExchangeSettings($this->exchangeName)
                 ),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
 
@@ -81,7 +82,7 @@ final class QueueProviderTest extends UnitTestCase
                     new ExchangeSettings('yii-queue-test-with-channel-name')
                 )
                 ->withChannelName('yii-queue-test-channel-name'),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
     }

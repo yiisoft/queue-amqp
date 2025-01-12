@@ -11,6 +11,7 @@ use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 
 final class QueueSettingsTest extends UnitTestCase
@@ -40,7 +41,7 @@ final class QueueSettingsTest extends UnitTestCase
                 ->withExchangeSettings(
                     new ExchangeSettings('yii-queue-test-queue-common-settings')
                 ),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
 
@@ -85,7 +86,7 @@ final class QueueSettingsTest extends UnitTestCase
                 ->withExchangeSettings(
                     new ExchangeSettings('yii-queue-test-queue-settings-arg')
                 ),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
 

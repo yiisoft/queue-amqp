@@ -6,11 +6,11 @@ namespace Yiisoft\Queue\AMQP\Tests\Support;
 
 use BackedEnum;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\AMQP\MessageSerializerInterface;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Enum\JobStatus;
 use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 
 final class FakeAdapter implements AdapterInterface
 {
