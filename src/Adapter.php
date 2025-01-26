@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\AMQP;
 
+use BackedEnum;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\JobStatus;
+use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 
 final class Adapter implements AdapterInterface
 {
     public function __construct(
         private QueueProviderInterface $queueProvider,
-        private MessageSerializerInterface $serializer,
-        private LoopInterface $loop,
+        private readonly MessageSerializerInterface $serializer,
+        private readonly LoopInterface $loop,
     ) {
     }
 
-    public function withChannel(string $channel): self
+    public function withChannel(BackedEnum|string $channel): self
     {
         $instance = clone $this;
-        $instance->queueProvider = $this->queueProvider->withChannelName($channel);
+        $channelName = is_string($channel) ? $channel : (string) $channel->value;
+        $instance->queueProvider = $this->queueProvider->withChannelName($channelName);
 
         return $instance;
     }
@@ -44,12 +48,12 @@ final class Adapter implements AdapterInterface
     /**
      * @return never
      */
-    public function status(string $id): JobStatus
+    public function status(int|string $id): JobStatus
     {
         throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
     }
 
-    public function push(MessageInterface $message): void
+    public function push(MessageInterface $message): MessageInterface
     {
         $payload = $this->serializer->serialize($message);
         $amqpMessage = new AMQPMessage(
@@ -68,7 +72,8 @@ final class Adapter implements AdapterInterface
             );
         /** @var string $messageId */
         $messageId = $amqpMessage->get('message_id');
-        $message->setId($messageId);
+
+        return new IdEnvelope($message, $messageId);
     }
 
     public function subscribe(callable $handlerCallback): void
@@ -87,7 +92,7 @@ final class Adapter implements AdapterInterface
             true,
             function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
                 try {
-                    $handlerCallback($this->serializer->unserialize($amqpMessage->body));
+                    $handlerCallback($this->serializer->unserialize($amqpMessage->getBody()));
                     $channel->basic_ack($amqpMessage->getDeliveryTag());
                 } catch (Throwable $exception) {
                     $consumerTag = $amqpMessage->getConsumerTag();
@@ -116,5 +121,10 @@ final class Adapter implements AdapterInterface
         $new->queueProvider = $queueProvider;
 
         return $new;
+    }
+
+    public function getChannel(): string
+    {
+        return $this->queueProvider->getQueueSettings()->getName();
     }
 }

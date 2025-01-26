@@ -18,7 +18,7 @@ final class QueueProvider implements QueueProviderInterface
     private ?AMQPChannel $channel = null;
 
     public function __construct(
-        private AbstractConnection $connection,
+        private readonly AbstractConnection $connection,
         private QueueSettingsInterface $queueSettings,
         private ?ExchangeSettingsInterface $exchangeSettings = null,
         private array $messageProperties = [],

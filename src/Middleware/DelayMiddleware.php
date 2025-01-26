@@ -17,7 +17,7 @@ use Yiisoft\Queue\Middleware\Push\PushRequest;
 
 final class DelayMiddleware implements DelayMiddlewareInterface
 {
-    public function __construct(private float $delayInSeconds, private bool $forcePersistentMessages = true)
+    public function __construct(private float $delayInSeconds, private readonly bool $forcePersistentMessages = true)
     {
     }
 

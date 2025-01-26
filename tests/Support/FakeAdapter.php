@@ -4,44 +4,51 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\AMQP\Tests\Support;
 
+use BackedEnum;
+use LogicException;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\AMQP\MessageSerializerInterface;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\Enum\JobStatus;
+use Yiisoft\Queue\JobStatus;
 use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\Message\MessageSerializerInterface;
 
 final class FakeAdapter implements AdapterInterface
 {
     public function __construct(
-        private QueueProviderInterface $queueProvider,
-        private MessageSerializerInterface $serializer,
-        private LoopInterface $loop,
+        private readonly QueueProviderInterface $queueProvider,
+        private readonly MessageSerializerInterface $serializer,
+        private readonly LoopInterface $loop,
     ) {
     }
 
     public function runExisting(callable $handlerCallback): void
     {
-        // TODO: Implement runExisting() method.
+        throw new LogicException('Method not implemented');
     }
 
-    public function status(string $id): JobStatus
+    public function status(int|string $id): JobStatus
     {
-        // TODO: Implement status() method.
+        throw new LogicException('Method not implemented');
     }
 
-    public function push(MessageInterface $message): void
+    public function push(MessageInterface $message): MessageInterface
     {
-        // TODO: Implement push() method.
+        throw new LogicException('Method not implemented');
     }
 
     public function subscribe(callable $handlerCallback): void
     {
-        // TODO: Implement subscribe() method.
+        throw new LogicException('Method not implemented');
     }
 
-    public function withChannel(string $channel): AdapterInterface
+    public function withChannel(BackedEnum|string $channel): AdapterInterface
     {
-        // TODO: Implement withChannel() method.
+        throw new LogicException('Method not implemented');
+    }
+
+    public function getChannel(): string
+    {
+        throw new LogicException('Method not implemented');
     }
 }

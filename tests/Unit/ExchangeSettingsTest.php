@@ -7,10 +7,10 @@ namespace Yiisoft\Queue\AMQP\Tests\Unit;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Wire\AMQPTable;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\MessageSerializer;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\Message\JsonMessageSerializer;
 
 final class ExchangeSettingsTest extends UnitTestCase
 {
@@ -38,7 +38,7 @@ final class ExchangeSettingsTest extends UnitTestCase
                         ])
                     )
                 ),
-            new MessageSerializer(),
+            new JsonMessageSerializer(),
             $this->getLoop(),
         );
         $exchangeSettings = $adapter->getQueueProvider()->getExchangeSettings();
