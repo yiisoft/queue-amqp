@@ -1,0 +1,11 @@
+{
+    "php.validate.executablePath": "/home/viktor/.vscode/php82",
+    "php.executablePath": "/home/viktor/.vscode/php82",
+    "better-phpunit.docker.enable": true,
+    "better-phpunit.docker.command": "cd tests && docker compose run --rm php81",
+    "better-phpunit.docker.paths": {
+        "${workspaceRoot}": "/app"
+    },
+    "better-phpunit.phpunitBinary": "vendor/bin/phpunit",
+    "better-phpunit.commandSuffix": "--colors=auto"
+}

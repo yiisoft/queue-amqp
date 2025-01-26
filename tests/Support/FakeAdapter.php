@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP\Tests\Support;
 
 use BackedEnum;
+use LogicException;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
@@ -23,31 +24,31 @@ final class FakeAdapter implements AdapterInterface
 
     public function runExisting(callable $handlerCallback): void
     {
-        // TODO: Implement runExisting() method.
+        throw new LogicException('Method not implemented');
     }
 
     public function status(int|string $id): JobStatus
     {
-        // TODO: Implement status() method.
+        throw new LogicException('Method not implemented');
     }
 
     public function push(MessageInterface $message): MessageInterface
     {
-        // TODO: Implement push() method.
+        throw new LogicException('Method not implemented');
     }
 
     public function subscribe(callable $handlerCallback): void
     {
-        // TODO: Implement subscribe() method.
+        throw new LogicException('Method not implemented');
     }
 
     public function withChannel(BackedEnum|string $channel): AdapterInterface
     {
-        // TODO: Implement withChannel() method.
+        throw new LogicException('Method not implemented');
     }
 
     public function getChannel(): string
     {
-        // TODO: Implement getChannel() method.
+        throw new LogicException('Method not implemented');
     }
 }
