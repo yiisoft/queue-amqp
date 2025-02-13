@@ -24,6 +24,12 @@ services:
       - ..:/app
       - ./runtime/.composer83:/root/.composer
 
+  php84:
+    <<: *php
+    volumes:
+      - ..:/app
+      - ./runtime/.composer84:/root/.composer
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     ports:

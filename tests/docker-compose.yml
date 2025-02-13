@@ -43,6 +43,15 @@ services:
       args:
         PHP_VERSION: '8.3'
 
+  php84:
+    <<: *php
+    container_name: yii-queue-amqp-php84
+    build:
+      context: ..
+      dockerfile: tests/docker/php/Dockerfile
+      args:
+        PHP_VERSION: '8.4'
+
   rabbitmq:
     image: rabbitmq:3-alpine
     healthcheck:
