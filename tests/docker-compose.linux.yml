@@ -11,3 +11,6 @@ services:
 
   php83:
     <<: *php
+
+  php84:
+    <<: *php
