@@ -69,9 +69,9 @@ final class QueueProvider implements QueueProviderInterface
             return $this;
         }
 
-        if ($this->exchangeSettings !== null) {
-            throw new ExchangeDeclaredException();
-        }
+        //if ($this->exchangeSettings !== null) {
+        //    throw new ExchangeDeclaredException();
+        //}
 
         $instance = clone $this;
         $instance->channel = null;
