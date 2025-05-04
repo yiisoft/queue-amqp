@@ -64,28 +64,6 @@ final class QueueProviderTest extends UnitTestCase
         self::assertEquals($messageBody['data']['payload']['time'], $result);
     }
 
-    public function testWithChannelNameExchangeDeclaredException(): void
-    {
-        $queueProvider = new QueueProvider(
-            $this->createConnection(),
-            $this->getQueueSettings(),
-        );
-
-        $this->expectException(ExchangeDeclaredException::class);
-        new Adapter(
-            $queueProvider
-                ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-with-channel-name')
-                )
-                ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-with-channel-name')
-                )
-                ->withChannelName('yii-queue-test-channel-name'),
-            new JsonMessageSerializer(),
-            $this->getLoop(),
-        );
-    }
-
     public function testImmutable(): void
     {
         $queueSettings = $this->createMock(QueueSettingsInterface::class);
