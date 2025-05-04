@@ -6,7 +6,6 @@ namespace Yiisoft\Queue\AMQP;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
-use Yiisoft\Queue\AMQP\Exception\ExchangeDeclaredException;
 use Yiisoft\Queue\AMQP\Settings\Exchange;
 use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
@@ -38,11 +37,8 @@ final class QueueProvider implements QueueProviderInterface
         if ($this->channel === null) {
             $this->channel = $this->connection->channel();
             $this->channel->queue_declare(...$this->queueSettings->getPositionalSettings());
-
-            if ($this->exchangeSettings !== null) {
-                $this->channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
-                $this->channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
-            }
+            $this->channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
+            $this->channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
         }
 
         return $this->channel;
@@ -67,10 +63,6 @@ final class QueueProvider implements QueueProviderInterface
     {
         if ($channel === $this->queueSettings->getName()) {
             return $this;
-        }
-
-        if ($this->exchangeSettings !== null) {
-            throw new ExchangeDeclaredException();
         }
 
         $instance = clone $this;
