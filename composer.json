@@ -39,7 +39,7 @@
         "spatie/phpunit-watcher": "^1.23",
         "symfony/console": "^6.0",
         "symfony/process": "^6.0",
-        "vimeo/psalm": "^5.20||^6.0",
+        "vimeo/psalm": "^5.26.1 || ^6.10.3",
         "yiisoft/test-support": "^3.0"
     },
     "autoload": {
