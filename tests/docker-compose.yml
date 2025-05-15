@@ -1,5 +1,3 @@
-version: "3.5"
-
 x-php: &php
   volumes:
     - ./runtime:/app/tests/runtime

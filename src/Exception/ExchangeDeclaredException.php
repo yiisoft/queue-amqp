@@ -7,10 +7,8 @@ namespace Yiisoft\Queue\AMQP\Exception;
 use InvalidArgumentException;
 use Yiisoft\FriendlyException\FriendlyExceptionInterface;
 
-class ExchangeDeclaredException extends InvalidArgumentException implements FriendlyExceptionInterface
+final class ExchangeDeclaredException extends InvalidArgumentException implements FriendlyExceptionInterface
 {
-    protected $message = 'Can\'t set channel name implicitly when an exchange is declared';
-
     public function getName(): string
     {
         return 'Exchange is declared';
