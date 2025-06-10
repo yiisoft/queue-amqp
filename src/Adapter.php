@@ -17,6 +17,8 @@ use Yiisoft\Queue\Message\MessageSerializerInterface;
 
 final class Adapter implements AdapterInterface
 {
+    private ?AMQPMessage $amqpMessage = null;
+
     public function __construct(
         private QueueProviderInterface $queueProvider,
         private readonly MessageSerializerInterface $serializer,
@@ -27,8 +29,10 @@ final class Adapter implements AdapterInterface
     public function withChannel(BackedEnum|string $channel): self
     {
         $instance = clone $this;
+
         $channelName = is_string($channel) ? $channel : (string) $channel->value;
         $instance->queueProvider = $this->queueProvider->withChannelName($channelName);
+        $instance->amqpMessage = null;
 
         return $instance;
     }
@@ -55,12 +59,20 @@ final class Adapter implements AdapterInterface
 
     public function push(MessageInterface $message): MessageInterface
     {
-        $payload = $this->serializer->serialize($message);
-        $amqpMessage = new AMQPMessage(
-            $payload,
-            array_merge(['message_id' => uniqid(more_entropy: true)], $this->queueProvider->getMessageProperties())
+        if (empty($message->getMetadata()[IdEnvelope::MESSAGE_ID_KEY])) {
+            $message = new IdEnvelope($message, uniqid(more_entropy: true));
+        }
+
+        $this->amqpMessage = $this->amqpMessage ?? new AMQPMessage(
+            '',
+            $this->queueProvider->getMessageProperties(),
         );
+        $amqpMessage = $this->amqpMessage;
+
+        $payload = $this->serializer->serialize($message);
+        $amqpMessage->setBody($payload);
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
+
         $this->queueProvider
             ->getChannel()
             ->basic_publish(
@@ -70,10 +82,8 @@ final class Adapter implements AdapterInterface
                     ->getQueueSettings()
                     ->getName()
             );
-        /** @var string $messageId */
-        $messageId = $amqpMessage->get('message_id');
 
-        return new IdEnvelope($message, $messageId);
+        return $message;
     }
 
     public function subscribe(callable $handlerCallback): void
