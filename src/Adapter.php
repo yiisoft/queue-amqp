@@ -59,10 +59,6 @@ final class Adapter implements AdapterInterface
 
     public function push(MessageInterface $message): MessageInterface
     {
-        if (empty($message->getMetadata()[IdEnvelope::MESSAGE_ID_KEY])) {
-            $message = new IdEnvelope($message, uniqid(more_entropy: true));
-        }
-
         $this->amqpMessage = $this->amqpMessage ?? new AMQPMessage(
             '',
             $this->queueProvider->getMessageProperties(),
