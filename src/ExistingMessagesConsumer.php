@@ -29,34 +29,36 @@ final class ExistingMessagesConsumer
      */
     public function consume(callable $callback): void
     {
-        $this->channel->basic_consume(
-            $this->queueName,
-            '',
-            false,
-            false,
-            false,
-            false,
-            function (AMQPMessage $amqpMessage) use ($callback): void {
-                try {
-                    $message = $this->serializer->unserialize($amqpMessage->getBody());
-                    if ($this->messageConsumed = $callback($message)) {
-                        $this->channel->basic_ack($amqpMessage->getDeliveryTag());
-                    }
-                } catch (Throwable $exception) {
-                    $this->messageConsumed = false;
-                    $consumerTag = $amqpMessage->getConsumerTag();
-                    if ($consumerTag !== null) {
-                        $this->channel->basic_cancel($consumerTag);
-                    }
+        $consumerTag = uniqid(more_entropy: true);
+        try {
+            $this->channel->basic_consume(
+                $this->queueName,
+                $consumerTag,
+                false,
+                false,
+                false,
+                false,
+                function (AMQPMessage $amqpMessage) use ($callback): void {
+                    try {
+                        $message = $this->serializer->unserialize($amqpMessage->getBody());
+                        if ($this->messageConsumed = $callback($message)) {
+                            $this->channel->basic_ack($amqpMessage->getDeliveryTag());
+                        }
+                    } catch (Throwable $exception) {
+                        $this->messageConsumed = false;
+                        $this->channel->basic_nack($amqpMessage->getDeliveryTag(), false, true);
 
-                    throw $exception;
+                        throw $exception;
+                    }
                 }
-            }
-        );
+            );
 
-        do {
-            $this->messageConsumed = false;
-            $this->channel->wait(null, true);
-        } while ($this->messageConsumed === true);
+            do {
+                $this->messageConsumed = false;
+                $this->channel->wait(null, true);
+            } while ($this->messageConsumed === true);
+        } finally {
+            $this->channel->basic_cancel($consumerTag, false, false);
+        }
     }
 }
