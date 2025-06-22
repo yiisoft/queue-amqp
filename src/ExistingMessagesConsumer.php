@@ -20,7 +20,8 @@ final class ExistingMessagesConsumer
     public function __construct(
         private readonly string $queueName,
         private readonly MessageSerializerInterface $serializer
-    ) {}
+    ) {
+    }
 
     /**
      * @param callable(MessageInterface): bool  $callback

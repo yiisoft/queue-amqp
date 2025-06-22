@@ -9,7 +9,6 @@ use PhpBench\Attributes\AfterMethods;
 use PhpBench\Attributes\BeforeMethods;
 use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\Revs;
-use PhpBench\Attributes\Skip;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
