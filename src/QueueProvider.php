@@ -15,7 +15,7 @@ final class QueueProvider implements QueueProviderInterface
 {
     public const EXCHANGE_NAME_DEFAULT = 'yii-queue';
 
-    private ?AMQPChannel $channel = null;
+    private ?int $channelId = null;
 
     public function __construct(
         private readonly AbstractConnection $connection,
@@ -28,24 +28,33 @@ final class QueueProvider implements QueueProviderInterface
         }
     }
 
-    public function __destruct()
+    public function __clone()
     {
-        $this->channel?->close();
+        $this->channelId = null;
     }
 
+    public function __destruct()
+    {
+        if ($this->channelId !== null) {
+            $this->connection->channel($this->channelId)->close();
+        }
+    }
+
+    /**
+     * Returns an AMQPChannel instance.
+     * IMPORTANT: Do NOT memorise the channel instance, as this will cause memory leaks on channel close!
+     */
     public function getChannel(): AMQPChannel
     {
-        if ($this->channel === null) {
-            $this->channel = $this->connection->channel();
-            $this->channel->queue_declare(...$this->queueSettings->getPositionalSettings());
+        $channel = $this->connection->channel($this->getChannelId());
+        $channel->queue_declare(...$this->queueSettings->getPositionalSettings());
 
-            if ($this->exchangeSettings !== null) {
-                $this->channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
-                $this->channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
-            }
+        if ($this->exchangeSettings !== null) {
+            $channel->exchange_declare(...$this->exchangeSettings->getPositionalSettings());
+            $channel->queue_bind($this->queueSettings->getName(), $this->exchangeSettings->getName());
         }
 
-        return $this->channel;
+        return $channel;
     }
 
     public function getQueueSettings(): QueueSettingsInterface
@@ -74,8 +83,10 @@ final class QueueProvider implements QueueProviderInterface
         }
 
         $instance = clone $this;
-        $instance->channel = null;
         $instance->queueSettings = $instance->queueSettings->withName($channel);
+        if ($this->channelId !== null) {
+            $instance->channelId = null;
+        }
 
         return $instance;
     }
@@ -111,5 +122,14 @@ final class QueueProvider implements QueueProviderInterface
         $new->messageProperties = $properties;
 
         return $new;
+    }
+
+    private function getChannelId(): int
+    {
+        if ($this->channelId === null) {
+            $this->channelId = $this->connection->get_free_channel_id();
+        }
+
+        return $this->channelId;
     }
 }

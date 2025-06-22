@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Benchmark;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpBench\Attributes\OutputMode;
-use PhpBench\Attributes\OutputTimeUnit;
+use PhpBench\Attributes\AfterMethods;
+use PhpBench\Attributes\BeforeMethods;
+use PhpBench\Attributes\Iterations;
+use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Skip;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
@@ -17,7 +19,7 @@ use Yiisoft\Queue\Message\Message;
 
 final class QueueBench
 {
-    private const CONSUME_REVISIONS = 100_000;
+    private const CONSUME_MESSAGE_COUNT = 10_000;
 
     private Adapter $adapter;
 
@@ -39,34 +41,39 @@ final class QueueBench
         $this->adapter = $adapter;
     }
 
-    #[\PhpBench\Attributes\BeforeMethods('cleanupQueue')]
-    #[OutputMode('throughput')]
-    #[OutputTimeUnit('seconds', 3)]
-    #[Skip]
+    /**
+     * How fast we can push 1 message
+     */
+    #[Iterations(5)]
+    #[Revs(self::CONSUME_MESSAGE_COUNT)]
+    #[BeforeMethods('cleanupQueue')]
+    #[AfterMethods('cleanupQueue')]
     public function benchPush(): void
     {
         $this->adapter->push(new Message('test', ['payload' => 'test']));
     }
 
-    public function cleanupQueue(): void
+    /**
+     * How fast we can consume 100_000 messages
+     */
+    #[Iterations(5)]
+    #[Revs(1)]
+    #[BeforeMethods('cleanupQueue')]
+    #[BeforeMethods('pushMessagesForConsume')]
+    public function benchConsume(): void
     {
         $this->adapter->runExisting(static fn (): bool => true);
     }
 
-    #[\PhpBench\Attributes\Iterations(5)]
-    #[\PhpBench\Attributes\Revs(self::CONSUME_REVISIONS)]
-    #[\PhpBench\Attributes\BeforeMethods('pushMessagesForConsume')]
-    #[OutputMode('throughput')]
-    #[OutputTimeUnit('seconds', 3)]
-    public function benchConsume(): void
-    {
-        $this->adapter->runExisting(static fn (): bool => false);
-    }
-
     public function pushMessagesForConsume(): void
     {
-        for ($i = 0; $i < self::CONSUME_REVISIONS; $i++) {
+        for ($i = 0; $i < self::CONSUME_MESSAGE_COUNT; $i++) {
             $this->adapter->push(new Message('test', ['payload' => 'test']));
         }
+    }
+
+    public function cleanupQueue(): void
+    {
+        $this->adapter->runExisting(static fn (): bool => true);
     }
 }
