@@ -58,7 +58,7 @@ final class Adapter implements AdapterInterface
 
     public function push(MessageInterface $message): MessageInterface
     {
-        $this->amqpMessage = $this->amqpMessage ?? new AMQPMessage(
+        $this->amqpMessage ??= new AMQPMessage(
             '',
             $this->queueProvider->getMessageProperties(),
         );
