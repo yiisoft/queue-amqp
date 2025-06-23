@@ -26,9 +26,51 @@ name: bechmark
 
 jobs:
   phpbench:
-    uses: yiisoft/actions/.github/workflows/phpbench.yml@master
-    with:
-      os: >-
-        ['ubuntu-latest', 'windows-latest']
-      php: >-
-        ['8.1', '8.2', '8.3', '8.4']
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - 81
+          - 82
+          - 83
+          - 84
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check if we need to create a baseline for a PR
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.ref }}" != "refs/heads/${{ github.event.repository.default_branch }}" ]]; then
+            echo "WITH_BENCH_BASELINE=1" >> $GITHUB_ENV
+          else
+            echo "WITH_BENCH_BASELINE=0" >> $GITHUB_ENV
+          fi
+
+      - name: "Baseline creation: Checkout default branch."
+        uses: actions/checkout@v4
+        if: ${{ env.WITH_BENCH_BASELINE == '1' }}
+        with:
+          path: default
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Build
+        if: ${{ env.WITH_BENCH_BASELINE == '1' }}
+        working-directory: ./tests
+        run: docker compose build php${{ matrix.php }}
+
+      - name: "Baseline creation: Run PhpBench."
+        if: ${{ env.WITH_BENCH_BASELINE == '1' }}
+        run: docker compose run --rm php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' --tag=default
+        working-directory: default
+
+      - name: "Run PhpBench."
+        working-directory: ./current
+        run: |
+          if [ "${{ env.WITH_BENCH_BASELINE }}" == '1' ]; then
+            docker compose run --rm php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' --ref=default --assert="mode(variant.time.avg) <= mode(baseline.time.avg) +/- 5%" > phpbench.log
+          else
+            docker compose run --rm php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' > phpbench.log
+          fi
