@@ -63,7 +63,7 @@ jobs:
       - name: "Baseline creation: Run PhpBench."
         if: ${{ env.WITH_BENCH_BASELINE == '1' }}
         run: docker compose run --rm php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' --tag=default
-        working-directory: default
+        working-directory: ./tests
 
       - name: "Run PhpBench."
         working-directory: ./tests
