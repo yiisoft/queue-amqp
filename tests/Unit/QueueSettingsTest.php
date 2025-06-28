@@ -49,7 +49,7 @@ final class QueueSettingsTest extends UnitTestCase
         self::assertTrue($queueSettings->isDurable());
         self::assertTrue($queueSettings->isPassive());
         self::assertTrue($queueSettings->isExclusive());
-        self::assertTrue($queueSettings->isAutoDeletable());
+        self::assertFalse($queueSettings->isAutoDeletable());
         self::assertTrue($queueSettings->hasNowait());
         self::assertNull($queueSettings->getTicket());
 
