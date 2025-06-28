@@ -7,7 +7,6 @@ namespace Yiisoft\Queue\AMQP\Tests\Integration;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Queue\AMQP\Tests\Integration\TestCase;
 use Yiisoft\Queue\Cli\SimpleLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
@@ -86,7 +85,7 @@ class ConsumeExistingMessagesTest extends TestCase
 
                 return true;
             });
-        };
+        }
 
         self::assertEquals($messageCount, $processingCount);
     }
