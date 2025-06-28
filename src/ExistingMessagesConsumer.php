@@ -59,6 +59,7 @@ final class ExistingMessagesConsumer
             } while ($this->messageConsumed === true);
         } finally {
             $this->channel->basic_cancel($consumerTag, false, false);
+            $this->channel->close();
         }
     }
 }
