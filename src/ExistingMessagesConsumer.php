@@ -43,6 +43,8 @@ final class ExistingMessagesConsumer
                         $message = $this->serializer->unserialize($amqpMessage->getBody());
                         if ($this->messageConsumed = $callback($message)) {
                             $this->channel->basic_ack($amqpMessage->getDeliveryTag());
+                        } else {
+                            $this->channel->basic_nack($amqpMessage->getDeliveryTag(), false, true);
                         }
                     } catch (Throwable $exception) {
                         $this->messageConsumed = false;
