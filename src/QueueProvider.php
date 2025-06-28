@@ -11,6 +11,9 @@ use Yiisoft\Queue\AMQP\Settings\Exchange;
 use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 
+/**
+ * @internal
+ */
 final class QueueProvider implements QueueProviderInterface
 {
     public const EXCHANGE_NAME_DEFAULT = 'yii-queue';
@@ -46,6 +49,11 @@ final class QueueProvider implements QueueProviderInterface
      */
     public function getChannel(): AMQPChannel
     {
+        if ($this->channelId !== null) {
+            return $this->connection->channel($this->channelId);
+        }
+
+        $this->channelId = $this->connection->get_free_channel_id();
         $channel = $this->connection->channel($this->getChannelId());
         $channel->queue_declare(...$this->queueSettings->getPositionalSettings());
 
@@ -122,6 +130,14 @@ final class QueueProvider implements QueueProviderInterface
         $new->messageProperties = $properties;
 
         return $new;
+    }
+
+    public function channelClose(): void
+    {
+        if ($this->channelId !== null) {
+            $this->connection->channel($this->channelId)->close();
+            $this->channelId = null;
+        }
     }
 
     private function getChannelId(): int
