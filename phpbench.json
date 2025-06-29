@@ -5,6 +5,6 @@
     "runner.retry_threshold": 5,
     "runner.revs": 100000,
     "runner.iterations": 5,
-    "runner.warmup": 5,
+    "runner.warmup": 0,
     "storage.xml_storage_path": "tests/runtime/.phpbench/storage"
 }
