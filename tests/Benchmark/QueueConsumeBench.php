@@ -68,8 +68,6 @@ final class QueueConsumeBench
             ),
             new QueueSettings(),
         );
-        $adapter = new Adapter($queueProvider, $serializer, $loop);
-
-        return $adapter;
+        return new Adapter($queueProvider, $serializer, $loop);
     }
 }
