@@ -18,9 +18,9 @@ use Yiisoft\Queue\Cli\SimpleLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 
-final class QueueBench
+final class QueuePushBench
 {
-    private const CONSUME_MESSAGE_COUNT = 10_000;
+    private const MESSAGE_COUNT = 10_000;
 
     private Adapter $adapter;
 
@@ -46,7 +46,7 @@ final class QueueBench
      * How fast we can push 1 message
      */
     #[Iterations(5)]
-    #[Revs(self::CONSUME_MESSAGE_COUNT)]
+    #[Revs(self::MESSAGE_COUNT)]
     #[BeforeMethods('cleanupQueue')]
     #[AfterMethods('cleanupQueue')]
     #[OutputMode('throughput')]
@@ -70,25 +70,6 @@ final class QueueBench
         $message = new Message('test', ['payload' => 'test']);
         for ($i = 0; $i < 100; $i++) {
             $this->adapter->push($message);
-        }
-    }
-
-    /**
-     * How fast we can consume 100_000 messages
-     */
-    #[Iterations(5)]
-    #[Revs(1)]
-    #[BeforeMethods('cleanupQueue')]
-    #[BeforeMethods('pushMessagesForConsume')]
-    public function benchConsume(): void
-    {
-        $this->adapter->runExisting(static fn (): bool => true);
-    }
-
-    public function pushMessagesForConsume(): void
-    {
-        for ($i = 0; $i < self::CONSUME_MESSAGE_COUNT; $i++) {
-            $this->adapter->push(new Message('test', ['payload' => 'test']));
         }
     }
 
