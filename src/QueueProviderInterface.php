@@ -8,6 +8,9 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 
+/**
+ * @internal
+ */
 interface QueueProviderInterface
 {
     public function getChannel(): AMQPChannel;
@@ -25,4 +28,6 @@ interface QueueProviderInterface
     public function withExchangeSettings(?ExchangeSettingsInterface $exchangeSettings): self;
 
     public function withMessageProperties(array $properties): self;
+
+    public function channelClose(): void;
 }
