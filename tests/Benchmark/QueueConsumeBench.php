@@ -36,11 +36,7 @@ final class QueueConsumeBench
     #[BeforeMethods('pushMessagesForConsume')]
     public function benchConsume(): void
     {
-        file_put_contents(__DIR__ . '/test.txt', "0\n");
-        $this->adapter->runExisting(static function () {
-            file_put_contents(__DIR__ . '/test.txt', "1\n", FILE_APPEND);
-            return true;
-        });
+        $this->adapter->runExisting(static fn(): bool => true);
     }
 
     public function pushMessagesForConsume(): void
