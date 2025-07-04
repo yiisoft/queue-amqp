@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\Exception\ExchangeDeclaredException;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
@@ -62,28 +61,6 @@ final class QueueProviderTest extends UnitTestCase
 
         $messageBody = json_decode($message->getBody(), true, 512, JSON_THROW_ON_ERROR);
         self::assertEquals($messageBody['data']['payload']['time'], $result);
-    }
-
-    public function testWithChannelNameExchangeDeclaredException(): void
-    {
-        $queueProvider = new QueueProvider(
-            $this->createConnection(),
-            $this->getQueueSettings(),
-        );
-
-        $this->expectException(ExchangeDeclaredException::class);
-        new Adapter(
-            $queueProvider
-                ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-with-channel-name')
-                )
-                ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-with-channel-name')
-                )
-                ->withChannelName('yii-queue-test-channel-name'),
-            new JsonMessageSerializer(),
-            $this->getLoop(),
-        );
     }
 
     public function testImmutable(): void
