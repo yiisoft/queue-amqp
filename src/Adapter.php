@@ -41,11 +41,7 @@ final class Adapter implements AdapterInterface
      */
     public function runExisting(callable $handlerCallback): void
     {
-        $channel = $this->queueProvider->getChannel();
-        (new ExistingMessagesConsumer($channel, $this->queueProvider
-            ->getQueueSettings()
-            ->getName(), $this->serializer))
-            ->consume($handlerCallback);
+        (new ExistingMessagesConsumer($this->queueProvider, $this->serializer))->consume($handlerCallback);
     }
 
     /**
