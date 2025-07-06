@@ -12,7 +12,7 @@ final class Queue implements QueueSettingsInterface
     public function __construct(
         private string $queueName = QueueInterface::DEFAULT_CHANNEL,
         private bool $passive = false,
-        private bool $durable = false,
+        private bool $durable = true,
         private bool $exclusive = false,
         private bool $autoDelete = false,
         private bool $nowait = false,
