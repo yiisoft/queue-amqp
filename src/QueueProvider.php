@@ -26,9 +26,6 @@ final class QueueProvider implements QueueProviderInterface
         private ?ExchangeSettingsInterface $exchangeSettings = null,
         private array $messageProperties = [],
     ) {
-        if ($this->exchangeSettings === null) {
-            $this->exchangeSettings = new Exchange(self::EXCHANGE_NAME_DEFAULT);
-        }
     }
 
     public function __clone()

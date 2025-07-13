@@ -12,9 +12,9 @@ use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FakeAdapter;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Queue\AMQP\Tests\Support\SimpleMessageHandler;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
@@ -43,6 +43,7 @@ final class DelayMiddlewareTest extends TestCase
             new QueueProvider(
                 $this->createConnection(),
                 new QueueSettings(),
+                new ExchangeSettings('yii-queue'),
             ),
             new JsonMessageSerializer(),
             new SignalLoop(),
@@ -74,6 +75,7 @@ final class DelayMiddlewareTest extends TestCase
             new QueueProvider(
                 $this->createConnection(),
                 new QueueSettings(),
+                new ExchangeSettings('yii-queue'),
             ),
             new JsonMessageSerializer(),
             new SignalLoop(),
@@ -96,9 +98,7 @@ final class DelayMiddlewareTest extends TestCase
             $this->createMock(LoggerInterface::class),
             new PushMiddlewareDispatcher(
                 new MiddlewareFactoryPush(
-                    new SimpleContainer([
-                        'simple' => new SimpleMessageHandler(new FileHelper()),
-                    ]),
+                    new SimpleContainer(),
                     new CallableFactory($this->createMock(ContainerInterface::class)),
                 ),
             ),

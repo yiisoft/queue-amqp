@@ -50,6 +50,10 @@ final class DelayMiddleware implements DelayMiddlewareInterface
             );
         }
 
+        if ($adapter->getQueueProvider()->getExchangeSettings() === null) {
+            throw new InvalidArgumentException('Message cannot be delayed to a queue without an exchange. Exchange is mandatory.');
+        }
+
         $queueProvider = $adapter->getQueueProvider();
         $exchangeSettings = $this->getExchangeSettings($queueProvider->getExchangeSettings());
         $queueSettings = $this->getQueueSettings($queueProvider->getQueueSettings(), $queueProvider->getExchangeSettings());

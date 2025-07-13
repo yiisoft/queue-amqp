@@ -7,6 +7,7 @@ use Symfony\Component\Console\Application;
 use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
+use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\AMQP\Tests\Support\SimpleMessageHandler;
@@ -23,6 +24,7 @@ use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
 use Yiisoft\Queue\Provider\PrototypeQueueProvider;
 use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
@@ -51,7 +53,8 @@ $adapter = new Adapter(
             getenv('RABBITMQ_USER'),
             getenv('RABBITMQ_PASSWORD'),
         ),
-        new QueueSettings(),
+        new QueueSettings(queueName: QueueInterface::DEFAULT_CHANNEL),
+        new ExchangeSettings(exchangeName: QueueInterface::DEFAULT_CHANNEL),
     ),
     new JsonMessageSerializer(),
     $loop,
