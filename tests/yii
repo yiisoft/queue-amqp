@@ -54,7 +54,7 @@ $adapter = new Adapter(
             getenv('RABBITMQ_PASSWORD'),
         ),
         new QueueSettings(queueName: QueueInterface::DEFAULT_CHANNEL),
-        new ExchangeSettings(exchangeName: QueueInterface::DEFAULT_CHANNEL),
+        new ExchangeSettings(exchangeName: QueueProvider::EXCHANGE_NAME_DEFAULT),
     ),
     new JsonMessageSerializer(),
     $loop,
