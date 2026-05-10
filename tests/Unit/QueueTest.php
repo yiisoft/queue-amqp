@@ -7,14 +7,14 @@ namespace Yiisoft\Queue\AMQP\Tests\Unit;
 use Exception;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\Exception\JobFailureException;
+use Yiisoft\Queue\Exception\MessageFailureException;
+use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
@@ -31,18 +31,13 @@ final class QueueTest extends UnitTestCase
     public function testStatus(): void
     {
         $adapter = $this->getAdapter();
-        $adapterClass = $adapter::class;
-
         $queue = $this->getDefaultQueue($adapter);
 
         $message = new Message('ext-simple', null);
-        $queue->push(
-            $message,
-        );
+        $queue->push($message);
 
-        $this->expectException(NotImplementedException::class);
-        $this->expectExceptionMessage("Status check is not supported by the adapter $adapterClass.");
-        $adapter->status(IdEnvelope::fromMessage($message)->getId() ?? '');
+        $status = $adapter->status(IdEnvelope::fromMessage($message)->getId() ?? '');
+        self::assertSame(MessageStatus::NOT_FOUND, $status);
     }
 
     /**
@@ -93,7 +88,7 @@ final class QueueTest extends UnitTestCase
         $time = time();
         $queue->push(new Message('exception-listen', ['payload' => ['time' => $time]]));
 
-        $this->expectException(JobFailureException::class);
+        $this->expectException(MessageFailureException::class);
 
         $queue->listen();
 
@@ -126,9 +121,7 @@ final class QueueTest extends UnitTestCase
 
     private function getDefaultQueue(AdapterInterface $adapter): Queue
     {
-        return $this
-            ->getQueue()
-            ->withAdapter($adapter);
+        return $this->makeQueue($adapter);
     }
 
     public function testImmutable(): void

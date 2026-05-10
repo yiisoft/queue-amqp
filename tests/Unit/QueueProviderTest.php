@@ -38,7 +38,7 @@ final class QueueProviderTest extends UnitTestCase
             $this->getLoop(),
         );
 
-        $queue = $this->getQueue()->withAdapter($adapter);
+        $queue = $this->makeQueue($adapter);
 
         $fileHelper = new FileHelper();
         $time = time();

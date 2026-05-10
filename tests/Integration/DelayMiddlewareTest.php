@@ -9,19 +9,18 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
-use Yiisoft\Queue\AMQP\Tests\Support\FakeAdapter;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
-use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
@@ -52,8 +51,7 @@ final class DelayMiddlewareTest extends TestCase
 
         $time = time();
         $queue->push(
-            new Message('simple', 'test-delay-middleware-main'),
-            new DelayMiddleware(3),
+            new DelayEnvelope(new Message('simple', 'test-delay-middleware-main'), 3),
         );
 
         sleep(2);
@@ -66,16 +64,12 @@ final class DelayMiddlewareTest extends TestCase
         self::assertLessThanOrEqual($time + 5, $result);
     }
 
-    public function testMainFlowWithFakeAdapter(): void
+    public function testNoExchangeThrows(): void
     {
-        $adapterClass = Adapter::class;
-        $fakeAdapterClass = FakeAdapter::class;
-
-        $adapter = new FakeAdapter(
+        $adapter = new Adapter(
             new QueueProvider(
                 $this->createConnection(),
                 new QueueSettings(),
-                new ExchangeSettings('yii-queue'),
             ),
             new JsonMessageSerializer(),
             new SignalLoop(),
@@ -83,10 +77,9 @@ final class DelayMiddlewareTest extends TestCase
         $queue = $this->makeQueue($adapter);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("This middleware works only with the $adapterClass. $fakeAdapterClass given.");
+        $this->expectExceptionMessage('Message cannot be delayed to a queue without an exchange. Exchange is mandatory.');
         $queue->push(
-            new Message('simple', 'test-delay-middleware-main'),
-            new DelayMiddleware(3),
+            new DelayEnvelope(new Message('simple', 'test-delay-no-exchange'), 3),
         );
     }
 
@@ -96,8 +89,8 @@ final class DelayMiddlewareTest extends TestCase
             $this->createMock(WorkerInterface::class),
             $this->createMock(LoopInterface::class),
             $this->createMock(LoggerInterface::class),
-            new PushMiddlewareDispatcher(
-                new MiddlewareFactoryPush(
+            new PushMiddlewareConfig(
+                new PushMiddlewareFactory(
                     new SimpleContainer(),
                     new CallableFactory($this->createMock(ContainerInterface::class)),
                 ),

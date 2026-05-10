@@ -15,6 +15,29 @@ use Yiisoft\Queue\Message\Message;
 
 final class QueueSettingsTest extends UnitTestCase
 {
+    private const TEST_QUEUE_NAMES = [
+        'yii-queue-test-queue-settings-arg',
+        'yii-queue-test-queue-common-settings',
+    ];
+
+    protected function setUp(): void
+    {
+        $savedQueueName = $this->queueName;
+        $savedExchangeName = $this->exchangeName;
+
+        foreach (self::TEST_QUEUE_NAMES as $name) {
+            $this->queueName = $name;
+            $this->exchangeName = $name;
+            $this->deleteQueue();
+            $this->deleteExchange();
+        }
+
+        $this->queueName = $savedQueueName;
+        $this->exchangeName = $savedExchangeName;
+
+        parent::setUp();
+    }
+
     public function testCommonSettings(): void
     {
         $queueProvider = new QueueProvider(
@@ -68,6 +91,9 @@ final class QueueSettingsTest extends UnitTestCase
 
     public function testArgumentsXExpires(): void
     {
+        $this->queueName = 'yii-queue-test-queue-settings-arg';
+        $this->exchangeName = 'yii-queue-test-queue-settings-arg';
+
         $queueProvider = new QueueProvider(
             $this->createConnection(),
             $this->getQueueSettings(),
@@ -89,8 +115,7 @@ final class QueueSettingsTest extends UnitTestCase
             $this->getLoop(),
         );
 
-        $this->getQueue()
-            ->withAdapter($adapter)
+        $this->makeQueue($adapter)
             ->push(
                 new Message('ext-simple', ['payload' => time()])
             );

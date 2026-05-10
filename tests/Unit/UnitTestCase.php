@@ -21,11 +21,11 @@ use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
-use Yiisoft\Queue\Middleware\Consume\MiddlewareFactoryConsume;
+use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareFactory;
 use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
-use Yiisoft\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
-use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareFactory;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Worker\Worker;
 use Yiisoft\Queue\Worker\WorkerInterface;
@@ -36,7 +36,6 @@ use Yiisoft\Test\Support\Container\SimpleContainer;
  */
 abstract class UnitTestCase extends MainTestCase
 {
-    protected Queue|null $queue = null;
     protected ?WorkerInterface $worker = null;
     protected ?ContainerInterface $container = null;
     protected ?AdapterInterface $adapter = null;
@@ -64,13 +63,14 @@ abstract class UnitTestCase extends MainTestCase
         parent::tearDown();
     }
 
-    protected function getQueue(): Queue
+    protected function makeQueue(AdapterInterface $adapter): Queue
     {
-        return $this->queue ??= new Queue(
+        return new Queue(
             $this->getWorker(),
             $this->getLoop(),
             new NullLogger(),
-            $this->getPushMiddlewareDispatcher()
+            $this->getPushMiddlewareConfig(),
+            $adapter,
         );
     }
 
@@ -83,6 +83,7 @@ abstract class UnitTestCase extends MainTestCase
             $this->getContainer(),
             $this->getConsumeMiddlewareDispatcher(),
             $this->getFailureMiddlewareDispatcher(),
+            new CallableFactory($this->getContainer()),
         );
     }
 
@@ -112,7 +113,7 @@ abstract class UnitTestCase extends MainTestCase
     protected function getConsumeMiddlewareDispatcher(): ConsumeMiddlewareDispatcher
     {
         return new ConsumeMiddlewareDispatcher(
-            new MiddlewareFactoryConsume(
+            new ConsumeMiddlewareFactory(
                 $this->getContainer(),
                 new CallableFactory($this->getContainer()),
             ),
@@ -122,7 +123,7 @@ abstract class UnitTestCase extends MainTestCase
     protected function getFailureMiddlewareDispatcher(): FailureMiddlewareDispatcher
     {
         return new FailureMiddlewareDispatcher(
-            new MiddlewareFactoryFailure(
+            new FailureMiddlewareFactory(
                 $this->getContainer(),
                 new CallableFactory($this->getContainer()),
             ),
@@ -144,10 +145,10 @@ abstract class UnitTestCase extends MainTestCase
         return $this->loop ??= new SignalLoop();
     }
 
-    protected function getPushMiddlewareDispatcher(): PushMiddlewareDispatcher
+    protected function getPushMiddlewareConfig(): PushMiddlewareConfig
     {
-        return new PushMiddlewareDispatcher(
-            new MiddlewareFactoryPush(
+        return new PushMiddlewareConfig(
+            new PushMiddlewareFactory(
                 $this->getContainer(),
                 new CallableFactory($this->getContainer()),
             ),

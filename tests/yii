@@ -17,14 +17,14 @@ use Yiisoft\Queue\Command\RunCommand;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
-use Yiisoft\Queue\Middleware\Consume\MiddlewareFactoryConsume;
+use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareFactory;
 use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
-use Yiisoft\Queue\Middleware\FailureHandling\MiddlewareFactoryFailure;
-use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
-use Yiisoft\Queue\Provider\PrototypeQueueProvider;
+use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareFactory;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
+use Yiisoft\Queue\Provider\PredefinedQueueProvider;
+use Yiisoft\Queue\Provider\QueueProviderInterface;
 use Yiisoft\Queue\Queue;
-use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
@@ -40,11 +40,12 @@ $worker = new \Yiisoft\Queue\Worker\Worker(
     $logger,
     $injector,
     $container,
-    new ConsumeMiddlewareDispatcher(new MiddlewareFactoryConsume($container, $callableFactory)),
-    new FailureMiddlewareDispatcher(new MiddlewareFactoryFailure($container, $callableFactory), []),
+    new ConsumeMiddlewareDispatcher(new ConsumeMiddlewareFactory($container, $callableFactory)),
+    new FailureMiddlewareDispatcher(new FailureMiddlewareFactory($container, $callableFactory), []),
+    $callableFactory,
 );
 $loop = new SignalLoop();
-$pushMiddlewareDispatcher = new PushMiddlewareDispatcher(new MiddlewareFactoryPush($container, $callableFactory));
+$pushMiddlewareConfig = new PushMiddlewareConfig(new PushMiddlewareFactory($container, $callableFactory));
 $adapter = new Adapter(
     new QueueProvider(
         new AMQPStreamConnection(
@@ -53,7 +54,7 @@ $adapter = new Adapter(
             getenv('RABBITMQ_USER'),
             getenv('RABBITMQ_PASSWORD'),
         ),
-        new QueueSettings(queueName: QueueInterface::DEFAULT_CHANNEL),
+        new QueueSettings(queueName: QueueProviderInterface::DEFAULT_QUEUE),
         new ExchangeSettings(exchangeName: QueueProvider::EXCHANGE_NAME_DEFAULT),
     ),
     new JsonMessageSerializer(),
@@ -63,16 +64,16 @@ $queue = new Queue(
     $worker,
     $loop,
     $logger,
-    $pushMiddlewareDispatcher,
+    $pushMiddlewareConfig,
     $adapter,
 );
-$queueFactory = new PrototypeQueueProvider(
-    $queue,
-    $adapter,
-);
+$queueProvider = new PredefinedQueueProvider([
+    QueueProviderInterface::DEFAULT_QUEUE => $queue,
+]);
 
 $application = new Application();
-$application->add(new ListenCommand($queueFactory));
-$application->add(new RunCommand($queueFactory, []));
+$application->add(new ListenCommand($queueProvider));
+$application->add(new RunCommand($queueProvider));
+
 
 $application->run();

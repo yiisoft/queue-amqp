@@ -9,7 +9,7 @@ use LogicException;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\JobStatus;
+use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
 
@@ -27,7 +27,7 @@ final class FakeAdapter implements AdapterInterface
         throw new LogicException('Method not implemented');
     }
 
-    public function status(int|string $id): JobStatus
+    public function status(string|int $id): MessageStatus
     {
         throw new LogicException('Method not implemented');
     }

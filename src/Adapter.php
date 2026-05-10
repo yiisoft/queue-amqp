@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP;
 
 use BackedEnum;
+use InvalidArgumentException;
+use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\JobStatus;
+use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\MessageStatus;
 
 final class Adapter implements AdapterInterface
 {
@@ -44,16 +46,19 @@ final class Adapter implements AdapterInterface
         (new ExistingMessagesConsumer($this->queueProvider, $this->serializer))->consume($handlerCallback);
     }
 
-    /**
-     * @return never
-     */
-    public function status(int|string $id): JobStatus
+    public function status(string|int $id): MessageStatus
     {
-        throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
+        return MessageStatus::NOT_FOUND;
     }
 
     public function push(MessageInterface $message): MessageInterface
     {
+        $delaySeconds = $message->getMetadata()[DelayEnvelope::META_DELAY_SECONDS] ?? null;
+        if ($delaySeconds !== null) {
+            $this->pushDelayed($message, (float) $delaySeconds);
+            return $message;
+        }
+
         $this->amqpMessage ??= new AMQPMessage(
             '',
             $this->queueProvider->getMessageProperties(),
@@ -75,6 +80,56 @@ final class Adapter implements AdapterInterface
             );
 
         return $message;
+    }
+
+    private function pushDelayed(MessageInterface $message, float $delaySeconds): void
+    {
+        $exchangeSettings = $this->queueProvider->getExchangeSettings();
+        if ($exchangeSettings === null) {
+            throw new InvalidArgumentException('Message cannot be delayed to a queue without an exchange. Exchange is mandatory.');
+        }
+
+        $dlxExchangeSettings = $exchangeSettings
+            ->withName("{$exchangeSettings->getName()}.dlx")
+            ->withAutoDelete(true)
+            ->withType(AMQPExchangeType::TOPIC);
+
+        $deliveryTime = time() + (int) $delaySeconds;
+        $queueSettings = $this->queueProvider->getQueueSettings();
+        $dlxQueueSettings = $queueSettings
+            ->withName("{$queueSettings->getName()}.dlx.$deliveryTime")
+            ->withAutoDeletable(true)
+            ->withArguments([
+                'x-dead-letter-exchange' => ['S', $exchangeSettings->getName()],
+                'x-expires' => ['I', (int) ($delaySeconds * 1000) + 30000],
+                'x-message-ttl' => ['I', (int) ($delaySeconds * 1000)],
+            ]);
+
+        $messageProperties = array_merge(
+            $this->queueProvider->getMessageProperties(),
+            [
+                'expiration' => (int) ($delaySeconds * 1000),
+                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
+            ],
+        );
+
+        $dlxQueueProvider = $this->queueProvider
+            ->withExchangeSettings($dlxExchangeSettings)
+            ->withQueueSettings($dlxQueueSettings)
+            ->withMessageProperties($messageProperties);
+
+        $amqpMessage = new AMQPMessage(
+            $this->serializer->serialize($message),
+            $dlxQueueProvider->getMessageProperties(),
+        );
+
+        $dlxQueueProvider
+            ->getChannel()
+            ->basic_publish(
+                $amqpMessage,
+                $dlxExchangeSettings->getName(),
+                '',
+            );
     }
 
     public function subscribe(callable $handlerCallback): void
