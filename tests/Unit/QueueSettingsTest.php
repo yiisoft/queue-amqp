@@ -40,34 +40,18 @@ final class QueueSettingsTest extends UnitTestCase
 
     public function testCommonSettings(): void
     {
-        $queueProvider = new QueueProvider(
-            $this->createConnection(),
-            $this->getQueueSettings(),
+        $queueSettings = new QueueSettings(
+            queueName: 'yii-queue-test-queue-common-settings',
+            passive: true,
+            durable: true,
+            exclusive: true,
+            nowait: true,
+            arguments: new AMQPTable([
+                'x-dead-letter-exchange' => 'yii-queue-test-queue-common-settings-dead-letter-exc',
+                'x-message-ttl' => 15000,
+                'x-expires' => 16000,
+            ])
         );
-        $adapter = new Adapter(
-            $queueProvider
-                ->withQueueSettings(
-                    new QueueSettings(
-                        queueName: 'yii-queue-test-queue-common-settings',
-                        passive: true,
-                        durable: true,
-                        exclusive: true,
-                        nowait: true,
-                        arguments: new AMQPTable([
-                            'x-dead-letter-exchange' => 'yii-queue-test-queue-common-settings-dead-letter-exc',
-                            'x-message-ttl' => 15000,
-                            'x-expires' => 16000,
-                        ])
-                    )
-                )
-                ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-queue-common-settings')
-                ),
-            new JsonMessageSerializer(),
-            $this->getLoop(),
-        );
-
-        $queueSettings = $adapter->getQueueProvider()->getQueueSettings();
 
         self::assertTrue($queueSettings->isDurable());
         self::assertTrue($queueSettings->isPassive());

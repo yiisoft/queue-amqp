@@ -6,42 +6,23 @@ namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
-use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Queue\Message\JsonMessageSerializer;
 
 final class ExchangeSettingsTest extends UnitTestCase
 {
     public function testCommonSettings(): void
     {
-        $queueProvider = new QueueProvider(
-            $this->createConnection(),
-            $this->getQueueSettings(),
+        $exchangeSettings = new ExchangeSettings(
+            exchangeName: 'yii-queue-test-common-settings',
+            passive: true,
+            durable: true,
+            autoDelete: false,
+            internal: true,
+            nowait: true,
+            arguments: new AMQPTable([
+                'alternate-exchange' => 'yii-queue-test-common-settings-alt',
+            ])
         );
-        $adapter = new Adapter(
-            $queueProvider
-                ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-common-settings')
-                )
-                ->withExchangeSettings(
-                    new ExchangeSettings(
-                        exchangeName: 'yii-queue-test-common-settings',
-                        passive: true,
-                        durable: true,
-                        autoDelete: false,
-                        internal: true,
-                        nowait: true,
-                        arguments: new AMQPTable([
-                            'alternate-exchange' => 'yii-queue-test-common-settings-alt',
-                        ])
-                    )
-                ),
-            new JsonMessageSerializer(),
-            $this->getLoop(),
-        );
-        $exchangeSettings = $adapter->getQueueProvider()->getExchangeSettings();
 
         self::assertTrue($exchangeSettings->isDurable());
         self::assertTrue($exchangeSettings->isInternal());

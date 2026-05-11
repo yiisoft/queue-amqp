@@ -27,17 +27,6 @@ final class Adapter implements AdapterInterface
     ) {
     }
 
-    public function withChannel(BackedEnum|string $channel): self
-    {
-        $instance = clone $this;
-
-        $channelName = is_string($channel) ? $channel : (string) $channel->value;
-        $instance->queueProvider = $this->queueProvider->withChannelName($channelName);
-        $instance->amqpMessage = null;
-
-        return $instance;
-    }
-
     /**
      * @param callable(MessageInterface): bool  $handlerCallback
      */
@@ -164,23 +153,5 @@ final class Adapter implements AdapterInterface
         while ($this->loop->canContinue()) {
             $channel->wait();
         }
-    }
-
-    public function getQueueProvider(): QueueProviderInterface
-    {
-        return $this->queueProvider;
-    }
-
-    public function withQueueProvider(QueueProviderInterface $queueProvider): self
-    {
-        $new = clone $this;
-        $new->queueProvider = $queueProvider;
-
-        return $new;
-    }
-
-    public function getChannel(): string
-    {
-        return $this->queueProvider->getQueueSettings()->getName();
     }
 }

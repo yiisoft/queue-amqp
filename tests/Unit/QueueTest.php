@@ -107,7 +107,7 @@ final class QueueTest extends UnitTestCase
         );
         $adapter = new Adapter(
             $queueProvider
-                ->withChannelName('yii-queue'),
+                ->withQueueName('yii-queue'),
             new JsonMessageSerializer(),
             $mockLoop,
         );
@@ -122,18 +122,5 @@ final class QueueTest extends UnitTestCase
     private function getDefaultQueue(AdapterInterface $adapter): Queue
     {
         return $this->makeQueue($adapter);
-    }
-
-    public function testImmutable(): void
-    {
-        $queueProvider = $this->createMock(QueueProviderInterface::class);
-        $adapter = new Adapter(
-            $queueProvider,
-            $this->createMock(MessageSerializerInterface::class),
-            $this->createMock(LoopInterface::class)
-        );
-
-        self::assertNotSame($adapter, $adapter->withChannel('test'));
-        self::assertNotSame($adapter, $adapter->withQueueProvider($queueProvider));
     }
 }
