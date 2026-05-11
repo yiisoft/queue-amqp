@@ -10,6 +10,7 @@ use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Settings\QosSettings;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
 
@@ -139,5 +140,7 @@ final class QueueSettingsTest extends UnitTestCase
         self::assertNotSame($queueSettings, $queueSettings->withName('test'));
         self::assertNotSame($queueSettings, $queueSettings->withAutoDeletable(false));
         self::assertNotSame($queueSettings, $queueSettings->withArguments([]));
+        self::assertNotSame($queueSettings, $queueSettings->withQosSettings(new QosSettings()));
+        self::assertNotSame($queueSettings, $queueSettings->withQosSettings(null));
     }
 }

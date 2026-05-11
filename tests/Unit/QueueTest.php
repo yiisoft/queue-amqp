@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Exception;
+use PhpAmqpLib\Channel\AMQPChannel;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Settings\QosSettings;
+use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\MessageFailureException;
@@ -134,5 +137,82 @@ final class QueueTest extends UnitTestCase
         );
 
         self::assertNotSame($adapter, $adapter->withQueueProvider($queueProvider));
+    }
+
+    public function testSubscribeCallsBasicQosWhenConfigured(): void
+    {
+        $qosSettings = new QosSettings(prefetchSize: 0, prefetchCount: 5, global: true);
+
+        $queueSettings = $this->createMock(QueueSettingsInterface::class);
+        $queueSettings->method('getQosSettings')->willReturn($qosSettings);
+        $queueSettings->method('getName')->willReturn('test-queue');
+
+        $channel = $this->createMock(AMQPChannel::class);
+        $channel->expects(self::once())
+            ->method('basic_qos')
+            ->with(0, 5, true);
+        $channel->expects(self::once())
+            ->method('basic_consume')
+            ->with('test-queue', 'test-queue', false, false, false, true, self::anything());
+
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $queueProvider->method('getChannel')->willReturn($channel);
+        $queueProvider->method('getQueueSettings')->willReturn($queueSettings);
+
+        $loop = $this->createMock(LoopInterface::class);
+        $loop->method('canContinue')->willReturn(false);
+
+        $adapter = new Adapter($queueProvider, $this->createMock(MessageSerializerInterface::class), $loop);
+        $adapter->subscribe(static fn() => null);
+    }
+
+    public function testSubscribeCallsBasicQosWithDefaultSettings(): void
+    {
+        $qosSettings = new QosSettings();
+
+        $queueSettings = $this->createMock(QueueSettingsInterface::class);
+        $queueSettings->method('getQosSettings')->willReturn($qosSettings);
+        $queueSettings->method('getName')->willReturn('test-queue');
+
+        $channel = $this->createMock(AMQPChannel::class);
+        $channel->expects(self::once())
+            ->method('basic_qos')
+            ->with(0, 0, false);
+        $channel->expects(self::once())
+            ->method('basic_consume')
+            ->with('test-queue', 'test-queue', false, false, false, true, self::anything());
+
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $queueProvider->method('getChannel')->willReturn($channel);
+        $queueProvider->method('getQueueSettings')->willReturn($queueSettings);
+
+        $loop = $this->createMock(LoopInterface::class);
+        $loop->method('canContinue')->willReturn(false);
+
+        $adapter = new Adapter($queueProvider, $this->createMock(MessageSerializerInterface::class), $loop);
+        $adapter->subscribe(static fn() => null);
+    }
+
+    public function testSubscribeSkipsBasicQosWhenNotConfigured(): void
+    {
+        $queueSettings = $this->createMock(QueueSettingsInterface::class);
+        $queueSettings->method('getQosSettings')->willReturn(null);
+        $queueSettings->method('getName')->willReturn('test-queue');
+
+        $channel = $this->createMock(AMQPChannel::class);
+        $channel->expects(self::never())->method('basic_qos');
+        $channel->expects(self::once())
+            ->method('basic_consume')
+            ->with('test-queue', 'test-queue', false, false, false, true, self::anything());
+
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $queueProvider->method('getChannel')->willReturn($channel);
+        $queueProvider->method('getQueueSettings')->willReturn($queueSettings);
+
+        $loop = $this->createMock(LoopInterface::class);
+        $loop->method('canContinue')->willReturn(false);
+
+        $adapter = new Adapter($queueProvider, $this->createMock(MessageSerializerInterface::class), $loop);
+        $adapter->subscribe(static fn() => null);
     }
 }

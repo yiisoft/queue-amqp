@@ -24,6 +24,8 @@ interface QueueSettingsInterface
 
     public function isPassive(): bool;
 
+    public function getQosSettings(): ?QosSettings;
+
     /**
      * Returns positional arguments to be used with {@see \PhpAmqpLib\Channel\AMQPChannel::queue_declare()}
      *
@@ -50,4 +52,6 @@ interface QueueSettingsInterface
     public function withNowait(bool $nowait): self;
 
     public function withPassive(bool $passive): self;
+
+    public function withQosSettings(?QosSettings $qosSettings): self;
 }
