@@ -76,9 +76,9 @@ final class QueueProvider implements QueueProviderInterface
         return $this->messageProperties;
     }
 
-    public function withChannelName(string $channel): self
+    public function withQueueName(string $queue): self
     {
-        if ($channel === $this->queueSettings->getName()) {
+        if ($queue === $this->queueSettings->getName()) {
             return $this;
         }
 
