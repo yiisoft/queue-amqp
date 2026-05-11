@@ -43,5 +43,4 @@ final class QosSettingsTest extends TestCase
 
         new QosSettings(prefetchCount: -3);
     }
-
 }
