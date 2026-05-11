@@ -87,7 +87,7 @@ final class QueueProvider implements QueueProviderInterface
         }
 
         $instance = clone $this;
-        $instance->queueSettings = $instance->queueSettings->withName($channel);
+        $instance->queueSettings = $instance->queueSettings->withName($queue);
         if ($this->channelId !== null) {
             $instance->channelId = null;
         }

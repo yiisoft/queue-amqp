@@ -80,7 +80,7 @@ final class QueueProviderTest extends UnitTestCase
                 ->withExchangeSettings(
                     new ExchangeSettings('yii-queue-test-with-channel-name')
                 )
-                ->withChannelName('yii-queue-test-channel-name'),
+                ->withQueueName('yii-queue-test-channel-name'),
             new JsonMessageSerializer(),
             $this->getLoop(),
         );
