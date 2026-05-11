@@ -8,7 +8,6 @@ use Exception;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
-use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
@@ -18,7 +17,6 @@ use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Message\Message;
-use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
 
 final class QueueTest extends UnitTestCase
