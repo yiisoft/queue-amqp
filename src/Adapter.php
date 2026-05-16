@@ -43,7 +43,7 @@ final class Adapter implements AdapterInterface
     {
         $delaySeconds = $message->getMetadata()[DelayEnvelope::META_DELAY_SECONDS] ?? null;
         if ($delaySeconds !== null) {
-            $this->pushDelayed($message, (float) $delaySeconds);
+            $this->pushDelayed($message, $delaySeconds);
             return $message;
         }
 
@@ -70,7 +70,7 @@ final class Adapter implements AdapterInterface
         return $message;
     }
 
-    private function pushDelayed(MessageInterface $message, float $delaySeconds): void
+    private function pushDelayed(MessageInterface $message, int $delaySeconds): void
     {
         $exchangeSettings = $this->queueProvider->getExchangeSettings();
         if ($exchangeSettings === null) {
@@ -82,21 +82,22 @@ final class Adapter implements AdapterInterface
             ->withAutoDelete(true)
             ->withType(AMQPExchangeType::TOPIC);
 
-        $deliveryTime = time() + (int) $delaySeconds;
+        $deliveryTime = time() + $delaySeconds;
+        $delayMilliseconds = $delaySeconds * 1000;
         $queueSettings = $this->queueProvider->getQueueSettings();
         $dlxQueueSettings = $queueSettings
             ->withName("{$queueSettings->getName()}.dlx.$deliveryTime")
             ->withAutoDeletable(true)
             ->withArguments([
                 'x-dead-letter-exchange' => ['S', $exchangeSettings->getName()],
-                'x-expires' => ['I', (int) ($delaySeconds * 1000) + 30000],
-                'x-message-ttl' => ['I', (int) ($delaySeconds * 1000)],
+                'x-expires' => ['I', $delayMilliseconds + 30000],
+                'x-message-ttl' => ['I', $delayMilliseconds],
             ]);
 
         $messageProperties = array_merge(
             $this->queueProvider->getMessageProperties(),
             [
-                'expiration' => (int) ($delaySeconds * 1000),
+                'expiration' => $delayMilliseconds,
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
             ],
         );
