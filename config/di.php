@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Yiisoft\Queue\AMQP\QueueProvider;
-use Yiisoft\Queue\AMQP\QueueProviderInterface;
-use Yiisoft\Queue\AMQP\Settings\Queue;
-use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\Amqp\QueueProvider;
+use Yiisoft\Queue\Amqp\QueueProviderInterface;
+use Yiisoft\Queue\Amqp\Settings\Queue;
+use Yiisoft\Queue\Amqp\Settings\QueueSettingsInterface;
 
 return [
     QueueProviderInterface::class => QueueProvider::class,

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\Amqp\Tests\Unit;
 
 use PhpAmqpLib\Exception\AMQPProtocolChannelException;
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\QueueProvider;
-use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
-use Yiisoft\Queue\AMQP\Settings\QosSettings;
-use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\Amqp\Adapter;
+use Yiisoft\Queue\Amqp\QueueProvider;
+use Yiisoft\Queue\Amqp\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\Amqp\Settings\QosSettings;
+use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
+use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 
 final class QueueSettingsTest extends UnitTestCase
 {

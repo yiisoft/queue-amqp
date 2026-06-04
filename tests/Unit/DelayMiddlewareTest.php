@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\Amqp\Tests\Unit;
 
-use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
+use Yiisoft\Queue\Amqp\Middleware\DelayMiddleware;
 use Yiisoft\Queue\Message\DelayEnvelope;
-use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
+use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Middleware\Push\PushHandlerInterface;
 

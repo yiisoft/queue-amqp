@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\Amqp\Tests\Unit;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Queue\AMQP\Settings\QosSettings;
+use Yiisoft\Queue\Amqp\Settings\QosSettings;
 
 final class QosSettingsTest extends TestCase
 {

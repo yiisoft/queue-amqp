@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Tests\Support;
+namespace Yiisoft\Queue\Amqp\Tests\Support;
 
 use BackedEnum;
 use LogicException;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\AMQP\QueueProviderInterface;
+use Yiisoft\Queue\Amqp\QueueProviderInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
