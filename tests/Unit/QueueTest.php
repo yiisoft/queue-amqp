@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Exception;
+use PhpAmqpLib\Message\AMQPMessage;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
@@ -140,5 +141,28 @@ final class QueueTest extends UnitTestCase
 
         self::assertNotSame($adapter, $adapter->withChannel('test'));
         self::assertNotSame($adapter, $adapter->withQueueProvider($queueProvider));
+    }
+
+    public function testDelayMessagePropertiesUseStringExpiration(): void
+    {
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $queueProvider
+            ->method('getMessageProperties')
+            ->willReturn([]);
+
+        $adapter = new Adapter(
+            $queueProvider,
+            $this->createMock(MessageSerializerInterface::class),
+            $this->createMock(LoopInterface::class)
+        );
+        $method = new \ReflectionMethod($adapter, 'getDelayMessageProperties');
+
+        self::assertSame(
+            [
+                'expiration' => '1500',
+                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
+            ],
+            $method->invoke($adapter, 1500)
+        );
     }
 }

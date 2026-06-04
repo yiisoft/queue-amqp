@@ -35,6 +35,10 @@ final class DelayMiddleware implements PushMiddlewareInterface
 
     public function processPush(MessageInterface $message, PushHandlerInterface $handler): MessageInterface
     {
+        if ($this->delayInSeconds <= 0) {
+            return $handler->handlePush($message);
+        }
+
         return $handler->handlePush(new DelayEnvelope($message, $this->delayInSeconds));
     }
 }

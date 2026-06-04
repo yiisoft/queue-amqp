@@ -159,14 +159,14 @@ final class Adapter implements AdapterInterface
     }
 
     /**
-     * @psalm-return array{expiration: int, delivery_mode: int}&array
+     * @psalm-return array{expiration: string, delivery_mode: int}&array
      */
     private function getDelayMessageProperties(int $delayMilliseconds): array
     {
         return array_merge(
             $this->queueProvider->getMessageProperties(),
             [
-                'expiration' => $delayMilliseconds,
+                'expiration' => (string) $delayMilliseconds,
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
             ],
         );
