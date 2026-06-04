@@ -76,6 +76,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          clean: false
 
       - name: "Pull request: Build"
         if: ${{ github.event_name == 'pull_request' }}

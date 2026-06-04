@@ -9,7 +9,7 @@ use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Cli\SimpleLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\GenericMessage as Message;
+use Yiisoft\Queue\Message\Message;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 class ConsumeExistingMessagesTest extends TestCase

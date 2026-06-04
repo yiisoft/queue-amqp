@@ -6,6 +6,7 @@ namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Exception;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
@@ -13,15 +14,17 @@ use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\AMQP\Settings\QosSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\MessageFailureException;
+use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\GenericMessage as Message;
+use Yiisoft\Queue\Message\Message;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
 
@@ -146,27 +149,102 @@ final class QueueTest extends UnitTestCase
         self::assertNotSame($adapter, $adapter->withQueueProvider($queueProvider));
     }
 
-    public function testDelayMessagePropertiesUseStringExpiration(): void
+    public function testPushUsesStringExpirationForDelayedMessage(): void
     {
+        $message = new DelayEnvelope(new Message('ext-simple', null), 1.5);
+        $exchangeSettings = new ExchangeSettings('test-exchange');
+        $queueSettings = new QueueSettings('test-queue');
+        $delayMessageProperties = [
+            'expiration' => '1500',
+            'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
+        ];
+
+        $channel = $this->createMock(AMQPChannel::class);
+        $channel
+            ->expects(self::once())
+            ->method('basic_publish')
+            ->with(
+                self::callback(static function (AMQPMessage $amqpMessage): bool {
+                    self::assertSame('1500', $amqpMessage->get('expiration'));
+                    self::assertSame(AMQPMessage::DELIVERY_MODE_PERSISTENT, $amqpMessage->get('delivery_mode'));
+                    self::assertSame('payload', $amqpMessage->getBody());
+
+                    return true;
+                }),
+                'test-exchange.dlx',
+                '',
+            );
+
+        $delayedQueueProvider = $this->createMock(QueueProviderInterface::class);
+        $delayedQueueProvider
+            ->method('getMessageProperties')
+            ->willReturn($delayMessageProperties);
+        $delayedQueueProvider
+            ->expects(self::once())
+            ->method('withExchangeSettings')
+            ->with(self::callback(static function (ExchangeSettingsInterface $settings): bool {
+                self::assertSame('test-exchange.dlx', $settings->getName());
+                self::assertSame(AMQPExchangeType::TOPIC, $settings->getType());
+                self::assertTrue($settings->isAutoDelete());
+
+                return true;
+            }))
+            ->willReturnSelf();
+        $delayedQueueProvider
+            ->expects(self::once())
+            ->method('withQueueSettings')
+            ->with(self::callback(static function (QueueSettingsInterface $settings): bool {
+                self::assertMatchesRegularExpression('/^test-queue\.dlx\.\d+$/', $settings->getName());
+                self::assertTrue($settings->isAutoDeletable());
+                self::assertSame(
+                    [
+                        'x-dead-letter-exchange' => ['S', 'test-exchange'],
+                        'x-expires' => ['I', 31500],
+                        'x-message-ttl' => ['I', 1500],
+                    ],
+                    $settings->getArguments(),
+                );
+
+                return true;
+            }))
+            ->willReturnSelf();
+        $delayedQueueProvider
+            ->method('getChannel')
+            ->willReturn($channel);
+        $delayedQueueProvider
+            ->method('getExchangeSettings')
+            ->willReturn(new ExchangeSettings('test-exchange.dlx'));
+
         $queueProvider = $this->createMock(QueueProviderInterface::class);
         $queueProvider
             ->method('getMessageProperties')
             ->willReturn([]);
+        $queueProvider
+            ->method('getExchangeSettings')
+            ->willReturn($exchangeSettings);
+        $queueProvider
+            ->method('getQueueSettings')
+            ->willReturn($queueSettings);
+        $queueProvider
+            ->expects(self::once())
+            ->method('withMessageProperties')
+            ->with($delayMessageProperties)
+            ->willReturn($delayedQueueProvider);
+
+        $serializer = $this->createMock(MessageSerializerInterface::class);
+        $serializer
+            ->expects(self::once())
+            ->method('serialize')
+            ->with($message)
+            ->willReturn('payload');
 
         $adapter = new Adapter(
             $queueProvider,
-            $this->createMock(MessageSerializerInterface::class),
+            $serializer,
             $this->createMock(LoopInterface::class)
         );
-        $method = new \ReflectionMethod($adapter, 'getDelayMessageProperties');
 
-        self::assertSame(
-            [
-                'expiration' => '1500',
-                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
-            ],
-            $method->invoke($adapter, 1500)
-        );
+        self::assertSame($message, $adapter->push($message));
     }
 
     public function testSubscribeUsesConfiguredBasicQos(): void

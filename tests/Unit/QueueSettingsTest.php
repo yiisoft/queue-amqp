@@ -12,7 +12,7 @@ use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\QosSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\GenericMessage as Message;
+use Yiisoft\Queue\Message\Message;
 
 final class QueueSettingsTest extends UnitTestCase
 {
