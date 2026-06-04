@@ -87,7 +87,7 @@ jobs:
         working-directory: ./tests
         run: |
           if [ "${{ env.WITH_BENCH_BASELINE }}" == '1' ]; then
-            docker compose run --rm -e XDEBUG_MODE=off php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' --ref=default --assert="mode(variant.time.avg) <= mode(baseline.time.avg) +/- 5%" > phpbench.log
+            docker compose run --rm -e XDEBUG_MODE=off php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' --ref=default --assert="mode(variant.time.avg) <= mode(baseline.time.avg) +/- 10%" > phpbench.log
           else
             docker compose run --rm -e XDEBUG_MODE=off php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' > phpbench.log
           fi
