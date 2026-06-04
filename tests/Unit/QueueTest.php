@@ -14,10 +14,10 @@ use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\Exception\JobFailureException;
+use Yiisoft\Queue\Exception\MessageFailureException;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Message\GenericMessage as Message;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
 
@@ -93,7 +93,7 @@ final class QueueTest extends UnitTestCase
         $time = time();
         $queue->push(new Message('exception-listen', ['payload' => ['time' => $time]]));
 
-        $this->expectException(JobFailureException::class);
+        $this->expectException(MessageFailureException::class);
 
         $queue->listen();
 
@@ -126,9 +126,7 @@ final class QueueTest extends UnitTestCase
 
     private function getDefaultQueue(AdapterInterface $adapter): Queue
     {
-        return $this
-            ->getQueue()
-            ->withAdapter($adapter);
+        return $this->getQueueWithAdapter($adapter);
     }
 
     public function testImmutable(): void

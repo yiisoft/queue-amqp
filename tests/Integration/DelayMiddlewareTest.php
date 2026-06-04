@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\AMQP\Tests\Integration;
 
-use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\Adapter\AdapterInterface;
@@ -18,10 +17,10 @@ use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Message\GenericMessage as Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
-use Yiisoft\Queue\Middleware\Push\MiddlewareFactoryPush;
-use Yiisoft\Queue\Middleware\Push\PushMiddlewareDispatcher;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
+use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
@@ -48,12 +47,11 @@ final class DelayMiddlewareTest extends TestCase
             new JsonMessageSerializer(),
             new SignalLoop(),
         );
-        $queue = $this->makeQueue($adapter);
+        $queue = $this->makeQueue($adapter)->withMiddlewaresAdded(new DelayMiddleware(3));
 
         $time = time();
         $queue->push(
             new Message('simple', 'test-delay-middleware-main'),
-            new DelayMiddleware(3),
         );
 
         sleep(2);
@@ -68,9 +66,6 @@ final class DelayMiddlewareTest extends TestCase
 
     public function testMainFlowWithFakeAdapter(): void
     {
-        $adapterClass = Adapter::class;
-        $fakeAdapterClass = FakeAdapter::class;
-
         $adapter = new FakeAdapter(
             new QueueProvider(
                 $this->createConnection(),
@@ -80,13 +75,12 @@ final class DelayMiddlewareTest extends TestCase
             new JsonMessageSerializer(),
             new SignalLoop(),
         );
-        $queue = $this->makeQueue($adapter);
+        $queue = $this->makeQueue($adapter)->withMiddlewaresAdded(new DelayMiddleware(3));
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("This middleware works only with the $adapterClass. $fakeAdapterClass given.");
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Method not implemented');
         $queue->push(
             new Message('simple', 'test-delay-middleware-main'),
-            new DelayMiddleware(3),
         );
     }
 
@@ -96,8 +90,8 @@ final class DelayMiddlewareTest extends TestCase
             $this->createMock(WorkerInterface::class),
             $this->createMock(LoopInterface::class),
             $this->createMock(LoggerInterface::class),
-            new PushMiddlewareDispatcher(
-                new MiddlewareFactoryPush(
+            new PushMiddlewareConfig(
+                new PushMiddlewareFactory(
                     new SimpleContainer(),
                     new CallableFactory($this->createMock(ContainerInterface::class)),
                 ),

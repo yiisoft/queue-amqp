@@ -11,7 +11,7 @@ use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\Message\GenericMessage as Message;
 
 final class QueueSettingsTest extends UnitTestCase
 {
@@ -89,8 +89,7 @@ final class QueueSettingsTest extends UnitTestCase
             $this->getLoop(),
         );
 
-        $this->getQueue()
-            ->withAdapter($adapter)
+        $this->getQueueWithAdapter($adapter)
             ->push(
                 new Message('ext-simple', ['payload' => time()])
             );
