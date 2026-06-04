@@ -61,9 +61,26 @@ jobs:
         run: docker compose build php${{ matrix.php }}
 
       - name: "Baseline creation: Run PhpBench."
+        id: baseline
         if: ${{ env.WITH_BENCH_BASELINE == '1' }}
+        continue-on-error: true
         run: docker compose run --rm -e XDEBUG_MODE=off php${{ matrix.php }} php vendor/bin/phpbench run --report='aggregate' --tag=default
         working-directory: ./tests
+
+      - name: Disable baseline comparison when baseline creation failed
+        if: ${{ env.WITH_BENCH_BASELINE == '1' && steps.baseline.outcome == 'failure' }}
+        run: echo "WITH_BENCH_BASELINE=0" >> $GITHUB_ENV
+
+      - name: "Pull request: Checkout head."
+        uses: actions/checkout@v4
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: "Pull request: Build"
+        if: ${{ github.event_name == 'pull_request' }}
+        working-directory: ./tests
+        run: docker compose build php${{ matrix.php }}
 
       - name: "Run PhpBench."
         working-directory: ./tests
