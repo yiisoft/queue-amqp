@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Exception;
+use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Adapter;
@@ -12,7 +13,9 @@ use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\QueueProviderInterface;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\AMQP\Settings\QosSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\MessageFailureException;
@@ -164,5 +167,53 @@ final class QueueTest extends UnitTestCase
             ],
             $method->invoke($adapter, 1500)
         );
+    }
+
+    public function testSubscribeUsesConfiguredBasicQos(): void
+    {
+        $queueSettings = $this->createMock(QueueSettingsInterface::class);
+        $queueSettings->method('getQosSettings')->willReturn(new QosSettings(1024, 10, true));
+        $queueSettings->method('getName')->willReturn('test-queue');
+
+        $channel = $this->createMock(AMQPChannel::class);
+        $channel->expects(self::once())
+            ->method('basic_qos')
+            ->with(1024, 10, true);
+        $channel->expects(self::once())
+            ->method('basic_consume')
+            ->with('test-queue', 'test-queue', false, false, false, true, self::anything());
+
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $queueProvider->method('getChannel')->willReturn($channel);
+        $queueProvider->method('getQueueSettings')->willReturn($queueSettings);
+
+        $loop = $this->createMock(LoopInterface::class);
+        $loop->method('canContinue')->willReturn(false);
+
+        $adapter = new Adapter($queueProvider, $this->createMock(MessageSerializerInterface::class), $loop);
+        $adapter->subscribe(static fn() => null);
+    }
+
+    public function testSubscribeSkipsBasicQosWhenNotConfigured(): void
+    {
+        $queueSettings = $this->createMock(QueueSettingsInterface::class);
+        $queueSettings->method('getQosSettings')->willReturn(null);
+        $queueSettings->method('getName')->willReturn('test-queue');
+
+        $channel = $this->createMock(AMQPChannel::class);
+        $channel->expects(self::never())->method('basic_qos');
+        $channel->expects(self::once())
+            ->method('basic_consume')
+            ->with('test-queue', 'test-queue', false, false, false, true, self::anything());
+
+        $queueProvider = $this->createMock(QueueProviderInterface::class);
+        $queueProvider->method('getChannel')->willReturn($channel);
+        $queueProvider->method('getQueueSettings')->willReturn($queueSettings);
+
+        $loop = $this->createMock(LoopInterface::class);
+        $loop->method('canContinue')->willReturn(false);
+
+        $adapter = new Adapter($queueProvider, $this->createMock(MessageSerializerInterface::class), $loop);
+        $adapter->subscribe(static fn() => null);
     }
 }

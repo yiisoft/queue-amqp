@@ -17,7 +17,8 @@ final class Queue implements QueueSettingsInterface
         private bool $autoDelete = false,
         private bool $nowait = false,
         private AMQPTable|array $arguments = [],
-        private ?int $ticket = null
+        private ?int $ticket = null,
+        private ?QosSettings $qosSettings = null,
     ) {
     }
 
@@ -34,6 +35,11 @@ final class Queue implements QueueSettingsInterface
     public function getTicket(): ?int
     {
         return $this->ticket;
+    }
+
+    public function getQosSettings(): ?QosSettings
+    {
+        return $this->qosSettings;
     }
 
     public function isAutoDeletable(): bool
@@ -100,6 +106,14 @@ final class Queue implements QueueSettingsInterface
     {
         $new = clone $this;
         $new->ticket = $ticket;
+
+        return $new;
+    }
+
+    public function withQosSettings(?QosSettings $qosSettings): self
+    {
+        $new = clone $this;
+        $new->qosSettings = $qosSettings;
 
         return $new;
     }

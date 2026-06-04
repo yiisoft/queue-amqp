@@ -50,7 +50,7 @@ final class QueueProvider implements QueueProviderInterface
         }
 
         $this->channelId = $this->connection->get_free_channel_id();
-        $channel = $this->connection->channel($this->getChannelId());
+        $channel = $this->connection->channel($this->channelId);
         $channel->queue_declare(...$this->queueSettings->getPositionalSettings());
 
         if ($this->exchangeSettings !== null) {
@@ -88,9 +88,6 @@ final class QueueProvider implements QueueProviderInterface
 
         $instance = clone $this;
         $instance->queueSettings = $instance->queueSettings->withName($queue);
-        if ($this->channelId !== null) {
-            $instance->channelId = null;
-        }
 
         return $instance;
     }
@@ -134,14 +131,5 @@ final class QueueProvider implements QueueProviderInterface
             $this->connection->channel($this->channelId)->close();
             $this->channelId = null;
         }
-    }
-
-    private function getChannelId(): int
-    {
-        if ($this->channelId === null) {
-            $this->channelId = $this->connection->get_free_channel_id();
-        }
-
-        return $this->channelId;
     }
 }

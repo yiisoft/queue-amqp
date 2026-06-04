@@ -83,6 +83,17 @@ final class Adapter implements AdapterInterface
     public function subscribe(callable $handlerCallback): void
     {
         $channel = $this->queueProvider->getChannel();
+        $qosSettings = $this->queueProvider
+            ->getQueueSettings()
+            ->getQosSettings();
+        if ($qosSettings !== null) {
+            $channel->basic_qos(
+                $qosSettings->getPrefetchSize(),
+                $qosSettings->getPrefetchCount(),
+                $qosSettings->isGlobal(),
+            );
+        }
+
         $channel->basic_consume(
             $this->queueProvider
                 ->getQueueSettings()
