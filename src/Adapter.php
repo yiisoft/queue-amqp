@@ -5,19 +5,22 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP;
 
 use BackedEnum;
+use InvalidArgumentException;
+use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
+use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
+use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\JobStatus;
+use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\MessageStatus;
 
 final class Adapter implements AdapterInterface
 {
-    private ?AMQPMessage $amqpMessage = null;
-
     public function __construct(
         private QueueProviderInterface $queueProvider,
         private readonly MessageSerializerInterface $serializer,
@@ -29,9 +32,8 @@ final class Adapter implements AdapterInterface
     {
         $instance = clone $this;
 
-        $channelName = is_string($channel) ? $channel : (string) $channel->value;
-        $instance->queueProvider = $this->queueProvider->withChannelName($channelName);
-        $instance->amqpMessage = null;
+        $queueName = is_string($channel) ? $channel : (string) $channel->value;
+        $instance->queueProvider = $this->queueProvider->withQueueName($queueName);
 
         return $instance;
     }
@@ -47,29 +49,30 @@ final class Adapter implements AdapterInterface
     /**
      * @return never
      */
-    public function status(int|string $id): JobStatus
+    public function status(int|string $id): MessageStatus
     {
         throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
     }
 
     public function push(MessageInterface $message): MessageInterface
     {
-        $this->amqpMessage ??= new AMQPMessage(
+        $queueProvider = $this->getQueueProviderForMessage($message);
+
+        $amqpMessage = new AMQPMessage(
             '',
-            $this->queueProvider->getMessageProperties(),
+            $queueProvider->getMessageProperties(),
         );
-        $amqpMessage = $this->amqpMessage;
 
         $payload = $this->serializer->serialize($message);
         $amqpMessage->setBody($payload);
-        $exchangeSettings = $this->queueProvider->getExchangeSettings();
+        $exchangeSettings = $queueProvider->getExchangeSettings();
 
-        $this->queueProvider
+        $queueProvider
             ->getChannel()
             ->basic_publish(
                 $amqpMessage,
                 $exchangeSettings?->getName() ?? '',
-                $exchangeSettings ? '' : $this->queueProvider
+                $exchangeSettings ? '' : $queueProvider
                     ->getQueueSettings()
                     ->getName()
             );
@@ -80,6 +83,17 @@ final class Adapter implements AdapterInterface
     public function subscribe(callable $handlerCallback): void
     {
         $channel = $this->queueProvider->getChannel();
+        $qosSettings = $this->queueProvider
+            ->getQueueSettings()
+            ->getQosSettings();
+        if ($qosSettings !== null) {
+            $channel->basic_qos(
+                $qosSettings->getPrefetchSize(),
+                $qosSettings->getPrefetchCount(),
+                $qosSettings->isGlobal(),
+            );
+        }
+
         $channel->basic_consume(
             $this->queueProvider
                 ->getQueueSettings()
@@ -127,5 +141,72 @@ final class Adapter implements AdapterInterface
     public function getChannel(): string
     {
         return $this->queueProvider->getQueueSettings()->getName();
+    }
+
+    private function getQueueProviderForMessage(MessageInterface $message): QueueProviderInterface
+    {
+        $delaySeconds = DelayEnvelope::fromMessage($message)->getDelaySeconds();
+        if ($delaySeconds <= 0) {
+            return $this->queueProvider;
+        }
+
+        $exchangeSettings = $this->queueProvider->getExchangeSettings();
+        if ($exchangeSettings === null) {
+            throw new InvalidArgumentException('Message cannot be delayed to a queue without an exchange. Exchange is mandatory.');
+        }
+
+        $delayMilliseconds = (int) ceil($delaySeconds * 1000);
+
+        return $this->queueProvider
+            ->withMessageProperties($this->getDelayMessageProperties($delayMilliseconds))
+            ->withExchangeSettings($this->getDelayExchangeSettings($exchangeSettings))
+            ->withQueueSettings(
+                $this->getDelayQueueSettings(
+                    $this->queueProvider->getQueueSettings(),
+                    $exchangeSettings,
+                    $delayMilliseconds,
+                )
+            );
+    }
+
+    /**
+     * @psalm-return array{expiration: string, delivery_mode: int}&array
+     */
+    private function getDelayMessageProperties(int $delayMilliseconds): array
+    {
+        return array_merge(
+            $this->queueProvider->getMessageProperties(),
+            [
+                'expiration' => (string) $delayMilliseconds,
+                'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
+            ],
+        );
+    }
+
+    private function getDelayQueueSettings(
+        QueueSettingsInterface $queueSettings,
+        ExchangeSettingsInterface $exchangeSettings,
+        int $delayMilliseconds,
+    ): QueueSettingsInterface {
+        $deliveryTime = time() + (int) ceil($delayMilliseconds / 1000);
+
+        return $queueSettings
+            ->withName("{$queueSettings->getName()}.dlx.$deliveryTime")
+            ->withAutoDeletable(true)
+            ->withArguments(
+                [
+                    'x-dead-letter-exchange' => ['S', $exchangeSettings->getName()],
+                    'x-expires' => ['I', $delayMilliseconds + 30000],
+                    'x-message-ttl' => ['I', $delayMilliseconds],
+                ]
+            );
+    }
+
+    private function getDelayExchangeSettings(ExchangeSettingsInterface $exchangeSettings): ExchangeSettingsInterface
+    {
+        return $exchangeSettings
+            ->withName("{$exchangeSettings->getName()}.dlx")
+            ->withAutoDelete(true)
+            ->withType(AMQPExchangeType::TOPIC);
     }
 }

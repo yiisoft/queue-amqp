@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\AMQP\Settings;
 
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Queue\QueueInterface;
+use Yiisoft\Queue\Provider\QueueProviderInterface;
 
 final class Queue implements QueueSettingsInterface
 {
     public function __construct(
-        private string $queueName = QueueInterface::DEFAULT_CHANNEL,
+        private string $queueName = QueueProviderInterface::DEFAULT_QUEUE,
         private bool $passive = false,
         private bool $durable = true,
         private bool $exclusive = false,
         private bool $autoDelete = false,
         private bool $nowait = false,
         private AMQPTable|array $arguments = [],
-        private ?int $ticket = null
+        private ?int $ticket = null,
+        private ?QosSettings $qosSettings = null,
     ) {
     }
 
@@ -34,6 +35,11 @@ final class Queue implements QueueSettingsInterface
     public function getTicket(): ?int
     {
         return $this->ticket;
+    }
+
+    public function getQosSettings(): ?QosSettings
+    {
+        return $this->qosSettings;
     }
 
     public function isAutoDeletable(): bool
@@ -100,6 +106,14 @@ final class Queue implements QueueSettingsInterface
     {
         $new = clone $this;
         $new->ticket = $ticket;
+
+        return $new;
+    }
+
+    public function withQosSettings(?QosSettings $qosSettings): self
+    {
+        $new = clone $this;
+        $new->qosSettings = $qosSettings;
 
         return $new;
     }

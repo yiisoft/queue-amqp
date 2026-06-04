@@ -9,42 +9,50 @@ use PhpAmqpLib\Wire\AMQPTable;
 use Yiisoft\Queue\AMQP\Adapter;
 use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\AMQP\Settings\QosSettings;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
 
 final class QueueSettingsTest extends UnitTestCase
 {
+    private const TEST_QUEUE_NAMES = [
+        'yii-queue-test-queue-settings-arg',
+        'yii-queue-test-queue-common-settings',
+    ];
+
+    protected function setUp(): void
+    {
+        $savedQueueName = $this->queueName;
+        $savedExchangeName = $this->exchangeName;
+
+        foreach (self::TEST_QUEUE_NAMES as $name) {
+            $this->queueName = $name;
+            $this->exchangeName = $name;
+            $this->deleteQueue();
+            $this->deleteExchange();
+        }
+
+        $this->queueName = $savedQueueName;
+        $this->exchangeName = $savedExchangeName;
+
+        parent::setUp();
+    }
+
     public function testCommonSettings(): void
     {
-        $queueProvider = new QueueProvider(
-            $this->createConnection(),
-            $this->getQueueSettings(),
+        $queueSettings = new QueueSettings(
+            queueName: 'yii-queue-test-queue-common-settings',
+            passive: true,
+            durable: true,
+            exclusive: true,
+            nowait: true,
+            arguments: new AMQPTable([
+                'x-dead-letter-exchange' => 'yii-queue-test-queue-common-settings-dead-letter-exc',
+                'x-message-ttl' => 15000,
+                'x-expires' => 16000,
+            ])
         );
-        $adapter = new Adapter(
-            $queueProvider
-                ->withQueueSettings(
-                    new QueueSettings(
-                        queueName: 'yii-queue-test-queue-common-settings',
-                        passive: true,
-                        durable: true,
-                        exclusive: true,
-                        nowait: true,
-                        arguments: new AMQPTable([
-                            'x-dead-letter-exchange' => 'yii-queue-test-queue-common-settings-dead-letter-exc',
-                            'x-message-ttl' => 15000,
-                            'x-expires' => 16000,
-                        ])
-                    )
-                )
-                ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-queue-common-settings')
-                ),
-            new JsonMessageSerializer(),
-            $this->getLoop(),
-        );
-
-        $queueSettings = $adapter->getQueueProvider()->getQueueSettings();
 
         self::assertTrue($queueSettings->isDurable());
         self::assertTrue($queueSettings->isPassive());
@@ -59,6 +67,7 @@ final class QueueSettingsTest extends UnitTestCase
         self::assertFalse($queueSettings->withAutoDeletable(false)->isAutoDeletable());
         self::assertFalse($queueSettings->withNowait(false)->hasNowait());
         self::assertEquals(0, $queueSettings->withTicket(0)->getTicket());
+        self::assertEquals(new QosSettings(prefetchCount: 1), $queueSettings->withQosSettings(new QosSettings(prefetchCount: 1))->getQosSettings());
 
         self::assertInstanceOf(AMQPTable::class, $queueSettings->getArguments());
         self::assertArrayHasKey('x-dead-letter-exchange', $queueSettings->getArguments());
@@ -68,6 +77,9 @@ final class QueueSettingsTest extends UnitTestCase
 
     public function testArgumentsXExpires(): void
     {
+        $this->queueName = 'yii-queue-test-queue-settings-arg';
+        $this->exchangeName = 'yii-queue-test-queue-settings-arg';
+
         $queueProvider = new QueueProvider(
             $this->createConnection(),
             $this->getQueueSettings(),
@@ -89,10 +101,9 @@ final class QueueSettingsTest extends UnitTestCase
             $this->getLoop(),
         );
 
-        $this->getQueue()
-            ->withAdapter($adapter)
+        $this->getQueueWithAdapter($adapter)
             ->push(
-                new Message('ext-simple', ['payload' => time()])
+                Message::fromData('ext-simple', ['payload' => time()])
             );
 
         sleep(2);
@@ -114,5 +125,6 @@ final class QueueSettingsTest extends UnitTestCase
         self::assertNotSame($queueSettings, $queueSettings->withName('test'));
         self::assertNotSame($queueSettings, $queueSettings->withAutoDeletable(false));
         self::assertNotSame($queueSettings, $queueSettings->withArguments([]));
+        self::assertNotSame($queueSettings, $queueSettings->withQosSettings(new QosSettings(prefetchCount: 1)));
     }
 }

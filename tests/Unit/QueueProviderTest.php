@@ -13,7 +13,7 @@ use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
 
 final class QueueProviderTest extends UnitTestCase
 {
@@ -38,12 +38,12 @@ final class QueueProviderTest extends UnitTestCase
             $this->getLoop(),
         );
 
-        $queue = $this->getQueue()->withAdapter($adapter);
+        $queue = $this->getQueueWithAdapter($adapter);
 
         $fileHelper = new FileHelper();
         $time = time();
         $queue->push(
-            new Message('ext-simple', ['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
+            Message::fromData('ext-simple', ['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
         );
 
         $message = $this
@@ -64,7 +64,7 @@ final class QueueProviderTest extends UnitTestCase
         self::assertEquals($messageBody['data']['payload']['time'], $result);
     }
 
-    public function testWithChannelNameExchangeDeclaredException(): void
+    public function testWithQueueNameExchangeDeclaredException(): void
     {
         $queueProvider = new QueueProvider(
             $this->createConnection(),
@@ -75,12 +75,12 @@ final class QueueProviderTest extends UnitTestCase
         new Adapter(
             $queueProvider
                 ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-with-channel-name')
+                    new QueueSettings('yii-queue-test-with-queue-name')
                 )
                 ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-with-channel-name')
+                    new ExchangeSettings('yii-queue-test-with-queue-name')
                 )
-                ->withChannelName('yii-queue-test-channel-name'),
+                ->withQueueName('yii-queue-test-queue-name'),
             new JsonMessageSerializer(),
             $this->getLoop(),
         );

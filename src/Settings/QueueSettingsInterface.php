@@ -14,6 +14,8 @@ interface QueueSettingsInterface
 
     public function getTicket(): ?int;
 
+    public function getQosSettings(): ?QosSettings;
+
     public function isAutoDeletable(): bool;
 
     public function isDurable(): bool;
@@ -40,6 +42,8 @@ interface QueueSettingsInterface
     public function withName(string $name): self;
 
     public function withTicket(?int $ticket): self;
+
+    public function withQosSettings(?QosSettings $qosSettings): self;
 
     public function withAutoDeletable(bool $autoDeletable): self;
 

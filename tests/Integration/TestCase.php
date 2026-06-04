@@ -43,7 +43,7 @@ abstract class TestCase extends MainTestCase
         // TODO Fail test on subprocess error exit code
         $command = [PHP_BINARY, dirname(__DIR__) . '/yii', 'queue:listen'];
         if ($queue !== null) {
-            $command[] = "--channel=$queue";
+            $command[] = $queue;
         }
         $process = new Process($command);
         $this->processes[] = $process;
