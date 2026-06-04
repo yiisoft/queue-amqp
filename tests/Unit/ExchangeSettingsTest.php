@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\Amqp\Tests\Unit;
 
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\Amqp\Settings\Exchange as ExchangeSettings;
 
 final class ExchangeSettingsTest extends UnitTestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP;
+namespace Yiisoft\Queue\Amqp;
 
 use BackedEnum;
 use InvalidArgumentException;
@@ -10,9 +10,9 @@ use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\AMQP\Exception\NotImplementedException;
-use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\Amqp\Exception\NotImplementedException;
+use Yiisoft\Queue\Amqp\Settings\ExchangeSettingsInterface;
+use Yiisoft\Queue\Amqp\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Tests\Unit;
+namespace Yiisoft\Queue\Amqp\Tests\Unit;
 
 use PHPUnit\Util\Exception as PHPUnitException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\QueueProvider;
-use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Queue\AMQP\Tests\Support\ExtendedSimpleMessageHandler;
-use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
-use Yiisoft\Queue\AMQP\Tests\Support\MainTestCase;
+use Yiisoft\Queue\Amqp\Adapter;
+use Yiisoft\Queue\Amqp\QueueProvider;
+use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\Amqp\Tests\Support\ExtendedSimpleMessageHandler;
+use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
+use Yiisoft\Queue\Amqp\Tests\Support\MainTestCase;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;

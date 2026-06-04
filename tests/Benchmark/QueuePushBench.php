@@ -11,12 +11,12 @@ use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\OutputMode;
 use PhpBench\Attributes\OutputTimeUnit;
 use PhpBench\Attributes\Revs;
-use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\QueueProvider;
-use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\Amqp\Adapter;
+use Yiisoft\Queue\Amqp\QueueProvider;
+use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Cli\SimpleLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
+use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 
 final class QueuePushBench
 {

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Tests\Integration;
+namespace Yiisoft\Queue\Amqp\Tests\Integration;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\AMQP\Adapter;
-use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
-use Yiisoft\Queue\AMQP\QueueProvider;
-use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
-use Yiisoft\Queue\AMQP\Settings\Exchange as ExchangeSettings;
-use Yiisoft\Queue\AMQP\Tests\Support\FakeAdapter;
-use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
+use Yiisoft\Queue\Amqp\Adapter;
+use Yiisoft\Queue\Amqp\Middleware\DelayMiddleware;
+use Yiisoft\Queue\Amqp\QueueProvider;
+use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
+use Yiisoft\Queue\Amqp\Settings\Exchange as ExchangeSettings;
+use Yiisoft\Queue\Amqp\Tests\Support\FakeAdapter;
+use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
+use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Exception;
+namespace Yiisoft\Queue\Amqp\Exception;
 
 use RuntimeException;
 

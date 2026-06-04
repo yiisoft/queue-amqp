@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP;
+namespace Yiisoft\Queue\Amqp;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
-use Yiisoft\Queue\AMQP\Exception\ExchangeDeclaredException;
-use Yiisoft\Queue\AMQP\Settings\ExchangeSettingsInterface;
-use Yiisoft\Queue\AMQP\Settings\QueueSettingsInterface;
+use Yiisoft\Queue\Amqp\Exception\ExchangeDeclaredException;
+use Yiisoft\Queue\Amqp\Settings\ExchangeSettingsInterface;
+use Yiisoft\Queue\Amqp\Settings\QueueSettingsInterface;
 
 /**
  * @internal

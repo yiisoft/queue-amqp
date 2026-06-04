@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Queue\AMQP\Settings;
+namespace Yiisoft\Queue\Amqp\Settings;
 
 use PhpAmqpLib\Wire\AMQPTable;
 
@@ -29,7 +29,7 @@ interface ExchangeSettingsInterface
     /**
      * Positional arguments to be used with {@see \PhpAmqpLib\Channel\AMQPChannel::exchange_declare()}
      *
-     * @see \Yiisoft\Queue\AMQP\QueueProvider::getChannel()
+     * @see \Yiisoft\Queue\Amqp\QueueProvider::getChannel()
      *
      * @return (AMQPTable|array|bool|int|string|null)[]
      *

@@ -45,12 +45,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Yiisoft\\Queue\\AMQP\\": "src"
+            "Yiisoft\\Queue\\Amqp\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\Queue\\AMQP\\Tests\\": "tests"
+            "Yiisoft\\Queue\\Amqp\\Tests\\": "tests"
         }
     },
     "extra": {
