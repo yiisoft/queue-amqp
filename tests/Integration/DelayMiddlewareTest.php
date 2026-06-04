@@ -17,7 +17,7 @@ use Yiisoft\Queue\AMQP\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
@@ -51,7 +51,7 @@ final class DelayMiddlewareTest extends TestCase
 
         $time = time();
         $queue->push(
-            new Message('simple', 'test-delay-middleware-main'),
+            Message::fromData('simple', 'test-delay-middleware-main'),
         );
 
         sleep(2);
@@ -80,7 +80,7 @@ final class DelayMiddlewareTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Method not implemented');
         $queue->push(
-            new Message('simple', 'test-delay-middleware-main'),
+            Message::fromData('simple', 'test-delay-middleware-main'),
         );
     }
 

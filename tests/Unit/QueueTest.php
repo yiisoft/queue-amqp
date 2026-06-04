@@ -24,7 +24,7 @@ use Yiisoft\Queue\Exception\MessageFailureException;
 use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
 
@@ -42,7 +42,7 @@ final class QueueTest extends UnitTestCase
 
         $queue = $this->getDefaultQueue($adapter);
 
-        $message = new Message('ext-simple', null);
+        $message = Message::fromData('ext-simple', null);
         $queue->push(
             $message,
         );
@@ -67,7 +67,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($this->getAdapter());
 
         $queue->push(
-            new Message('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
+            Message::fromData('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
         );
 
         self::assertNull($fileHelper->get($fileName));
@@ -98,7 +98,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $time = time();
-        $queue->push(new Message('exception-listen', ['payload' => ['time' => $time]]));
+        $queue->push(Message::fromData('exception-listen', ['payload' => ['time' => $time]]));
 
         $this->expectException(MessageFailureException::class);
 
@@ -126,7 +126,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $queue->push(
-            new Message('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
+            Message::fromData('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
         );
         $queue->listen();
     }
@@ -151,7 +151,7 @@ final class QueueTest extends UnitTestCase
 
     public function testPushUsesStringExpirationForDelayedMessage(): void
     {
-        $message = new DelayEnvelope(new Message('ext-simple', null), 1.5);
+        $message = new DelayEnvelope(Message::fromData('ext-simple', null), 1.5);
         $exchangeSettings = new ExchangeSettings('test-exchange');
         $queueSettings = new QueueSettings('test-queue');
         $delayMessageProperties = [

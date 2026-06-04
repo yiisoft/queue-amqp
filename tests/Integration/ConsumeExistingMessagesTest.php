@@ -9,7 +9,7 @@ use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Cli\SimpleLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 class ConsumeExistingMessagesTest extends TestCase
@@ -31,7 +31,7 @@ class ConsumeExistingMessagesTest extends TestCase
 
         $messageCount = 10;
         for ($i = 0; $i < $messageCount; $i++) {
-            $adapter->push(new Message('test', ['payload' => 'test']));
+            $adapter->push(Message::fromData('test', ['payload' => 'test']));
         }
 
         // wait for messages to be ready to consume
@@ -63,7 +63,7 @@ class ConsumeExistingMessagesTest extends TestCase
 
         $messageCount = 10;
         for ($i = 0; $i < $messageCount; $i++) {
-            $adapter->push(new Message('test', ['payload' => 'test']));
+            $adapter->push(Message::fromData('test', ['payload' => 'test']));
         }
 
         // wait for messages to be ready to consume

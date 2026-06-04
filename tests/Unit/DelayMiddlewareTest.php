@@ -6,7 +6,7 @@ namespace Yiisoft\Queue\AMQP\Tests\Unit;
 
 use Yiisoft\Queue\AMQP\Middleware\DelayMiddleware;
 use Yiisoft\Queue\Message\DelayEnvelope;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Middleware\Push\PushHandlerInterface;
 
@@ -31,7 +31,7 @@ final class DelayMiddlewareTest extends UnitTestCase
 
     public function testProcessPushAddsDelayEnvelope(): void
     {
-        $message = new Message('simple', null);
+        $message = Message::fromData('simple', null);
         $handler = new class () implements PushHandlerInterface {
             public function handlePush(MessageInterface $message): MessageInterface
             {
@@ -47,7 +47,7 @@ final class DelayMiddlewareTest extends UnitTestCase
 
     public function testProcessPushSkipsNonPositiveDelay(): void
     {
-        $message = new Message('simple', null);
+        $message = Message::fromData('simple', null);
         $handler = new class () implements PushHandlerInterface {
             public function handlePush(MessageInterface $message): MessageInterface
             {

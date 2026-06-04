@@ -14,7 +14,7 @@ use Yiisoft\Queue\AMQP\QueueProvider;
 use Yiisoft\Queue\AMQP\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Cli\SimpleLoop;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
-use Yiisoft\Queue\Message\Message;
+use Yiisoft\Queue\AMQP\Tests\Support\TestMessage as Message;
 
 #[BeforeClassMethods('cleanupQueue')]
 final class QueueConsumeBench
@@ -42,7 +42,7 @@ final class QueueConsumeBench
     public function pushMessagesForConsume(): void
     {
         for ($i = 0; $i < self::MESSAGE_COUNT; $i++) {
-            $this->adapter->push(new Message('test', ['payload' => 'test']));
+            $this->adapter->push(Message::fromData('test', ['payload' => 'test']));
         }
     }
 
