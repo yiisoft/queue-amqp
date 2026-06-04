@@ -17,16 +17,16 @@ final class ExchangeDeclaredException extends InvalidArgumentException implement
     public function getSolution(): ?string
     {
         return <<<'SOLUTION'
-            Can't explicitly set channel name when an exchange is declared.
+            Can't explicitly set queue name when an exchange is declared.
 
             Probably, you have called QueueFactory::get() without explicit configuration
-            for a given channel.
+            for a given queue.
             Your QueueProvider configuration has an exchange,
             which can't be implicitly binded to a new queue due to differences in behaviors
             of different types of exchanges. Please, create an explicit configuration
-            with a fully-configured adapter for the channel you are trying to create.
+            with a fully-configured adapter for the queue you are trying to create.
 
-            Reference: https://github.com/yiisoft/yii-queue#different-queue-channels
+            Reference: https://github.com/yiisoft/queue/blob/master/docs/guide/en/queue-names.md
 
             SOLUTION;
     }

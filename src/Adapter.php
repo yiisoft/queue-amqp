@@ -32,8 +32,8 @@ final class Adapter implements AdapterInterface
     {
         $instance = clone $this;
 
-        $channelName = is_string($channel) ? $channel : (string) $channel->value;
-        $instance->queueProvider = $this->queueProvider->withChannelName($channelName);
+        $queueName = is_string($channel) ? $channel : (string) $channel->value;
+        $instance->queueProvider = $this->queueProvider->withQueueName($queueName);
 
         return $instance;
     }
@@ -144,27 +144,29 @@ final class Adapter implements AdapterInterface
             throw new InvalidArgumentException('Message cannot be delayed to a queue without an exchange. Exchange is mandatory.');
         }
 
+        $delayMilliseconds = (int) ceil($delaySeconds * 1000);
+
         return $this->queueProvider
-            ->withMessageProperties($this->getDelayMessageProperties($delaySeconds))
+            ->withMessageProperties($this->getDelayMessageProperties($delayMilliseconds))
             ->withExchangeSettings($this->getDelayExchangeSettings($exchangeSettings))
             ->withQueueSettings(
                 $this->getDelayQueueSettings(
                     $this->queueProvider->getQueueSettings(),
                     $exchangeSettings,
-                    $delaySeconds,
+                    $delayMilliseconds,
                 )
             );
     }
 
     /**
-     * @psalm-return array{expiration: int|float, delivery_mode: int}&array
+     * @psalm-return array{expiration: int, delivery_mode: int}&array
      */
-    private function getDelayMessageProperties(float $delaySeconds): array
+    private function getDelayMessageProperties(int $delayMilliseconds): array
     {
         return array_merge(
             $this->queueProvider->getMessageProperties(),
             [
-                'expiration' => $delaySeconds * 1000,
+                'expiration' => $delayMilliseconds,
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,
             ],
         );
@@ -173,9 +175,9 @@ final class Adapter implements AdapterInterface
     private function getDelayQueueSettings(
         QueueSettingsInterface $queueSettings,
         ExchangeSettingsInterface $exchangeSettings,
-        float $delaySeconds,
+        int $delayMilliseconds,
     ): QueueSettingsInterface {
-        $deliveryTime = time() + $delaySeconds;
+        $deliveryTime = time() + (int) ceil($delayMilliseconds / 1000);
 
         return $queueSettings
             ->withName("{$queueSettings->getName()}.dlx.$deliveryTime")
@@ -183,8 +185,8 @@ final class Adapter implements AdapterInterface
             ->withArguments(
                 [
                     'x-dead-letter-exchange' => ['S', $exchangeSettings->getName()],
-                    'x-expires' => ['I', $delaySeconds * 1000 + 30000],
-                    'x-message-ttl' => ['I', $delaySeconds * 1000],
+                    'x-expires' => ['I', $delayMilliseconds + 30000],
+                    'x-message-ttl' => ['I', $delayMilliseconds],
                 ]
             );
     }

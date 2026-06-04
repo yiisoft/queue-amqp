@@ -112,7 +112,7 @@ final class QueueTest extends UnitTestCase
         );
         $adapter = new Adapter(
             $queueProvider
-                ->withChannelName('yii-queue'),
+                ->withQueueName('yii-queue'),
             new JsonMessageSerializer(),
             $mockLoop,
         );

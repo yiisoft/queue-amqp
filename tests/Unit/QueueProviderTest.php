@@ -64,7 +64,7 @@ final class QueueProviderTest extends UnitTestCase
         self::assertEquals($messageBody['data']['payload']['time'], $result);
     }
 
-    public function testWithChannelNameExchangeDeclaredException(): void
+    public function testWithQueueNameExchangeDeclaredException(): void
     {
         $queueProvider = new QueueProvider(
             $this->createConnection(),
@@ -75,12 +75,12 @@ final class QueueProviderTest extends UnitTestCase
         new Adapter(
             $queueProvider
                 ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-with-channel-name')
+                    new QueueSettings('yii-queue-test-with-queue-name')
                 )
                 ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-with-channel-name')
+                    new ExchangeSettings('yii-queue-test-with-queue-name')
                 )
-                ->withChannelName('yii-queue-test-channel-name'),
+                ->withQueueName('yii-queue-test-queue-name'),
             new JsonMessageSerializer(),
             $this->getLoop(),
         );

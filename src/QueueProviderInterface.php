@@ -21,7 +21,7 @@ interface QueueProviderInterface
 
     public function getMessageProperties(): array;
 
-    public function withChannelName(string $channel): self;
+    public function withQueueName(string $queue): self;
 
     public function withQueueSettings(QueueSettingsInterface $queueSettings): self;
 

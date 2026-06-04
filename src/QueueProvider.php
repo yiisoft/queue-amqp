@@ -76,9 +76,9 @@ final class QueueProvider implements QueueProviderInterface
         return $this->messageProperties;
     }
 
-    public function withChannelName(string $channel): self
+    public function withQueueName(string $queue): self
     {
-        if ($channel === $this->queueSettings->getName()) {
+        if ($queue === $this->queueSettings->getName()) {
             return $this;
         }
 
@@ -87,7 +87,7 @@ final class QueueProvider implements QueueProviderInterface
         }
 
         $instance = clone $this;
-        $instance->queueSettings = $instance->queueSettings->withName($channel);
+        $instance->queueSettings = $instance->queueSettings->withName($queue);
         if ($this->channelId !== null) {
             $instance->channelId = null;
         }
