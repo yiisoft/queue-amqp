@@ -35,7 +35,7 @@ final class TestMessage implements MessageInterface
         return $this->metadata;
     }
 
-    public function withMetadata(array $metadata): self
+    public function withMetadata(array $metadata): static
     {
         return new self($this->type, $this->data, $metadata);
     }
