@@ -10,7 +10,6 @@ use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Amqp\Adapter;
-use Yiisoft\Queue\Amqp\Exception\NotImplementedException;
 use Yiisoft\Queue\Amqp\QueueProvider;
 use Yiisoft\Queue\Amqp\QueueProviderInterface;
 use Yiisoft\Queue\Amqp\Settings\Exchange as ExchangeSettings;
@@ -22,34 +21,34 @@ use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\MessageFailureException;
 use Yiisoft\Queue\Message\DelayEnvelope;
-use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\JsonMessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\Queue;
 
 final class QueueTest extends UnitTestCase
 {
-    /**
-     * Testing getting status
-     *
-     * @throws Exception
-     */
     public function testStatus(): void
     {
-        $adapter = $this->getAdapter();
-        $adapterClass = $adapter::class;
-
-        $queue = $this->getDefaultQueue($adapter);
-
-        $message = Message::fromData('ext-simple', null);
-        $queue->push(
-            $message,
+        $adapter = new Adapter(
+            $this->createMock(QueueProviderInterface::class),
+            $this->createMock(MessageSerializerInterface::class),
+            $this->createMock(LoopInterface::class)
         );
 
-        $this->expectException(NotImplementedException::class);
-        $this->expectExceptionMessage("Status check is not supported by the adapter $adapterClass.");
-        $adapter->status(IdEnvelope::fromMessage($message)->getId() ?? '');
+        $this->assertSame(MessageStatus::NOT_FOUND, $adapter->status('any-id'));
+    }
+
+    public function testHasStatusSupport(): void
+    {
+        $adapter = new Adapter(
+            $this->createMock(QueueProviderInterface::class),
+            $this->createMock(MessageSerializerInterface::class),
+            $this->createMock(LoopInterface::class)
+        );
+
+        $this->assertFalse($adapter->hasStatusSupport());
     }
 
     /**

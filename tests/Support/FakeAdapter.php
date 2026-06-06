@@ -29,7 +29,12 @@ final class FakeAdapter implements AdapterInterface
 
     public function status(int|string $id): MessageStatus
     {
-        throw new LogicException('Method not implemented');
+        return MessageStatus::NOT_FOUND;
+    }
+
+    public function hasStatusSupport(): bool
+    {
+        return false;
     }
 
     public function push(MessageInterface $message): MessageInterface
