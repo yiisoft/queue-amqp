@@ -31,22 +31,14 @@ final class QueueTest extends UnitTestCase
 {
     public function testStatus(): void
     {
-        $adapter = new Adapter(
-            $this->createMock(QueueProviderInterface::class),
-            $this->createMock(MessageSerializerInterface::class),
-            $this->createMock(LoopInterface::class)
-        );
+        $adapter = $this->getAdapter();
 
         $this->assertSame(MessageStatus::NOT_FOUND, $adapter->status('any-id'));
     }
 
     public function testHasStatusSupport(): void
     {
-        $adapter = new Adapter(
-            $this->createMock(QueueProviderInterface::class),
-            $this->createMock(MessageSerializerInterface::class),
-            $this->createMock(LoopInterface::class)
-        );
+        $adapter = $this->getAdapter();
 
         $this->assertFalse($adapter->hasStatusSupport());
     }
