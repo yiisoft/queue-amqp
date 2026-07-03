@@ -32,7 +32,7 @@ jobs:
         php: [ 81, 82, 83, 84 ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
       - name: Build
         working-directory: ./tests
         run: docker compose build
