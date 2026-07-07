@@ -22,6 +22,8 @@ on:
 
 name: build
 
+permissions:
+  contents: read
 jobs:
   phpunit:
     name: PHP ${{ matrix.php }}
@@ -32,7 +34,9 @@ jobs:
         php: [ 81, 82, 83, 84 ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5
+        with:
+          persist-credentials: false
       - name: Build
         working-directory: ./tests
         run: docker compose build
