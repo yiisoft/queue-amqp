@@ -10,7 +10,6 @@ use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Adapter\AdapterInterface;
-use Yiisoft\Queue\Amqp\Exception\NotImplementedException;
 use Yiisoft\Queue\Amqp\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\Amqp\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
@@ -46,12 +45,14 @@ final class Adapter implements AdapterInterface
         (new ExistingMessagesConsumer($this->queueProvider, $this->serializer))->consume($handlerCallback);
     }
 
-    /**
-     * @return never
-     */
     public function status(int|string $id): MessageStatus
     {
-        throw new NotImplementedException('Status check is not supported by the adapter ' . self::class . '.');
+        return MessageStatus::NOT_FOUND;
+    }
+
+    public function hasStatusSupport(): bool
+    {
+        return false;
     }
 
     public function push(MessageInterface $message): MessageInterface
