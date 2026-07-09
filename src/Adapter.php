@@ -16,7 +16,7 @@ use Yiisoft\Queue\Amqp\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\MessageStatus;
 
 final class Adapter implements AdapterInterface

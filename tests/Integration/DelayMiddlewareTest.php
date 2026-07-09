@@ -16,11 +16,13 @@ use Yiisoft\Queue\Amqp\Tests\Support\FakeAdapter;
 use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
-use Yiisoft\Queue\Message\JsonMessageSerializer;
+use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
+use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
+use Yiisoft\Queue\Provider\QueueProviderInterface;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
@@ -44,14 +46,14 @@ final class DelayMiddlewareTest extends TestCase
                 new QueueSettings(),
                 new ExchangeSettings('yii-queue'),
             ),
-            new JsonMessageSerializer(),
+            new MessageSerializer(new JsonMessageEncoder()),
             new SignalLoop(),
         );
-        $queue = $this->makeQueue($adapter)->withMiddlewaresAdded(new DelayMiddleware(3));
+        $queue = $this->makeQueue($adapter, new DelayMiddleware(3));
 
         $time = time();
         $queue->push(
-            Message::fromData('simple', 'test-delay-middleware-main'),
+            Message::fromPayload('simple', 'test-delay-middleware-main'),
         );
 
         sleep(2);
@@ -72,19 +74,19 @@ final class DelayMiddlewareTest extends TestCase
                 new QueueSettings(),
                 new ExchangeSettings('yii-queue'),
             ),
-            new JsonMessageSerializer(),
+            new MessageSerializer(new JsonMessageEncoder()),
             new SignalLoop(),
         );
-        $queue = $this->makeQueue($adapter)->withMiddlewaresAdded(new DelayMiddleware(3));
+        $queue = $this->makeQueue($adapter, new DelayMiddleware(3));
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Method not implemented');
         $queue->push(
-            Message::fromData('simple', 'test-delay-middleware-main'),
+            Message::fromPayload('simple', 'test-delay-middleware-main'),
         );
     }
 
-    private function makeQueue(AdapterInterface $adapter): Queue
+    private function makeQueue(AdapterInterface $adapter, mixed ...$middlewareDefinitions): Queue
     {
         return new Queue(
             $this->createMock(WorkerInterface::class),
@@ -97,6 +99,8 @@ final class DelayMiddlewareTest extends TestCase
                 ),
             ),
             $adapter,
+            QueueProviderInterface::DEFAULT_QUEUE,
+            ...$middlewareDefinitions,
         );
     }
 }

@@ -8,7 +8,8 @@ use Yiisoft\Queue\Amqp\Adapter;
 use Yiisoft\Queue\Amqp\QueueProvider;
 use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Cli\SimpleLoop;
-use Yiisoft\Queue\Message\JsonMessageSerializer;
+use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
+use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -17,7 +18,7 @@ class ConsumeExistingMessagesTest extends TestCase
     public function testConsumeExistingMessages(): void
     {
         $loop = new SimpleLoop();
-        $serializer = new JsonMessageSerializer();
+        $serializer = new MessageSerializer(new JsonMessageEncoder());
         $queueProvider = new QueueProvider(
             new AMQPStreamConnection(
                 getenv('RABBITMQ_HOST'),
@@ -31,7 +32,7 @@ class ConsumeExistingMessagesTest extends TestCase
 
         $messageCount = 10;
         for ($i = 0; $i < $messageCount; $i++) {
-            $adapter->push(Message::fromData('test', ['payload' => 'test']));
+            $adapter->push(Message::fromPayload('test', ['payload' => 'test']));
         }
 
         // wait for messages to be ready to consume
@@ -49,7 +50,7 @@ class ConsumeExistingMessagesTest extends TestCase
     public function testConsumeExistingMessagesByOne(): void
     {
         $loop = new SimpleLoop();
-        $serializer = new JsonMessageSerializer();
+        $serializer = new MessageSerializer(new JsonMessageEncoder());
         $queueProvider = new QueueProvider(
             new AMQPStreamConnection(
                 getenv('RABBITMQ_HOST'),
@@ -63,7 +64,7 @@ class ConsumeExistingMessagesTest extends TestCase
 
         $messageCount = 10;
         for ($i = 0; $i < $messageCount; $i++) {
-            $adapter->push(Message::fromData('test', ['payload' => 'test']));
+            $adapter->push(Message::fromPayload('test', ['payload' => 'test']));
         }
 
         // wait for messages to be ready to consume

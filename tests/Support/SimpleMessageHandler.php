@@ -14,6 +14,6 @@ final class SimpleMessageHandler
 
     public function __invoke(MessageInterface $message): void
     {
-        $this->fileHelper->put($message->getData(), time());
+        $this->fileHelper->put($message->getPayload(), time());
     }
 }

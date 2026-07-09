@@ -10,7 +10,7 @@ use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Amqp\QueueProviderInterface;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\MessageStatus;
 
 final class FakeAdapter implements AdapterInterface
