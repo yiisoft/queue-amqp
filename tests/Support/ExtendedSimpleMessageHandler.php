@@ -18,7 +18,12 @@ final class ExtendedSimpleMessageHandler
     public function handle(MessageInterface $message): void
     {
         $data = $message->getPayload();
-        if (null !== $data) {
+        if (
+            is_array($data)
+            && is_string($data['file_name'] ?? null)
+            && is_array($data['payload'] ?? null)
+            && (is_int($data['payload']['time'] ?? null) || is_string($data['payload']['time'] ?? null))
+        ) {
             $this->fileHelper->put($data['file_name'], $data['payload']['time']);
         }
     }

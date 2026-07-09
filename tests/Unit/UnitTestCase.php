@@ -105,7 +105,11 @@ abstract class UnitTestCase extends MainTestCase
             'ext-simple' => [new ExtendedSimpleMessageHandler(new FileHelper()), 'handle'],
             'exception-listen' => static function (MessageInterface $message) {
                 $data = $message->getPayload();
-                if (null !== $data) {
+                if (
+                    is_array($data)
+                    && is_array($data['payload'] ?? null)
+                    && (is_int($data['payload']['time'] ?? null) || is_string($data['payload']['time'] ?? null))
+                ) {
                     throw new PHPUnitException((string) $data['payload']['time']);
                 }
             },
