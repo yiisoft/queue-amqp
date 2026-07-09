@@ -7,7 +7,7 @@ namespace Yiisoft\Queue\Amqp;
 use PhpAmqpLib\Message\AMQPMessage;
 use Throwable;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 
 /**
  * @internal

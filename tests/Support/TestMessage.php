@@ -8,16 +8,20 @@ use Yiisoft\Queue\Message\MessageInterface;
 
 final class TestMessage implements MessageInterface
 {
+    /**
+     * @param array|bool|float|int|string|null $payload
+     * @param array<string, array|bool|float|int|string|null> $meta
+     */
     public function __construct(
         private readonly string $type,
-        private readonly mixed $data,
-        private readonly array $metadata = [],
+        private readonly bool|int|float|string|array|null $payload,
+        private readonly array $meta = [],
     ) {
     }
 
-    public static function fromData(string $type, mixed $data, array $metadata = []): self
+    public static function fromPayload(string $type, bool|int|float|string|array|null $payload): static
     {
-        return new self($type, $data, $metadata);
+        return new self($type, $payload);
     }
 
     public function getType(): string
@@ -25,18 +29,18 @@ final class TestMessage implements MessageInterface
         return $this->type;
     }
 
-    public function getData(): mixed
+    public function getPayload(): bool|int|float|string|array|null
     {
-        return $this->data;
+        return $this->payload;
     }
 
-    public function getMetadata(): array
+    public function getMeta(): array
     {
-        return $this->metadata;
+        return $this->meta;
     }
 
-    public function withMetadata(array $metadata): static
+    public function withMeta(array $meta): static
     {
-        return new self($this->type, $this->data, $metadata);
+        return new self($this->type, $this->payload, $meta);
     }
 }

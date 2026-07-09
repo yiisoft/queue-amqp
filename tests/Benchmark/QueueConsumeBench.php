@@ -13,7 +13,8 @@ use Yiisoft\Queue\Amqp\Adapter;
 use Yiisoft\Queue\Amqp\QueueProvider;
 use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Cli\SimpleLoop;
-use Yiisoft\Queue\Message\JsonMessageSerializer;
+use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
+use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 
 #[BeforeClassMethods('cleanupQueue')]
@@ -42,7 +43,7 @@ final class QueueConsumeBench
     public function pushMessagesForConsume(): void
     {
         for ($i = 0; $i < self::MESSAGE_COUNT; $i++) {
-            $this->adapter->push(Message::fromData('test', ['payload' => 'test']));
+            $this->adapter->push(Message::fromPayload('test', ['payload' => 'test']));
         }
     }
 
@@ -54,7 +55,7 @@ final class QueueConsumeBench
     private static function getAdapter(): Adapter
     {
         $loop = new SimpleLoop();
-        $serializer = new JsonMessageSerializer();
+        $serializer = new MessageSerializer(new JsonMessageEncoder());
         $queueProvider = new QueueProvider(
             new AMQPStreamConnection(
                 getenv('RABBITMQ_HOST'),

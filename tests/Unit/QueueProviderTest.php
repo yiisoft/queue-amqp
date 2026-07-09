@@ -12,7 +12,8 @@ use Yiisoft\Queue\Amqp\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Amqp\Settings\QueueSettingsInterface;
 use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
-use Yiisoft\Queue\Message\JsonMessageSerializer;
+use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
+use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 
 final class QueueProviderTest extends UnitTestCase
@@ -34,7 +35,7 @@ final class QueueProviderTest extends UnitTestCase
                 ->withExchangeSettings(
                     new ExchangeSettings($this->exchangeName)
                 ),
-            new JsonMessageSerializer(),
+            new MessageSerializer(new JsonMessageEncoder()),
             $this->getLoop(),
         );
 
@@ -43,7 +44,7 @@ final class QueueProviderTest extends UnitTestCase
         $fileHelper = new FileHelper();
         $time = time();
         $queue->push(
-            Message::fromData('ext-simple', ['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
+            Message::fromPayload('ext-simple', ['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
         );
 
         $message = $this
@@ -61,7 +62,7 @@ final class QueueProviderTest extends UnitTestCase
         self::assertEquals($time, $result);
 
         $messageBody = json_decode($message->getBody(), true, 512, JSON_THROW_ON_ERROR);
-        self::assertEquals($messageBody['data']['payload']['time'], $result);
+        self::assertEquals($messageBody['payload']['payload']['time'], $result);
     }
 
     public function testWithQueueNameExchangeDeclaredException(): void
@@ -81,7 +82,7 @@ final class QueueProviderTest extends UnitTestCase
                     new ExchangeSettings('yii-queue-test-with-queue-name')
                 )
                 ->withQueueName('yii-queue-test-queue-name'),
-            new JsonMessageSerializer(),
+            new MessageSerializer(new JsonMessageEncoder()),
             $this->getLoop(),
         );
     }

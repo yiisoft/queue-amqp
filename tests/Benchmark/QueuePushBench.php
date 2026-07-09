@@ -15,7 +15,8 @@ use Yiisoft\Queue\Amqp\Adapter;
 use Yiisoft\Queue\Amqp\QueueProvider;
 use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Cli\SimpleLoop;
-use Yiisoft\Queue\Message\JsonMessageSerializer;
+use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
+use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 
 final class QueuePushBench
@@ -27,7 +28,7 @@ final class QueuePushBench
     public function __construct()
     {
         $loop = new SimpleLoop();
-        $serializer = new JsonMessageSerializer();
+        $serializer = new MessageSerializer(new JsonMessageEncoder());
         $queueProvider = new QueueProvider(
             new AMQPStreamConnection(
                 getenv('RABBITMQ_HOST'),
@@ -53,7 +54,7 @@ final class QueuePushBench
     #[OutputTimeUnit('seconds')]
     public function benchPush(): void
     {
-        $this->adapter->push(Message::fromData('test', ['payload' => 'test']));
+        $this->adapter->push(Message::fromPayload('test', ['payload' => 'test']));
     }
 
     /**
@@ -67,7 +68,7 @@ final class QueuePushBench
     #[OutputTimeUnit('seconds')]
     public function benchPushBatch(): void
     {
-        $message = Message::fromData('test', ['payload' => 'test']);
+        $message = Message::fromPayload('test', ['payload' => 'test']);
         for ($i = 0; $i < 100; $i++) {
             $this->adapter->push($message);
         }

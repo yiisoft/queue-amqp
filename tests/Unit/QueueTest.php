@@ -23,9 +23,10 @@ use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Exception\MessageFailureException;
 use Yiisoft\Queue\Message\DelayEnvelope;
 use Yiisoft\Queue\Message\IdEnvelope;
-use Yiisoft\Queue\Message\JsonMessageSerializer;
+use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
+use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
-use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\Queue;
 
 final class QueueTest extends UnitTestCase
@@ -42,7 +43,7 @@ final class QueueTest extends UnitTestCase
 
         $queue = $this->getDefaultQueue($adapter);
 
-        $message = Message::fromData('ext-simple', null);
+        $message = Message::fromPayload('ext-simple', null);
         $queue->push(
             $message,
         );
@@ -67,7 +68,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($this->getAdapter());
 
         $queue->push(
-            Message::fromData('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
+            Message::fromPayload('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
         );
 
         self::assertNull($fileHelper->get($fileName));
@@ -92,13 +93,13 @@ final class QueueTest extends UnitTestCase
             $queueProvider
                 ->withQueueSettings(new QueueSettings($this->queueName))
                 ->withExchangeSettings(new ExchangeSettings($this->exchangeName)),
-            new JsonMessageSerializer(),
+            new MessageSerializer(new JsonMessageEncoder()),
             $this->getLoop(),
         );
         $queue = $this->getDefaultQueue($adapter);
 
         $time = time();
-        $queue->push(Message::fromData('exception-listen', ['payload' => ['time' => $time]]));
+        $queue->push(Message::fromPayload('exception-listen', ['payload' => ['time' => $time]]));
 
         $this->expectException(MessageFailureException::class);
 
@@ -120,13 +121,13 @@ final class QueueTest extends UnitTestCase
         $adapter = new Adapter(
             $queueProvider
                 ->withQueueName('yii-queue'),
-            new JsonMessageSerializer(),
+            new MessageSerializer(new JsonMessageEncoder()),
             $mockLoop,
         );
         $queue = $this->getDefaultQueue($adapter);
 
         $queue->push(
-            Message::fromData('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
+            Message::fromPayload('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
         );
         $queue->listen();
     }
@@ -151,7 +152,7 @@ final class QueueTest extends UnitTestCase
 
     public function testPushUsesStringExpirationForDelayedMessage(): void
     {
-        $message = new DelayEnvelope(Message::fromData('ext-simple', null), 1.5);
+        $message = new DelayEnvelope(Message::fromPayload('ext-simple', null), 1.5);
         $exchangeSettings = new ExchangeSettings('test-exchange');
         $queueSettings = new QueueSettings('test-queue');
         $delayMessageProperties = [
