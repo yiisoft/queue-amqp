@@ -9,8 +9,8 @@ use Yiisoft\Queue\Message\MessageInterface;
 final class TestMessage implements MessageInterface
 {
     /**
-     * @param bool|int|float|string|array|null $payload
-     * @param array<string, bool|int|float|string|array|null> $meta
+     * @param array|bool|float|int|string|null $payload
+     * @param array<string, array|bool|float|int|string|null> $meta
      */
     public function __construct(
         private readonly string $type,
