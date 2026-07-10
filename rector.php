@@ -7,7 +7,6 @@ use Rector\Config\RectorConfig;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
 use Rector\Php81\Rector\FuncCall\NullToStrictStringFuncCallArgRector;
-use Rector\TypeDeclaration\Rector\ClassMethod\ReturnNeverTypeRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -22,5 +21,4 @@ return RectorConfig::configure()
         ClosureToArrowFunctionRector::class,
         ReadOnlyPropertyRector::class,
         NullToStrictStringFuncCallArgRector::class,
-        ReturnNeverTypeRector::class,
     ]);

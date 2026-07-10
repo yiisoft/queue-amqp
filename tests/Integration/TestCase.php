@@ -7,6 +7,11 @@ namespace Yiisoft\Queue\Amqp\Tests\Integration;
 use Symfony\Component\Process\Process;
 use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
 use Yiisoft\Queue\Amqp\Tests\Support\MainTestCase;
+use Exception;
+
+use function dirname;
+
+use const PHP_BINARY;
 
 abstract class TestCase extends MainTestCase
 {
@@ -51,7 +56,7 @@ abstract class TestCase extends MainTestCase
 
         usleep(500000);
         if (!$process->isRunning()) {
-            throw new \Exception('Failed to start queue listener process');
+            throw new Exception('Failed to start queue listener process');
         }
     }
 }

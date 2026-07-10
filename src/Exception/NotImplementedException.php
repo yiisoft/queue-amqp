@@ -6,6 +6,4 @@ namespace Yiisoft\Queue\Amqp\Exception;
 
 use RuntimeException;
 
-final class NotImplementedException extends RuntimeException
-{
-}
+final class NotImplementedException extends RuntimeException {}

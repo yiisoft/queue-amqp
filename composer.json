@@ -31,16 +31,18 @@
         "yiisoft/queue": "dev-master"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
         "infection/infection": "^0.27.8||^0.29.0",
         "maglnet/composer-require-checker": "^4.4",
         "phpbench/phpbench": "^1.4",
         "phpunit/phpunit": "^9.5",
-        "rector/rector": "^2.0.15",
+        "rector/rector": "^2.5.5",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
         "symfony/console": "^6.0",
         "symfony/process": "^6.0",
         "vimeo/psalm": "^5.26.1 || ^6.10.3",
+        "yiisoft/code-style": "^1.0",
         "yiisoft/test-support": "^3.0"
     },
     "autoload": {
@@ -70,5 +72,10 @@
             "infection/extension-installer": true,
             "composer/package-versions-deprecated": true
         }
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix",
+        "psalm": "psalm",
+        "rector": "rector"
     }
 }

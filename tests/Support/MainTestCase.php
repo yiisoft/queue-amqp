@@ -18,7 +18,7 @@ abstract class MainTestCase extends TestCase
             getenv('RABBITMQ_HOST'),
             getenv('RABBITMQ_PORT'),
             getenv('RABBITMQ_USER'),
-            getenv('RABBITMQ_PASSWORD')
+            getenv('RABBITMQ_PASSWORD'),
         );
     }
 

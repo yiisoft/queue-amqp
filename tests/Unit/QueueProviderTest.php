@@ -16,6 +16,8 @@ use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
 use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 
+use const JSON_THROW_ON_ERROR;
+
 final class QueueProviderTest extends UnitTestCase
 {
     public function testWithQueueAndExchangeSettings(): void
@@ -30,10 +32,10 @@ final class QueueProviderTest extends UnitTestCase
         $adapter = new Adapter(
             $queueProvider
                 ->withQueueSettings(
-                    new QueueSettings($this->queueName)
+                    new QueueSettings($this->queueName),
                 )
                 ->withExchangeSettings(
-                    new ExchangeSettings($this->exchangeName)
+                    new ExchangeSettings($this->exchangeName),
                 ),
             new MessageSerializer(new JsonMessageEncoder()),
             $this->getLoop(),
@@ -44,7 +46,7 @@ final class QueueProviderTest extends UnitTestCase
         $fileHelper = new FileHelper();
         $time = time();
         $queue->push(
-            Message::fromPayload('ext-simple', ['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]])
+            Message::fromPayload('ext-simple', ['file_name' => 'test-with-queue-settings', 'payload' => ['time' => $time]]),
         );
 
         $message = $this
@@ -76,10 +78,10 @@ final class QueueProviderTest extends UnitTestCase
         new Adapter(
             $queueProvider
                 ->withQueueSettings(
-                    new QueueSettings('yii-queue-test-with-queue-name')
+                    new QueueSettings('yii-queue-test-with-queue-name'),
                 )
                 ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-with-queue-name')
+                    new ExchangeSettings('yii-queue-test-with-queue-name'),
                 )
                 ->withQueueName('yii-queue-test-queue-name'),
             new MessageSerializer(new JsonMessageEncoder()),
@@ -92,7 +94,7 @@ final class QueueProviderTest extends UnitTestCase
         $queueSettings = $this->createMock(QueueSettingsInterface::class);
         $queueProvider = new QueueProvider(
             $this->createConnection(),
-            $queueSettings
+            $queueSettings,
         );
 
         self::assertNotSame($queueProvider, $queueProvider->withQueueSettings($queueSettings));

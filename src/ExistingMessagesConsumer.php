@@ -18,9 +18,8 @@ final class ExistingMessagesConsumer
 
     public function __construct(
         private readonly QueueProviderInterface $queueProvider,
-        private readonly MessageSerializerInterface $serializer
-    ) {
-    }
+        private readonly MessageSerializerInterface $serializer,
+    ) {}
 
     /**
      * @param callable(MessageInterface): bool  $callback
@@ -51,7 +50,7 @@ final class ExistingMessagesConsumer
 
                         throw $exception;
                     }
-                }
+                },
             );
 
             do {

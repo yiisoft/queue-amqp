@@ -11,9 +11,7 @@ use Yiisoft\Queue\Middleware\Push\PushMiddlewareInterface;
 
 final class DelayMiddleware implements PushMiddlewareInterface
 {
-    public function __construct(private float $delayInSeconds)
-    {
-    }
+    public function __construct(private float $delayInSeconds) {}
 
     /**
      * @param float $seconds

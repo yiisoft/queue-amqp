@@ -36,7 +36,7 @@ final class QueuePushBench
                 getenv('RABBITMQ_USER'),
                 getenv('RABBITMQ_PASSWORD'),
             ),
-            new QueueSettings()
+            new QueueSettings(),
         );
         $adapter = new Adapter($queueProvider, $serializer, $loop);
 
@@ -76,6 +76,6 @@ final class QueuePushBench
 
     public function cleanupQueue(): void
     {
-        $this->adapter->runExisting(static fn (): bool => true);
+        $this->adapter->runExisting(static fn(): bool => true);
     }
 }

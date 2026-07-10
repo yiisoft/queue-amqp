@@ -32,18 +32,22 @@ use Yiisoft\Queue\Worker\Worker;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 
+use function is_array;
+use function is_int;
+use function is_string;
+
 /**
  * Test case for unit tests
  */
 abstract class UnitTestCase extends MainTestCase
 {
-    protected Queue|null $queue = null;
+    public ?QueueSettings $queueSettings = null;
+    public ?QueueProvider $queueProvider = null;
+    protected ?Queue $queue = null;
     protected ?WorkerInterface $worker = null;
     protected ?ContainerInterface $container = null;
     protected ?AdapterInterface $adapter = null;
     protected ?LoopInterface $loop = null;
-    public ?QueueSettings $queueSettings = null;
-    public ?QueueProvider $queueProvider = null;
 
     protected function setUp(): void
     {

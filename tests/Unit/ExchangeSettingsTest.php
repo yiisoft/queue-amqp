@@ -21,7 +21,7 @@ final class ExchangeSettingsTest extends UnitTestCase
             nowait: true,
             arguments: new AMQPTable([
                 'alternate-exchange' => 'yii-queue-test-common-settings-alt',
-            ])
+            ]),
         );
 
         self::assertTrue($exchangeSettings->isDurable());

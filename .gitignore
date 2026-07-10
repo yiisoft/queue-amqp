@@ -33,7 +33,7 @@ phpunit.phar
 coverage.xml
 /coverage.html
 
-# Phan
-analysis.txt
+# PHP CS Fixer
+/.php-cs-fixer.cache
 
 tests/.env

@@ -6,11 +6,11 @@ namespace Yiisoft\Queue\Amqp\Tests\Support;
 
 use Yiisoft\Queue\Message\MessageInterface;
 
+use function is_string;
+
 final class SimpleMessageHandler
 {
-    public function __construct(private readonly FileHelper $fileHelper)
-    {
-    }
+    public function __construct(private readonly FileHelper $fileHelper) {}
 
     public function __invoke(MessageInterface $message): void
     {
