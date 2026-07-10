@@ -1,29 +1,26 @@
+name: mutation test
+
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'psalm.xml'
-      - 'Makefile'
-
+    paths: &paths
+      - 'config/**'
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/mutation.yml'
+      - 'composer.json'
+      - 'infection.json.dist'
+      - 'phpunit.xml.dist'
   push:
-    branches: [ 'master' ]
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'psalm.xml'
-      - 'Makefile'
+    branches: ['master']
+    paths: *paths
 
-name: Mutation test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
+
 jobs:
   mutation:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
@@ -44,24 +41,24 @@ jobs:
 
     steps:
       - name: Checkout.
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
       - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php }}
           ini-values: memory_limit=-1
           coverage: pcov
           tools: composer:v2
 
-      - name: Install dependencies with composer.
-        run: composer update --no-interaction --no-progress --optimize-autoloader --ansi
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
 
       - name: Run infection
         run: |
-          vendor/bin/roave-infection-static-analysis-plugin --threads=2 --ignore-msi-with-no-mutations --only-covered
+          vendor/bin/roave-infection-static-analysis-plugin --threads=1 --ignore-msi-with-no-mutations --only-covered
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
           RABBITMQ_HOST: 127.0.0.1

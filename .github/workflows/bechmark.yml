@@ -1,31 +1,21 @@
+name: bechmark
+
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+    paths: &paths
+      - 'config/**'
+      - 'src/**'
       - 'tests/**'
-
+      - '.github/workflows/benchmark.yml'
+      - 'composer.json'
+      - 'phpbench.json'
   push:
     branches: ['master']
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
-      - 'tests/**'
-
-name: bechmark
+    paths: *paths
 
 permissions:
   contents: read
+
 jobs:
   phpbench:
     name: PHP ${{ matrix.php }}
@@ -41,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -55,8 +45,8 @@ jobs:
         env:
           GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
 
-      - name: "Baseline creation: Checkout default branch."
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - name: "Baseline creation: Checkout default branch"
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         if: ${{ env.WITH_BENCH_BASELINE == '1' }}
         with:
           ref: ${{ github.event.repository.default_branch }}
@@ -67,7 +57,7 @@ jobs:
         working-directory: ./tests
         run: docker compose build php${{ matrix.php }}
 
-      - name: "Baseline creation: Run PhpBench."
+      - name: "Baseline creation: Run PhpBench"
         id: baseline
         if: ${{ env.WITH_BENCH_BASELINE == '1' }}
         continue-on-error: true
@@ -78,8 +68,8 @@ jobs:
         if: ${{ env.WITH_BENCH_BASELINE == '1' && steps.baseline.outcome == 'failure' }}
         run: echo "WITH_BENCH_BASELINE=0" >> $GITHUB_ENV
 
-      - name: "Pull request: Checkout head."
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - name: "Pull request: Checkout head"
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         if: ${{ github.event_name == 'pull_request' }}
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -91,7 +81,7 @@ jobs:
         working-directory: ./tests
         run: docker compose build php${{ matrix.php }}
 
-      - name: "Run PhpBench."
+      - name: Run PhpBench
         working-directory: ./tests
         run: |
           if [ "${WITH_BENCH_BASELINE}" == '1' ]; then

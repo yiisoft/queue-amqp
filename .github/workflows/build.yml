@@ -1,29 +1,25 @@
+name: build
+
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
-
+    paths: &paths
+      - 'config/**'
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/build.yml'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
   push:
-    branches: [ 'master' ]
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+    branches: ['master']
+    paths: *paths
 
-name: build
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
+
 jobs:
   phpunit:
     name: PHP ${{ matrix.php }}
@@ -34,7 +30,7 @@ jobs:
         php: [ 81, 82, 83, 84 ]
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Build
