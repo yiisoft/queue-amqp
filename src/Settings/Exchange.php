@@ -18,9 +18,8 @@ final class Exchange implements ExchangeSettingsInterface
         private bool $internal = false,
         private bool $nowait = false,
         private AMQPTable|array $arguments = [],
-        private ?int $ticket = null
-    ) {
-    }
+        private ?int $ticket = null,
+    ) {}
 
     public function getArguments(): AMQPTable|array
     {

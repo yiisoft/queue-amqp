@@ -24,19 +24,18 @@ final class QueueProvider implements QueueProviderInterface
         private QueueSettingsInterface $queueSettings,
         private ?ExchangeSettingsInterface $exchangeSettings = null,
         private array $messageProperties = [],
-    ) {
-    }
-
-    public function __clone()
-    {
-        $this->channelId = null;
-    }
+    ) {}
 
     public function __destruct()
     {
         if ($this->channelId !== null) {
             $this->connection->channel($this->channelId)->close();
         }
+    }
+
+    public function __clone()
+    {
+        $this->channelId = null;
     }
 
     /**

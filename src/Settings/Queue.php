@@ -19,8 +19,7 @@ final class Queue implements QueueSettingsInterface
         private AMQPTable|array $arguments = [],
         private ?int $ticket = null,
         private ?QosSettings $qosSettings = null,
-    ) {
-    }
+    ) {}
 
     public function getArguments(): AMQPTable|array
     {

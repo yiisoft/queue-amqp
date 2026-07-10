@@ -19,14 +19,15 @@ use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\MessageStatus;
 
+use function is_string;
+
 final class Adapter implements AdapterInterface
 {
     public function __construct(
         private QueueProviderInterface $queueProvider,
         private readonly MessageSerializerInterface $serializer,
         private readonly LoopInterface $loop,
-    ) {
-    }
+    ) {}
 
     public function withChannel(BackedEnum|string $channel): self
     {
@@ -74,7 +75,7 @@ final class Adapter implements AdapterInterface
                 $exchangeSettings?->getName() ?? '',
                 $exchangeSettings ? '' : $queueProvider
                     ->getQueueSettings()
-                    ->getName()
+                    ->getName(),
             );
 
         return $message;
@@ -117,7 +118,7 @@ final class Adapter implements AdapterInterface
 
                     throw $exception;
                 }
-            }
+            },
         );
 
         while ($this->loop->canContinue()) {
@@ -165,7 +166,7 @@ final class Adapter implements AdapterInterface
                     $this->queueProvider->getQueueSettings(),
                     $exchangeSettings,
                     $delayMilliseconds,
-                )
+                ),
             );
     }
 
@@ -198,7 +199,7 @@ final class Adapter implements AdapterInterface
                     'x-dead-letter-exchange' => ['S', $exchangeSettings->getName()],
                     'x-expires' => ['I', $delayMilliseconds + 30000],
                     'x-message-ttl' => ['I', $delayMilliseconds],
-                ]
+                ],
             );
     }
 

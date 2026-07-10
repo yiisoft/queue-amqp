@@ -68,7 +68,7 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($this->getAdapter());
 
         $queue->push(
-            Message::fromPayload('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]])
+            Message::fromPayload('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]]),
         );
 
         self::assertNull($fileHelper->get($fileName));
@@ -105,7 +105,7 @@ final class QueueTest extends UnitTestCase
 
         $queue->listen();
 
-        $this->expectExceptionMessage((string)$time);
+        $this->expectExceptionMessage((string) $time);
     }
 
     public function testListen(): void
@@ -127,14 +127,9 @@ final class QueueTest extends UnitTestCase
         $queue = $this->getDefaultQueue($adapter);
 
         $queue->push(
-            Message::fromPayload('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]])
+            Message::fromPayload('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]]),
         );
         $queue->listen();
-    }
-
-    private function getDefaultQueue(AdapterInterface $adapter): Queue
-    {
-        return $this->getQueueWithAdapter($adapter);
     }
 
     public function testImmutable(): void
@@ -143,7 +138,7 @@ final class QueueTest extends UnitTestCase
         $adapter = new Adapter(
             $queueProvider,
             $this->createMock(MessageSerializerInterface::class),
-            $this->createMock(LoopInterface::class)
+            $this->createMock(LoopInterface::class),
         );
 
         self::assertNotSame($adapter, $adapter->withChannel('test'));
@@ -242,7 +237,7 @@ final class QueueTest extends UnitTestCase
         $adapter = new Adapter(
             $queueProvider,
             $serializer,
-            $this->createMock(LoopInterface::class)
+            $this->createMock(LoopInterface::class),
         );
 
         self::assertSame($message, $adapter->push($message));
@@ -294,5 +289,10 @@ final class QueueTest extends UnitTestCase
 
         $adapter = new Adapter($queueProvider, $this->createMock(MessageSerializerInterface::class), $loop);
         $adapter->subscribe(static fn() => null);
+    }
+
+    private function getDefaultQueue(AdapterInterface $adapter): Queue
+    {
+        return $this->getQueueWithAdapter($adapter);
     }
 }

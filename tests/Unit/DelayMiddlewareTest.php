@@ -32,7 +32,7 @@ final class DelayMiddlewareTest extends UnitTestCase
     public function testProcessPushAddsDelayEnvelope(): void
     {
         $message = Message::fromPayload('simple', null);
-        $handler = new class () implements PushHandlerInterface {
+        $handler = new class implements PushHandlerInterface {
             public function handlePush(MessageInterface $message): MessageInterface
             {
                 return $message;
@@ -48,7 +48,7 @@ final class DelayMiddlewareTest extends UnitTestCase
     public function testProcessPushSkipsNonPositiveDelay(): void
     {
         $message = Message::fromPayload('simple', null);
-        $handler = new class () implements PushHandlerInterface {
+        $handler = new class implements PushHandlerInterface {
             public function handlePush(MessageInterface $message): MessageInterface
             {
                 return $message;

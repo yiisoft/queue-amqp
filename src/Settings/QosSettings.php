@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\Amqp\Settings;
 
 use InvalidArgumentException;
+use PhpAmqpLib\Channel\AMQPChannel;
 
 /**
  * Quality of Service settings for AMQP consumers.
  *
- * @see \PhpAmqpLib\Channel\AMQPChannel::basic_qos()
+ * @see AMQPChannel::basic_qos()
  */
 final class QosSettings
 {

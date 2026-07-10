@@ -19,8 +19,7 @@ final class FakeAdapter implements AdapterInterface
         private readonly QueueProviderInterface $queueProvider,
         private readonly MessageSerializerInterface $serializer,
         private readonly LoopInterface $loop,
-    ) {
-    }
+    ) {}
 
     public function runExisting(callable $handlerCallback): void
     {

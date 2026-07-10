@@ -16,8 +16,7 @@ final class TestMessage implements MessageInterface
         private readonly string $type,
         private readonly bool|int|float|string|array|null $payload,
         private readonly array $meta = [],
-    ) {
-    }
+    ) {}
 
     public static function fromPayload(string $type, bool|int|float|string|array|null $payload): static
     {

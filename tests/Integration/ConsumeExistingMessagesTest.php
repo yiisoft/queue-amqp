@@ -26,7 +26,7 @@ class ConsumeExistingMessagesTest extends TestCase
                 getenv('RABBITMQ_USER'),
                 getenv('RABBITMQ_PASSWORD'),
             ),
-            new QueueSettings()
+            new QueueSettings(),
         );
         $adapter = new Adapter($queueProvider, $serializer, $loop);
 
@@ -39,7 +39,7 @@ class ConsumeExistingMessagesTest extends TestCase
         sleep(1);
 
         $processingCount = 0;
-        $adapter->runExisting(static function() use (&$processingCount): bool {
+        $adapter->runExisting(static function () use (&$processingCount): bool {
             $processingCount++;
             return true;
         });
@@ -58,7 +58,7 @@ class ConsumeExistingMessagesTest extends TestCase
                 getenv('RABBITMQ_USER'),
                 getenv('RABBITMQ_PASSWORD'),
             ),
-            new QueueSettings()
+            new QueueSettings(),
         );
         $adapter = new Adapter($queueProvider, $serializer, $loop);
 

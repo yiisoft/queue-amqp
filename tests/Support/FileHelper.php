@@ -6,6 +6,8 @@ namespace Yiisoft\Queue\Amqp\Tests\Support;
 
 use RuntimeException;
 
+use function dirname;
+
 final class FileHelper
 {
     /**

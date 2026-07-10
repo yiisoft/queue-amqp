@@ -52,7 +52,7 @@ final class QueueSettingsTest extends UnitTestCase
                 'x-dead-letter-exchange' => 'yii-queue-test-queue-common-settings-dead-letter-exc',
                 'x-message-ttl' => 15000,
                 'x-expires' => 16000,
-            ])
+            ]),
         );
 
         self::assertTrue($queueSettings->isDurable());
@@ -92,11 +92,11 @@ final class QueueSettingsTest extends UnitTestCase
                         queueName: 'yii-queue-test-queue-settings-arg',
                         arguments: new AMQPTable([
                             'x-expires' => 1600,
-                        ])
-                    )
+                        ]),
+                    ),
                 )
                 ->withExchangeSettings(
-                    new ExchangeSettings('yii-queue-test-queue-settings-arg')
+                    new ExchangeSettings('yii-queue-test-queue-settings-arg'),
                 ),
             new MessageSerializer(new JsonMessageEncoder()),
             $this->getLoop(),
@@ -104,7 +104,7 @@ final class QueueSettingsTest extends UnitTestCase
 
         $this->getQueueWithAdapter($adapter)
             ->push(
-                Message::fromPayload('ext-simple', ['payload' => time()])
+                Message::fromPayload('ext-simple', ['payload' => time()]),
             );
 
         sleep(2);

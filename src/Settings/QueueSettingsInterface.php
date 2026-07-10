@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\Amqp\Settings;
 
 use PhpAmqpLib\Wire\AMQPTable;
+use PhpAmqpLib\Channel\AMQPChannel;
+use Yiisoft\Queue\Amqp\QueueProvider;
 
 interface QueueSettingsInterface
 {
@@ -27,9 +29,9 @@ interface QueueSettingsInterface
     public function isPassive(): bool;
 
     /**
-     * Returns positional arguments to be used with {@see \PhpAmqpLib\Channel\AMQPChannel::queue_declare()}
+     * Returns positional arguments to be used with {@see AMQPChannel::queue_declare()}
      *
-     * @see \Yiisoft\Queue\Amqp\QueueProvider::getChannel()
+     * @see QueueProvider::getChannel()
      *
      * @return (AMQPTable|array|bool|int|string|null)[]
      *

@@ -26,6 +26,7 @@ use Yiisoft\Queue\Provider\QueueProviderInterface;
 use Yiisoft\Queue\Queue;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
+use LogicException;
 
 final class DelayMiddlewareTest extends TestCase
 {
@@ -79,7 +80,7 @@ final class DelayMiddlewareTest extends TestCase
         );
         $queue = $this->makeQueue($adapter, new DelayMiddleware(3));
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Method not implemented');
         $queue->push(
             Message::fromPayload('simple', 'test-delay-middleware-main'),
