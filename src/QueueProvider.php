@@ -10,9 +10,6 @@ use Yiisoft\Queue\Amqp\Exception\ExchangeDeclaredException;
 use Yiisoft\Queue\Amqp\Settings\ExchangeSettingsInterface;
 use Yiisoft\Queue\Amqp\Settings\QueueSettingsInterface;
 
-/**
- * @internal
- */
 final class QueueProvider implements QueueProviderInterface
 {
     public const EXCHANGE_NAME_DEFAULT = 'yii-queue';
