@@ -95,6 +95,7 @@ final class Adapter implements AdapterInterface
             );
         }
 
+        $refused = false;
         $channel->basic_consume(
             $this->queueProvider
                 ->getQueueSettings()
@@ -106,10 +107,15 @@ final class Adapter implements AdapterInterface
             false,
             false,
             true,
-            function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel): void {
+            function (AMQPMessage $amqpMessage) use ($handlerCallback, $channel, &$refused): void {
+                if ($refused) {
+                    // A message delivered after the handler refused one is not passed to it.
+                    $channel->basic_nack($amqpMessage->getDeliveryTag(), false, true);
+                    return;
+                }
+
                 try {
-                    $handlerCallback($this->serializer->unserialize($amqpMessage->getBody()));
-                    $channel->basic_ack($amqpMessage->getDeliveryTag());
+                    $handled = $handlerCallback($this->serializer->unserialize($amqpMessage->getBody()));
                 } catch (Throwable $exception) {
                     $consumerTag = $amqpMessage->getConsumerTag();
                     if ($consumerTag !== null) {
@@ -118,10 +124,23 @@ final class Adapter implements AdapterInterface
 
                     throw $exception;
                 }
+
+                if ($handled) {
+                    $channel->basic_ack($amqpMessage->getDeliveryTag());
+                    return;
+                }
+
+                // The handler did not process the message and cannot continue: return it to the queue and stop.
+                $refused = true;
+                $channel->basic_nack($amqpMessage->getDeliveryTag(), false, true);
+                $consumerTag = $amqpMessage->getConsumerTag();
+                if ($consumerTag !== null) {
+                    $channel->basic_cancel($consumerTag);
+                }
             },
         );
 
-        while ($this->loop->canContinue()) {
+        while (!$refused && $this->loop->canContinue()) {
             $channel->wait();
         }
     }
