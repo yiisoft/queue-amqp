@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Queue\Amqp\Tests\Integration;
 
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Amqp\Adapter;
@@ -14,17 +13,15 @@ use Yiisoft\Queue\Amqp\Settings\Queue as QueueSettings;
 use Yiisoft\Queue\Amqp\Settings\Exchange as ExchangeSettings;
 use Yiisoft\Queue\Amqp\Tests\Support\FakeAdapter;
 use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
-use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
 use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
 use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
-use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
-use Yiisoft\Queue\Provider\QueueProviderInterface;
-use Yiisoft\Queue\Queue;
-use Yiisoft\Queue\Worker\WorkerInterface;
+use Yiisoft\Queue\AsyncQueueProducer;
+use Yiisoft\Queue\DefaultQueue;
+use Yiisoft\Queue\QueueProducerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 use LogicException;
 
@@ -87,21 +84,14 @@ final class DelayMiddlewareTest extends TestCase
         );
     }
 
-    private function makeQueue(AdapterInterface $adapter, mixed ...$middlewareDefinitions): Queue
+    private function makeQueue(AdapterInterface $adapter, mixed ...$middlewareDefinitions): QueueProducerInterface
     {
-        return new Queue(
-            $this->createMock(WorkerInterface::class),
-            $this->createMock(LoopInterface::class),
+        return new AsyncQueueProducer(
             $this->createMock(LoggerInterface::class),
-            new PushMiddlewareConfig(
-                new PushMiddlewareFactory(
-                    new SimpleContainer(),
-                    new CallableFactory($this->createMock(ContainerInterface::class)),
-                ),
-            ),
+            new PushMiddlewareConfig(new PushMiddlewareFactory(new SimpleContainer())),
             $adapter,
-            QueueProviderInterface::DEFAULT_QUEUE,
-            ...$middlewareDefinitions,
+            DefaultQueue::NAME,
+            $middlewareDefinitions,
         );
     }
 }

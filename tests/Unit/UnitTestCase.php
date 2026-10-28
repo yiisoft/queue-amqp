@@ -7,7 +7,6 @@ namespace Yiisoft\Queue\Amqp\Tests\Unit;
 use PHPUnit\Util\Exception as PHPUnitException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
-use Yiisoft\Injector\Injector;
 use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Amqp\Adapter;
 use Yiisoft\Queue\Amqp\QueueProvider;
@@ -17,17 +16,20 @@ use Yiisoft\Queue\Amqp\Tests\Support\FileHelper;
 use Yiisoft\Queue\Amqp\Tests\Support\MainTestCase;
 use Yiisoft\Queue\Cli\LoopInterface;
 use Yiisoft\Queue\Cli\SignalLoop;
+use Yiisoft\Queue\AsyncQueueProducer;
 use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
 use Yiisoft\Queue\Message\Serializer\MessageSerializer;
+use Yiisoft\Queue\Message\Handler\HandlerResolver;
 use Yiisoft\Queue\Message\MessageInterface;
-use Yiisoft\Queue\Middleware\CallableFactory;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareDispatcher;
 use Yiisoft\Queue\Middleware\Consume\ConsumeMiddlewareFactory;
 use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareDispatcher;
 use Yiisoft\Queue\Middleware\FailureHandling\FailureMiddlewareFactory;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareFactory;
-use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\QueueConsumer;
+use Yiisoft\Queue\QueueConsumerInterface;
+use Yiisoft\Queue\QueueProducerInterface;
 use Yiisoft\Queue\Worker\Worker;
 use Yiisoft\Queue\Worker\WorkerInterface;
 use Yiisoft\Test\Support\Container\SimpleContainer;
@@ -43,7 +45,6 @@ abstract class UnitTestCase extends MainTestCase
 {
     public ?QueueSettings $queueSettings = null;
     public ?QueueProvider $queueProvider = null;
-    protected ?Queue $queue = null;
     protected ?WorkerInterface $worker = null;
     protected ?ContainerInterface $container = null;
     protected ?AdapterInterface $adapter = null;
@@ -69,23 +70,21 @@ abstract class UnitTestCase extends MainTestCase
         parent::tearDown();
     }
 
-    protected function getQueue(): Queue
+    protected function getProducer(AdapterInterface $adapter): QueueProducerInterface
     {
-        return $this->queue ??= new Queue(
-            $this->getWorker(),
-            $this->getLoop(),
+        return new AsyncQueueProducer(
             new NullLogger(),
             $this->getPushMiddlewareConfig(),
+            $adapter,
         );
     }
 
-    protected function getQueueWithAdapter(AdapterInterface $adapter): Queue
+    protected function getConsumer(AdapterInterface $adapter): QueueConsumerInterface
     {
-        return new Queue(
+        return new QueueConsumer(
             $this->getWorker(),
             $this->getLoop(),
             new NullLogger(),
-            $this->getPushMiddlewareConfig(),
             $adapter,
         );
     }
@@ -93,13 +92,10 @@ abstract class UnitTestCase extends MainTestCase
     protected function getWorker(): WorkerInterface
     {
         return $this->worker ??= new Worker(
-            $this->getMessageHandlers(),
             new NullLogger(),
-            new Injector($this->getContainer()),
-            $this->getContainer(),
             $this->getConsumeMiddlewareDispatcher(),
             $this->getFailureMiddlewareDispatcher(),
-            new CallableFactory($this->getContainer()),
+            new HandlerResolver($this->getMessageHandlers(), $this->getContainer()),
         );
     }
 
@@ -133,20 +129,14 @@ abstract class UnitTestCase extends MainTestCase
     protected function getConsumeMiddlewareDispatcher(): ConsumeMiddlewareDispatcher
     {
         return new ConsumeMiddlewareDispatcher(
-            new ConsumeMiddlewareFactory(
-                $this->getContainer(),
-                new CallableFactory($this->getContainer()),
-            ),
+            new ConsumeMiddlewareFactory($this->getContainer()),
         );
     }
 
     protected function getFailureMiddlewareDispatcher(): FailureMiddlewareDispatcher
     {
         return new FailureMiddlewareDispatcher(
-            new FailureMiddlewareFactory(
-                $this->getContainer(),
-                new CallableFactory($this->getContainer()),
-            ),
+            new FailureMiddlewareFactory($this->getContainer()),
             [],
         );
     }
@@ -168,10 +158,7 @@ abstract class UnitTestCase extends MainTestCase
     protected function getPushMiddlewareConfig(): PushMiddlewareConfig
     {
         return new PushMiddlewareConfig(
-            new PushMiddlewareFactory(
-                $this->getContainer(),
-                new CallableFactory($this->getContainer()),
-            ),
+            new PushMiddlewareFactory($this->getContainer()),
         );
     }
 
