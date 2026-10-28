@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Queue\Amqp\Settings;
 
 use PhpAmqpLib\Wire\AMQPTable;
-use Yiisoft\Queue\Provider\QueueProviderInterface;
+use Yiisoft\Queue\DefaultQueue;
 
 final class Queue implements QueueSettingsInterface
 {
     public function __construct(
-        private string $queueName = QueueProviderInterface::DEFAULT_QUEUE,
+        private string $queueName = DefaultQueue::NAME,
         private bool $passive = false,
         private bool $durable = true,
         private bool $exclusive = false,

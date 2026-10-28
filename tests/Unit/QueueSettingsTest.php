@@ -102,7 +102,7 @@ final class QueueSettingsTest extends UnitTestCase
             $this->getLoop(),
         );
 
-        $this->getQueueWithAdapter($adapter)
+        $this->getProducer($adapter)
             ->push(
                 Message::fromPayload('ext-simple', ['payload' => time()]),
             );

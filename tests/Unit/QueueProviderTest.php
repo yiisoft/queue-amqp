@@ -41,7 +41,7 @@ final class QueueProviderTest extends UnitTestCase
             $this->getLoop(),
         );
 
-        $queue = $this->getQueueWithAdapter($adapter);
+        $queue = $this->getProducer($adapter);
 
         $fileHelper = new FileHelper();
         $time = time();
@@ -57,7 +57,7 @@ final class QueueProviderTest extends UnitTestCase
 
         self::assertNull($fileHelper->get('test-with-queue-settings'));
 
-        $queue->run();
+        $this->getConsumer($adapter)->run();
 
         $result = $fileHelper->get('test-with-queue-settings');
         self::assertNotNull($result);

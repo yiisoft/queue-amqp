@@ -8,7 +8,6 @@ use Exception;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
-use Yiisoft\Queue\Adapter\AdapterInterface;
 use Yiisoft\Queue\Amqp\Adapter;
 use Yiisoft\Queue\Amqp\Exception\NotImplementedException;
 use Yiisoft\Queue\Amqp\QueueProvider;
@@ -27,7 +26,6 @@ use Yiisoft\Queue\Message\Serializer\JsonMessageEncoder;
 use Yiisoft\Queue\Message\Serializer\MessageSerializer;
 use Yiisoft\Queue\Amqp\Tests\Support\TestMessage as Message;
 use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
-use Yiisoft\Queue\Queue;
 
 final class QueueTest extends UnitTestCase
 {
@@ -41,7 +39,7 @@ final class QueueTest extends UnitTestCase
         $adapter = $this->getAdapter();
         $adapterClass = $adapter::class;
 
-        $queue = $this->getDefaultQueue($adapter);
+        $queue = $this->getProducer($adapter);
 
         $message = Message::fromPayload('ext-simple', null);
         $queue->push(
@@ -65,7 +63,7 @@ final class QueueTest extends UnitTestCase
 
         $this->queueSettings = new QueueSettings($this->queueName);
 
-        $queue = $this->getDefaultQueue($this->getAdapter());
+        $queue = $this->getProducer($this->getAdapter());
 
         $queue->push(
             Message::fromPayload('ext-simple', ['file_name' => $fileName, 'payload' => ['time' => $time]]),
@@ -73,7 +71,7 @@ final class QueueTest extends UnitTestCase
 
         self::assertNull($fileHelper->get($fileName));
 
-        $queue->run();
+        $this->getConsumer($this->getAdapter())->run();
 
         $result = $fileHelper->get($fileName);
         self::assertNotNull($result);
@@ -96,14 +94,14 @@ final class QueueTest extends UnitTestCase
             new MessageSerializer(new JsonMessageEncoder()),
             $this->getLoop(),
         );
-        $queue = $this->getDefaultQueue($adapter);
+        $queue = $this->getProducer($adapter);
 
         $time = time();
         $queue->push(Message::fromPayload('exception-listen', ['payload' => ['time' => $time]]));
 
         $this->expectException(MessageFailureException::class);
 
-        $queue->listen();
+        $this->getConsumer($adapter)->listen();
 
         $this->expectExceptionMessage((string) $time);
     }
@@ -124,12 +122,12 @@ final class QueueTest extends UnitTestCase
             new MessageSerializer(new JsonMessageEncoder()),
             $mockLoop,
         );
-        $queue = $this->getDefaultQueue($adapter);
+        $queue = $this->getProducer($adapter);
 
         $queue->push(
             Message::fromPayload('ext-simple', ['file_name' => 'test-listen' . $time, 'payload' => ['time' => $time]]),
         );
-        $queue->listen();
+        $this->getConsumer($adapter)->listen();
     }
 
     public function testImmutable(): void
@@ -289,10 +287,5 @@ final class QueueTest extends UnitTestCase
 
         $adapter = new Adapter($queueProvider, $this->createMock(MessageSerializerInterface::class), $loop);
         $adapter->subscribe(static fn() => null);
-    }
-
-    private function getDefaultQueue(AdapterInterface $adapter): Queue
-    {
-        return $this->getQueueWithAdapter($adapter);
     }
 }
