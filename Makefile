@@ -19,7 +19,7 @@ sh:			## Enter the container with the application
 
 mutation-test:		## Run mutation tests. Params: {{ v=81 }}
 	docker compose -f tests/docker-compose.yml build --pull php$(v)
-	docker compose -f tests/docker-compose.yml run php$(v) php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/roave-infection-static-analysis-plugin -j2 --ignore-msi-with-no-mutations --only-covered
+	docker compose -f tests/docker-compose.yml run php$(v) php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/infection -j2 --ignore-msi-with-no-mutations --only-covered
 	make down
 
 coverage:		## Run code coverage. Params: {{ v=81 }}
