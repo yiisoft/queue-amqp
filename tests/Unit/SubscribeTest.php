@@ -44,7 +44,7 @@ final class SubscribeTest extends TestCase
         );
 
         self::assertSame(['1'], $handled);
-        self::assertSame(['nack 1 requeue', 'cancel consumer'], $this->calls);
+        self::assertSame(['cancel consumer', 'nack 1 requeue'], $this->calls);
     }
 
     public function testRequeuesMessagesDeliveredAfterRefusalWithoutHandlingThem(): void
@@ -60,7 +60,16 @@ final class SubscribeTest extends TestCase
         );
 
         self::assertSame(['1', '2'], $handled);
-        self::assertSame(['ack 1', 'nack 2 requeue', 'cancel consumer', 'nack 3 requeue'], $this->calls);
+        self::assertSame(['ack 1', 'cancel consumer', 'nack 2 requeue', 'nack 3 requeue'], $this->calls);
+    }
+
+    public function testRequeuesMessageWhenHandlerReturnsNonBoolean(): void
+    {
+        $channel = $this->createChannel([['1']]);
+
+        $this->createAdapter($channel, [true, true])->subscribe(static fn(): int => 1);
+
+        self::assertSame(['cancel consumer', 'nack 1 requeue'], $this->calls);
     }
 
     /**

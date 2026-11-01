@@ -125,18 +125,19 @@ final class Adapter implements AdapterInterface
                     throw $exception;
                 }
 
-                if ($handled) {
+                if ($handled === true) {
                     $channel->basic_ack($amqpMessage->getDeliveryTag());
                     return;
                 }
 
-                // The handler did not process the message and cannot continue: return it to the queue and stop.
+                // The handler did not process the message and cannot continue: stop and return it to the queue.
+                // The consumer is cancelled first, so that the broker doesn't deliver the message to it again.
                 $refused = true;
-                $channel->basic_nack($amqpMessage->getDeliveryTag(), false, true);
                 $consumerTag = $amqpMessage->getConsumerTag();
                 if ($consumerTag !== null) {
                     $channel->basic_cancel($consumerTag);
                 }
+                $channel->basic_nack($amqpMessage->getDeliveryTag(), false, true);
             },
         );
 
